@@ -39,7 +39,7 @@ CREATE TABLE table_vendor_price
 	id_goods int,
 	country enum_country,
 	price_goods numeric CHECK (price_goods >= 0) NOT NULL,
-	sales_model fifo_lifo DEFAULT 'lifo'::fifo_lifo
+	sales_model enum_fifo_lifo DEFAULT 'lifo'::enum_fifo_lifo
 );
 
 CREATE TABLE table_warehouse
@@ -78,9 +78,9 @@ CREATE TABLE table_consignment
 	id_warehouse int,
 	id_vendor int,
 	id_goods int,
-	amount_goods_available int,
-	amount_goods_blocked int,
-	amount_goods_defect int,
+	amount_goods_available int DEFAULT 0,
+	amount_goods_blocked int DEFAULT 0,
+	amount_goods_defect int DEFAULT 0,
 	goods_in_stock bool,
 	arrival_date_goods TIMESTAMPTZ,
 	consignment_info text,
@@ -97,7 +97,7 @@ CREATE TABLE table_tax_plan
 (
 	country enum_country,
 	city varchar(128),
-	vat numeric CHECK (vat >= 0),
+	vat numeric CHECK (vat >= 0) NOT NULL,
 
 	CONSTRAINT foreign_key_table_country_city FOREIGN KEY (city) REFERENCES table_country_city(city) ON UPDATE CASCADE
 );
@@ -105,21 +105,21 @@ CREATE TABLE table_tax_plan
 CREATE TABLE table_warehouse_commission
 (
 	id_warehouse int,
-	commission_percentage numeric CHECK (commission_percentage >= 0),
+	commission_percentage numeric CHECK (commission_percentage >= 0) DEFAULT 0,
 
 	CONSTRAINT foreign_key_id_warehouse FOREIGN KEY (id_warehouse) REFERENCES table_warehouse(id_warehouse)
 );
 
 CREATE TABLE table_system_commission
 (
-	commission_percentage numeric CHECK (commission_percentage >= 0)
+	commission_percentage numeric CHECK (commission_percentage >= 0) DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE table_customer_wallet
 (
 	id_customer int NOT NULL,
-	amount_money numeric CHECK (amount_money >= 0),
-	blocked_money numeric CHECK (blocked_money >= 0),
+	amount_money numeric CHECK (amount_money >= 0) DEFAULT 0,
+	blocked_money numeric CHECK (blocked_money >= 0) DEFAULT 0,
 
 	CONSTRAINT foreign_key_table_customer FOREIGN KEY (id_customer) REFERENCES table_customer(id_customer)
 );
@@ -127,9 +127,9 @@ CREATE TABLE table_customer_wallet
 CREATE TABLE table_vendor_wallet
 (
 	id_vendor int NOT NULL,
-	amount_money numeric CHECK (amount_money >= 0),
-	blocked_money numeric CHECK (blocked_money >= 0),
-	tax_money numeric CHECK (tax_money >= 0),
+	amount_money numeric CHECK (amount_money >= 0) DEFAULT 0,
+	blocked_money numeric CHECK (blocked_money >= 0) DEFAULT 0,
+	tax_money numeric CHECK (tax_money >= 0) DEFAULT 0,
 
 	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor)
 );
@@ -137,21 +137,21 @@ CREATE TABLE table_vendor_wallet
 CREATE TABLE table_warehouse_wallet
 (
 	id_warehouse int NOT NULL,
-	amount_money numeric CHECK (amount_money >= 0),
-	blocked_money numeric CHECK (blocked_money >= 0),
+	amount_money numeric CHECK (amount_money >= 0) DEFAULT 0,
+	blocked_money numeric CHECK (blocked_money >= 0) DEFAULT 0,
 
 	CONSTRAINT foreign_key_id_warehouse FOREIGN KEY (id_warehouse) REFERENCES table_warehouse (id_warehouse)
 );
 
 CREATE TABLE table_system_wallet
 (
-	amount_money numeric CHECK (amount_money >= 0),
-	blocked_money numeric CHECK (blocked_money >= 0)
+	amount_money numeric CHECK (amount_money >= 0) DEFAULT 0,
+	blocked_money numeric CHECK (blocked_money >= 0) DEFAULT 0
 );
 
 CREATE TABLE table_orders
 (
-	id_order int GENERATED ALWAYS AS IDENTITY,
+	id_order int,
 	id_customer int NOT NULL,
 	id_consignment int NOT NULL,
 	id_vendor int NOT NULL,
@@ -166,9 +166,11 @@ CREATE TABLE table_orders
 
 	delivery_status_order bool DEFAULT false,
 	id_problem int,
-	cancellation bool DEFAULT false,
+	cancellation_order bool DEFAULT false,
 
-	CONSTRAINT primery_key_id_order PRIMARY KEY (id_order),
+	operation_uuid uuid NOT NULL,
+
+	CONSTRAINT primery_key_id_order_id_consignment PRIMARY KEY (id_order, id_consignment),
 	CONSTRAINT foreign_key_id_customer FOREIGN KEY (id_customer) REFERENCES table_customer(id_customer),
 	CONSTRAINT foreign_key_id_consignment FOREIGN KEY (id_consignment) REFERENCES table_consignment(id_consignment),
 	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor),
@@ -179,19 +181,23 @@ CREATE TABLE table_orders
 
 CREATE TABLE table_ledger
 (
-	id_order int,
-	id_customer int,
-	money_customer_debit numeric,
-	id_vendor int,
-	money_vendor_credit numeric,
-	tax_money_vendor_credit numeric,
-	id_warehouse int,
-	money_warehouse_credit numeric,
-	money_system_credit numeric,
+	id_order int NOT NULL,
+	id_consignment int NOT NULL,
+	id_customer int NOT NULL,
+	money_customer_debit numeric DEFAULT 0,
+	id_vendor int NOT NULL,
+	money_vendor_credit numeric DEFAULT 0,
+	tax_money_vendor_credit numeric DEFAULT 0,
+	id_warehouse int NOT NULL,
+	money_warehouse_credit numeric DEFAULT 0,
+	money_system_credit numeric DEFAULT 0,
 
 	cancellation_pay bool,
+	confirmation_order_and_pay bool,
 
-	CONSTRAINT foreign_key_id_order FOREIGN KEY (id_order) REFERENCES table_orders(id_order),
+	operation_uuid uuid NOT NULL,
+
+	CONSTRAINT foreign_key_id_order FOREIGN KEY (id_order, id_consignment) REFERENCES table_orders(id_order, id_consignment),
 	CONSTRAINT foreign_key_id_customer FOREIGN KEY (id_customer) REFERENCES table_customer(id_customer),
 	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor),
 	CONSTRAINT foreign_key_id_warehouse FOREIGN KEY (id_warehouse) REFERENCES table_warehouse (id_warehouse)
