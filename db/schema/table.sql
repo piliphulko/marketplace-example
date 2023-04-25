@@ -152,7 +152,7 @@ CREATE TABLE table_system_wallet
 
 CREATE TABLE table_orders
 (
-	id_order int,
+	id_order int, -- seq_id_order
 	id_customer int NOT NULL,
 	id_consignment int NOT NULL,
 	id_vendor int NOT NULL,
