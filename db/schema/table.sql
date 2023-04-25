@@ -78,9 +78,9 @@ CREATE TABLE table_consignment
 	id_warehouse int,
 	id_vendor int,
 	id_goods int,
-	amount_goods_available int DEFAULT 0,
-	amount_goods_blocked int DEFAULT 0,
-	amount_goods_defect int DEFAULT 0,
+	amount_goods_available domain_amount,
+	amount_goods_blocked domain_amount,
+	amount_goods_defect domain_amount,
 	goods_in_stock bool,
 	arrival_date_goods TIMESTAMPTZ,
 	consignment_info text,
@@ -97,7 +97,7 @@ CREATE TABLE table_tax_plan
 (
 	country enum_country,
 	city varchar(128),
-	vat numeric CHECK (vat >= 0) NOT NULL,
+	vat domain_percentage,
 
 	CONSTRAINT foreign_key_table_country_city FOREIGN KEY (city) REFERENCES table_country_city(city) ON UPDATE CASCADE
 );
@@ -105,21 +105,21 @@ CREATE TABLE table_tax_plan
 CREATE TABLE table_warehouse_commission
 (
 	id_warehouse int,
-	commission_percentage numeric CHECK (commission_percentage >= 0) DEFAULT 0,
+	commission_percentage domain_percentage,
 
 	CONSTRAINT foreign_key_id_warehouse FOREIGN KEY (id_warehouse) REFERENCES table_warehouse(id_warehouse)
 );
 
 CREATE TABLE table_system_commission
 (
-	commission_percentage numeric CHECK (commission_percentage >= 0) DEFAULT 0 NOT NULL
+	commission_percentage domain_percentage
 );
 
 CREATE TABLE table_customer_wallet
 (
 	id_customer int NOT NULL,
-	amount_money numeric CHECK (amount_money >= 0) DEFAULT 0,
-	blocked_money numeric CHECK (blocked_money >= 0) DEFAULT 0,
+	amount_money domain_money,
+	blocked_money domain_money,
 
 	CONSTRAINT foreign_key_table_customer FOREIGN KEY (id_customer) REFERENCES table_customer(id_customer)
 );
@@ -127,9 +127,10 @@ CREATE TABLE table_customer_wallet
 CREATE TABLE table_vendor_wallet
 (
 	id_vendor int NOT NULL,
-	amount_money numeric CHECK (amount_money >= 0) DEFAULT 0,
-	blocked_money numeric CHECK (blocked_money >= 0) DEFAULT 0,
-	tax_money numeric CHECK (tax_money >= 0) DEFAULT 0,
+	amount_money domain_money,
+	blocked_money domain_money,
+	tax_money domain_money,
+	blocked_tax_money domain_money,
 
 	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor)
 );
@@ -137,16 +138,16 @@ CREATE TABLE table_vendor_wallet
 CREATE TABLE table_warehouse_wallet
 (
 	id_warehouse int NOT NULL,
-	amount_money numeric CHECK (amount_money >= 0) DEFAULT 0,
-	blocked_money numeric CHECK (blocked_money >= 0) DEFAULT 0,
+	amount_money domain_money,
+	blocked_money domain_money,
 
 	CONSTRAINT foreign_key_id_warehouse FOREIGN KEY (id_warehouse) REFERENCES table_warehouse (id_warehouse)
 );
 
 CREATE TABLE table_system_wallet
 (
-	amount_money numeric CHECK (amount_money >= 0) DEFAULT 0,
-	blocked_money numeric CHECK (blocked_money >= 0) DEFAULT 0
+	amount_money domain_money,
+	blocked_money domain_money
 );
 
 CREATE TABLE table_orders
@@ -158,7 +159,7 @@ CREATE TABLE table_orders
 	id_goods int NOT NULL,
 	id_warehouse int NOT NULL,
 	price_goods numeric,
-	amount_goods int NOT NULL,
+	amount_goods domain_amount,
 	delivery_location_country varchar(128),
 	delivery_location_city varchar(128),
 	date_order_start TIMESTAMPTZ NOT NULL,
@@ -184,13 +185,13 @@ CREATE TABLE table_ledger
 	id_order int NOT NULL,
 	id_consignment int NOT NULL,
 	id_customer int NOT NULL,
-	money_customer_debit numeric DEFAULT 0,
+	money_customer_debit domain_money,
 	id_vendor int NOT NULL,
-	money_vendor_credit numeric DEFAULT 0,
-	tax_money_vendor_credit numeric DEFAULT 0,
+	money_vendor_credit domain_money,
+	tax_money_vendor_credit domain_money,
 	id_warehouse int NOT NULL,
-	money_warehouse_credit numeric DEFAULT 0,
-	money_system_credit numeric DEFAULT 0,
+	money_warehouse_credit domain_money,
+	money_system_credit domain_money,
 
 	cancellation_pay bool,
 	confirmation_order_and_pay bool,
