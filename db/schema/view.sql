@@ -1,11 +1,11 @@
 CREATE VIEW view_market_all_countries AS
-    SELECT table_warehouse_info.country, table_vendor.login_vendor, table_goods.name_goods, table_goods.type_goods,
+    SELECT table_warehouse_info.country, table_vendor_info.name_vendor, table_goods.name_goods, table_goods.type_goods,
         sum(table_consignment.amount_goods_available) AS amount_goods_available, table_vendor_price.price_goods,
         trunc(avg(table_vendor_price.price_goods) OVER (PARTITION BY table_goods.name_goods), 2) AS avg_price_goods_all_countries
     FROM table_consignment
     JOIN table_vendor_price USING (id_vendor, id_goods)
     JOIN table_warehouse_info USING (id_warehouse)
-    JOIN table_vendor USING (id_vendor)
+    JOIN table_vendor_info USING (id_vendor)
     JOIN table_goods USING (id_goods)
     WHERE table_vendor_price.country = table_warehouse_info.country AND goods_in_stock = true
     GROUP BY table_warehouse_info.country, table_vendor.login_vendor, table_goods.name_goods, 

@@ -1,7 +1,7 @@
-SELECT function_create_order('GERMANY', 'vatican_agents', 'lair of Teutonic explorers', 'flat earth photo', 3, 'celt_4_blood_types', '1ea21fe0-5b00-45f1-9575-557e28394ae4')
+--SELECT function_create_order('GERMANY', 'Doubting Thomas', 'lair of Teutonic explorers', 'flat earth photo', 3, 'celt_4_blood_types', '1ea21fe0-5b00-45f1-9575-557e28394ae4')
 
 CREATE OR REPLACE FUNCTION function_create_order(
-	in_country varchar, in_login_vendor varchar, in_warehouse_name varchar,
+	in_country varchar, in_name_vendor varchar, in_warehouse_name varchar,
 	in_name_goods varchar, in_amount_goods int, in_login_customer varchar, 
 	in_uuid varchar) 
 RETURNS varchar AS $$
@@ -29,11 +29,11 @@ BEGIN
 	SELECT id_vendor, id_goods, id_warehouse, price_goods 
 	INTO id_vendor_v, id_goods_v, id_warehouse_v, price_goods_v
 	FROM table_consignment
-	JOIN table_vendor USING (id_vendor) 
+	JOIN table_vendor_info USING (id_vendor) 
 	JOIN table_goods USING (id_goods) 
 	JOIN table_warehouse_info USING (id_warehouse)
 	JOIN table_vendor_price USING (id_vendor, id_goods)
-	WHERE table_vendor.login_vendor = in_login_vendor AND table_goods.name_goods = in_name_goods AND
+	WHERE table_vendor_info.name_vendor = in_login_vendor AND table_goods.name_goods = in_name_goods AND
 		  table_warehouse_info.name_warehouse = in_warehouse_name AND 
 		  table_warehouse_info.country = table_vendor_price.country;
 	--

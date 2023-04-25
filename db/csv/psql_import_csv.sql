@@ -1,6 +1,7 @@
 \COPY table_customer (login_customer, passwort_customer) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\restapi-postgresql\db\csv\table_customer.csv' DELIMITER ',' CSV HEADER;
 \COPY table_vendor (login_vendor, passwort_vendor) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\restapi-postgresql\db\csv\table_vendor.csv' DELIMITER ',' CSV HEADER;
 \COPY table_goods (name_goods, type_goods, info_goods) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\restapi-postgresql\db\csv\table_goods.csv' DELIMITER ',' CSV HEADER;
+\COPY table_vendor_info (id_vendor, name_vendor) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\restapi-postgresql\db\csv\table_vendor_info.csv' DELIMITER ',' CSV HEADER;
 \COPY table_country_city (country, city) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\restapi-postgresql\db\csv\table_country_city.csv' DELIMITER ',' CSV HEADER;
 \COPY table_vendor_price (id_vendor, id_goods, country, price_goods) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\restapi-postgresql\db\csv\table_vendor_price.csv' DELIMITER ',' CSV HEADER;
 \COPY table_warehouse (login_warehouse, passwort_warehouse) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\restapi-postgresql\db\csv\table_warehouse.csv' DELIMITER ',' CSV HEADER;

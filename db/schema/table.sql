@@ -16,6 +16,14 @@ CREATE TABLE table_vendor
 	CONSTRAINT primery_key_id_vendor PRIMARY KEY (id_vendor)
 );
 
+CREATE TABLE table_vendor_info
+(
+	id_vendor int,
+	name_vendor varchar(128) UNIQUE,
+
+	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor)
+);
+
 CREATE TABLE table_goods
 (
 	id_goods int GENERATED ALWAYS AS IDENTITY,
@@ -81,7 +89,7 @@ CREATE TABLE table_consignment
 	amount_goods_available domain_amount,
 	amount_goods_blocked domain_amount,
 	amount_goods_defect domain_amount,
-	goods_in_stock bool,
+	goods_in_stock bool DEFAULT false,
 	arrival_date_goods TIMESTAMPTZ,
 	consignment_info text,
 	id_problem int,
