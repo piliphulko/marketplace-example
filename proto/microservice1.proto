@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "crud.proto";
+
+import "mess.proto";
+
+//import "google/protobuf/empty.proto";
+
+package microservise1;
+
+service CRUD_database {
+    rpc CRUD_Customer(mess.Customer, crud.CRUD_option) returns (crud.Customer_CRUD);
+    rpc CRUD_CustomerInfo(mess.CustomerInfo, crud.CRUD_option) returns (crud.CustomerInfo_CRUD);
+
+    rpc CRUD_Warehouse(mess.Warehouse, crud.CRUD_option) returns (crud.Warehouse_CRUD);
+    rpc CRUD_WarehouseInfo(mess.WarehouseInfo, crud.CRUD_option) returns (crud.WarehouseInfo_CRUD);
+
+    rpc CRUD_Vendor(mess.Vendor, crud.CRUD_option) returns (crud.Vendor_CRUD);
+    rpc CRUD_VendorInfo(mess.VendorInfo, crud.CRUD_option) returns (crud.VendorInfo_CRUD);
+
+    rpc CRUD_Goods(mess.Goods, crud.CRUD_option) returns (crud.Goods_CRUD);
+    rpc CRUD_VendorPrice(mess.VendorPrice, crud.CRUD_option) returns (crud.VendorPrice_CRUD);
+
+    //rpc CRUD_Consignment(crud.Consignment, crud.CRUD_option) returns (google.protobuf.Empty);
+    //rpc CRUD_ArrayOrder(crud.ArrayOrder, crud.CRUD_option) returns (google.protobuf.Empty);
+}

@@ -1,3 +1,11 @@
+CREATE TABLE table_country_city
+(
+	country enum_country,
+	city varchar(128),
+
+	CONSTRAINT primery_key_city PRIMARY KEY (city)
+);
+
 CREATE TABLE table_customer
 (
 	id_customer int GENERATED ALWAYS AS IDENTITY,
@@ -5,6 +13,16 @@ CREATE TABLE table_customer
 	passwort_customer varchar(32) CHECK (char_length(passwort_customer) > 7),
 
 	CONSTRAINT primery_key_id_customer PRIMARY KEY (id_customer)
+);
+
+CREATE TABLE table_customer_info
+(
+	id_customer int,
+	delivery_location_country enum_country,
+	delivery_location_city varchar(128),
+
+	CONSTRAINT foreign_key_id_customer FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor),
+	CONSTRAINT foreign_key_city FOREIGN KEY (delivery_location_city) REFERENCES table_country_city(city)
 );
 
 CREATE TABLE table_vendor
@@ -32,13 +50,6 @@ CREATE TABLE table_goods
 	info_goods text,
 
 	CONSTRAINT primery_key_id_goods PRIMARY KEY (id_goods)
-);
-
-CREATE TABLE table_country_city
-(
-	country enum_country,
-	city varchar(128),
-	CONSTRAINT primery_key_city PRIMARY KEY (city)
 );
 
 CREATE TABLE table_vendor_price

@@ -7,6 +7,12 @@ message Customer {
     string PasswortCustomer = 2;
 }
 
+message CustomerInfo {
+    Customer CustomerAut = 1;
+    string CustomerCountry = 2;
+    string CustomerCiry = 3;
+}
+
 message Warehouse {
     string LoginWarehouse = 1;
     string PasswortWarehouse = 2;
@@ -32,8 +38,9 @@ message VendorInfo {
 }
 
 message Goods {
-    string NameGoods = 1;
-    string TypeGoods = 2;
+    Vendor VendorAut = 1;
+    string NameGoods = 2;
+    string TypeGoods = 3;
 }
 
 message VendorPrice {
@@ -51,6 +58,14 @@ message Consignment {
     string ArrivalDate = 6;
     fixed32 IdProblem = 7;
     string ConsignmentNote = 8;
+}
+
+message ConsignmentVW {
+    oneof VendorOrWarehouse{
+        Vendor VendorAut = 1;
+        Warehouse WarehouseAut = 2;
+    }
+    Consignment ConsignmentM = 3;
 }
 
 message Order {

@@ -24,6 +24,8 @@ DECLARE
 	tax_money_vendor_credit_v domain_money = 0;
 	money_warehouse_credit_v domain_money = 0;
 	money_system_credit_v domain_money = 0;
+	delivery_location_country_v varchar;
+	delivery_location_city_v varchar;
 BEGIN
 	--
 	SELECT id_vendor, id_goods, id_warehouse, price_goods 
@@ -37,7 +39,19 @@ BEGIN
 		  table_warehouse_info.name_warehouse = in_warehouse_name AND 
 		  table_warehouse_info.country = table_vendor_price.country;
 	--
-	id_customer_v = (SELECT id_customer FROM table_customer WHERE login_customer = in_login_customer);
+	IF NOT FOUND THEN
+		RETURN 'No items or invalid request'::varchar;
+	END IF;
+	--
+	SELECT id_customer, delivery_location_country, delivery_location_city
+	INTO id_customer_v, delivery_location_country_v, delivery_location_city_v
+	FROM table_customer
+	JOIN table_customer_info USING (id_customer)
+	WHERE login_customer = in_login_customer;
+	--
+	IF NOT FOUND THEN
+		RETURN 'No items or invalid request'::varchar;
+	END IF;
 	--
 	SELECT ARRAY (
 		SELECT ROW (id_consignment, amount_goods_available)::type_id_amount 
@@ -93,7 +107,8 @@ BEGIN
 		INSERT INTO table_orders(id_order, id_customer, id_consignment, id_vendor, 
 		id_goods, id_warehouse, price_goods, amount_goods, delivery_location_country,
 		delivery_location_city, date_order_start, operation_uuid) VALUES
-		(id_order_v, id_customer_v, i_v, id_vendor_v, id_goods_v, id_warehouse_v, price_goods_v, a_v, '', '', now(), in_uuid::uuid);
+		(id_order_v, id_customer_v, i_v, id_vendor_v, id_goods_v, id_warehouse_v, price_goods_v, a_v, 
+		delivery_location_country_v, delivery_location_city_v, now(), in_uuid::uuid);
 		--
 		IF NOT FOUND THEN
 			RETURN 'problem2'::varchar;
