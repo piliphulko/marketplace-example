@@ -1,4 +1,4 @@
-module github.com/piliphulko/restapi-postgresql
+module github.com/piliphulko/marketplace-example
 
 go 1.20
 

@@ -1,5 +1,0 @@
-{
-    "POSTGRESQL" : {
-        "DATABASE_URL": "postgres://postgres:5432@localhost:5432/test_db"
-    }
-}

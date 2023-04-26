@@ -1,30 +1,132 @@
 syntax = "proto3";
 
-import "crud.proto";
+import "basic.proto";
 
-import "mess.proto";
-
-//import "google/protobuf/empty.proto";
+import "google/protobuf/empty.proto";
 //import "google/protobuf/wrappers.proto";
 
-option go_package = "../internal/proto-genr/crud-aut-profiles";
+option go_package = "marketplace-example/internal/proto-genr/crud-aut-profiles";
 
-package microservise1;
+package crudautprofiles;
 
 service CRUD_AUT_Profiles {
-    rpc CRUD_Customer(mess.Customer customer, crud.CRUD_option CRUD_Option_Enum) returns (crud.Customer_CRUD);
-    rpc CRUD_CustomerInfo(mess.CustomerInfo customerInfo, crud.CRUD_option CRUD_Option_Enum) returns (crud.CustomerInfo_CRUD);
+    rpc CRUD_Customer(Customer_IntoCRUD) returns (Customer_ReturnCRUD);
+    rpc CRUD_CustomerInfo(CustomerInfo_IntoCRUD) returns (CustomerInfo_ReturnCRUD);
 
-    rpc CRUD_Warehouse(mess.Warehouse warehouse, crud.CRUD_option CRUD_Option_Enum) returns (crud.Warehouse_CRUD);
-    rpc CRUD_WarehouseInfo(mess.WarehouseInfo warehouseInfo, crud.CRUD_option CRUD_Option_Enum) returns (crud.WarehouseInfo_CRUD);
+    rpc CRUD_Warehouse(Warehouse_IntoCRUD) returns (Warehouse_ReturnCRUD);
+    rpc CRUD_WarehouseInfo(WarehouseInfo_IntoCRUD) returns (WarehouseInfo_ReturnCRUD);
 
-    rpc CRUD_Vendor(mess.Vendor vendor, crud.CRUD_option CRUD_Option_Enum) returns (crud.Vendor_CRUD);
-    rpc CRUD_VendorInfo(mess.VendorInfo vendorInfo, crud.CRUD_option CRUD_Option_Enum) returns (crud.VendorInfo_CRUD);
-    rpc CRUD_VendorPrice(mess.VendorPrice vendorPrice, crud.CRUD_option CRUD_Option_Enum) returns (crud.VendorPrice_CRUD);
+    rpc CRUD_Vendor(Vendor_IntoCRUD) returns (Vendor_ReturnCRUD);
+    rpc CRUD_VendorInfo(VendorInfo_IntoCRUD) returns (VendorInfo_ReturnCRUD);
+    rpc CRUD_VendorPrice(VendorPrice_IntoCRUD) returns (VendorPrice_ReturnCRUD);
 
-    rpc CR_Goods(mess.Goods goods, crud.CRUD_option CRUD_Option_Enum) returns (crud.Goods_CR);
+    rpc CR_Goods(Goods_IntoCR) returns (Goods_ReturnCR);
 
-    rpc Aut_Customer(mess.Customer customer) returns (mess.BoolValue);
-    rpc Aut_Warehouse(mess.Warehouse warehouse) returns (mess.BoolValue);
-    rpc Aut_Vendor(mess.Vendor vendor) returns (mess.BoolValue);
+    rpc Aut_Customer(basic.Customer) returns (basic.BoolValue);
+    rpc Aut_Warehouse(basic.Warehouse) returns (basic.BoolValue);
+    rpc Aut_Vendor(basic.Vendor) returns (basic.BoolValue);
+}
+
+enum CRUD {
+    UNSPECIFIED = 0;
+    CREATE = 1;
+    READ = 2;
+    UPDATE = 3;
+    DELETE = 4;
+}
+
+message Customer_IntoCRUD {
+    CRUD crud = 1;
+    basic.Customer customer = 2;
+}
+
+message Customer_ReturnCRUD {
+    oneof crud_choice {
+        google.protobuf.Empty customer_cud = 1;
+        basic.Customer customer_r = 2;
+    }
+}
+
+message CustomerInfo_IntoCRUD {
+    CRUD crud = 1;
+    basic.CustomerInfo customer_info = 2;
+}
+
+message CustomerInfo_ReturnCRUD {
+    oneof crud_choice {
+        google.protobuf.Empty customer_info_cud = 1;
+        basic.CustomerInfo customer_info_r = 2;
+    }
+}
+
+message Warehouse_IntoCRUD {
+    CRUD crud = 1;
+    basic.Warehouse warehouse = 2;
+}
+
+message Warehouse_ReturnCRUD {
+    oneof crud_choice {
+        google.protobuf.Empty warehouse_cud = 1;
+        basic.Warehouse warehouse_r = 2;
+    }
+}
+
+message WarehouseInfo_IntoCRUD {
+    CRUD crud = 1;
+    basic.WarehouseInfo warehouse_info = 2;
+}
+
+message WarehouseInfo_ReturnCRUD {
+    oneof crud_choice {
+        google.protobuf.Empty warehouse_info_cud = 1;
+        basic.WarehouseInfo warehouse_info_r = 2;
+    }
+}
+
+message Vendor_IntoCRUD {
+    CRUD crud = 1;
+    basic.Vendor vendor = 2;
+}
+
+message Vendor_ReturnCRUD {
+    oneof crud_choice {
+        google.protobuf.Empty vendor_cud = 1;
+        basic.Vendor vendor_r = 2;
+    }
+}
+
+message VendorInfo_IntoCRUD {
+    CRUD crud = 1;
+    basic.VendorInfo vendor_info = 2;
+}
+
+message VendorInfo_ReturnCRUD {
+    oneof crud_choice {
+        google.protobuf.Empty vendor_info_cud = 1;
+        basic.VendorInfo vendor_info_r = 2;
+    }
+}
+
+message Goods_IntoCR {
+    CRUD crud = 1;
+    basic.Goods goods = 2;
+}
+
+message Goods_ReturnCR {
+    oneof crud_choice {
+        google.protobuf.Empty goods_c = 1;
+        basic.Goods goods_r = 2;
+    }
+}
+
+message VendorPrice_IntoCRUD {
+    CRUD crud = 1;
+    basic.VendorPrice vendor_price = 2;
+}
+
+message VendorPrice_ReturnCRUD {
+    oneof crud_choice {
+        google.protobuf.Empty vendor_price_cud = 1;
+        basic.VendorPrice vendor_price_r = 2;
+    }
 }
