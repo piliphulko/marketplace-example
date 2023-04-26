@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package mess;
 
+message BoolValue {
+    bool Value = 1;
+}
+
 message Customer {
     string LoginCustomer = 1;
     string PasswortCustomer = 2;
@@ -41,6 +45,7 @@ message Goods {
     Vendor VendorAut = 1;
     string NameGoods = 2;
     string TypeGoods = 3;
+    string NoteGoods = 4;
 }
 
 message VendorPrice {

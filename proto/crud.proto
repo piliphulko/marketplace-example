@@ -60,9 +60,9 @@ message VendorInfo_CRUD {
     }
 }
 
-message Goods_CRUD {
-    oneof CRUD_choice {
-        google.protobuf.Empty Goods_CUD = 1;
+message Goods_CR {
+    oneof CR_choice {
+        google.protobuf.Empty Goods_C = 1;
         mess.Goods Goods_R = 2;
     }
 }

@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "crud.proto";
+
+import "mess.proto";
+
+//import "google/protobuf/empty.proto";
+//import "google/protobuf/wrappers.proto";
+
+option go_package = "../internal/proto-genr/crud-aut-profiles";
+
+package microservise1;
+
+service CRUD_AUT_Profiles {
+    rpc CRUD_Customer(mess.Customer customer, crud.CRUD_option CRUD_Option_Enum) returns (crud.Customer_CRUD);
+    rpc CRUD_CustomerInfo(mess.CustomerInfo customerInfo, crud.CRUD_option CRUD_Option_Enum) returns (crud.CustomerInfo_CRUD);
+
+    rpc CRUD_Warehouse(mess.Warehouse warehouse, crud.CRUD_option CRUD_Option_Enum) returns (crud.Warehouse_CRUD);
+    rpc CRUD_WarehouseInfo(mess.WarehouseInfo warehouseInfo, crud.CRUD_option CRUD_Option_Enum) returns (crud.WarehouseInfo_CRUD);
+
+    rpc CRUD_Vendor(mess.Vendor vendor, crud.CRUD_option CRUD_Option_Enum) returns (crud.Vendor_CRUD);
+    rpc CRUD_VendorInfo(mess.VendorInfo vendorInfo, crud.CRUD_option CRUD_Option_Enum) returns (crud.VendorInfo_CRUD);
+    rpc CRUD_VendorPrice(mess.VendorPrice vendorPrice, crud.CRUD_option CRUD_Option_Enum) returns (crud.VendorPrice_CRUD);
+
+    rpc CR_Goods(mess.Goods goods, crud.CRUD_option CRUD_Option_Enum) returns (crud.Goods_CR);
+
+    rpc Aut_Customer(mess.Customer customer) returns (mess.BoolValue);
+    rpc Aut_Warehouse(mess.Warehouse warehouse) returns (mess.BoolValue);
+    rpc Aut_Vendor(mess.Vendor vendor) returns (mess.BoolValue);
+}
