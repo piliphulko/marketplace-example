@@ -1,5 +1,3 @@
---SELECT function_create_order('GERMANY', 'Doubting Thomas', 'lair of Teutonic explorers', 'flat earth photo', 3, 'celt_4_blood_types', '1ea21fe0-5b00-45f1-9575-557e28394ae4')
-
 CREATE OR REPLACE FUNCTION function_create_order(
 	in_country varchar, in_name_vendor varchar, in_warehouse_name varchar,
 	in_name_goods varchar, in_amount_goods int, in_login_customer varchar, 

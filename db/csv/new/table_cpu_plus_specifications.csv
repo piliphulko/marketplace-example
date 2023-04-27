@@ -1,0 +1,7 @@
+id_components,company,brand_modifier,processor_code,socket,cores,logical_processors,base_speed,max_speed,l2_cache,l3_cache,support_ddr4,support_ddr5,pci_express_4,pci_express_5,tdp,nm_process,market_launch_date
+1,AMD,Ryzen 5,5600X,AM4,6,12,3.7,4.6,3,32,true,false,true,false,65,7,2020
+2,AMD,Ryzen 9,7950X3D,AM5,16,32,4.2,5.7,16,128,true,true,true,true,true,120,5,2022
+3,AMD,Ryzen 7,7800X3D,AM5,8,16,4.2,5,8,96,true,true,true,true,true,120,5,2023
+4,Intel,Core i5,11600K,LGA1200,6,12,3.9,4.9,true,false,true,false,125,14,2021
+5,Intel,Core i9,13900KS,LGA1700,24,32,2.4,6,32,36,true,true,true,true,253,10,2022
+6,Intel,Core i7,13700KF,LGA1700,16,24,2.5,5.4,24,30,true,true,true,true,253,10,2022

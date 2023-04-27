@@ -1,0 +1,4 @@
+id_components,company,brand_modifier,memory,numbers,ddr4,ddr5,base_speed,pc_index,cas_latency,timings,supply_voltage
+11,Kingston,FURY Beast,8,2,true,false,3200,PC4-25600,16T,16-18-18,1.35
+12,Patriot,Viper Venom,16,2,false,true,6400,PC5-51200,32T,32-40-40-84,1.4
+13,Corsair,Dominator Platinum,32,2,false,true,5600,PC5-44800,40T,40-40-40-77,1.25
