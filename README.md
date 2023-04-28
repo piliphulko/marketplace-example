@@ -1,6 +1,2 @@
-# marketplace-example
-| Rank | THING-TO-RANK |
-|-----:|---------------|
-|     1|               |
-|     2|               |
-|     3|               |
+# Datebase POSTGRESQL
+The database structure is located in the [db](https://github.com/piliphulko/marketplace-example/tree/main/db) directory
