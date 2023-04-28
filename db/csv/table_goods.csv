@@ -1,0 +1,10 @@
+id_vendor,type_googs,name_goods,info_goods
+1,CPU,AMD Ryzen 9 7950X3D,overclocked to 6 GHz
+1,CPU,Intel Core i9-13900KS,selected chips
+2,Cooling,Liquid Metal,chemical combination of gallium-indium-tin alloy
+2,Cooling,heat distributing cover with radiator AM5,copper heat distributing cover with copper heatsink 2 x 120mm fans required
+2,Cooling,heat distributing cover with radiator LGA1700,copper heat distributing cover with copper heatsink 2 x 120mm fans required
+3,GPU,GeForce RTX 4090,custom graphics card case with three Noctua NF-F12 INDUSTRIALPPC-3000 PWM
+3,GPU,Radeon RX 6800,custom graphics card case with three Noctua NF-F12 PWM
+4,Motherboards,Motherboards AMD X670E eATX,custom copper cooling system
+4,Motherboards,Motherboards Intel Z790 eATX,custom copper cooling system

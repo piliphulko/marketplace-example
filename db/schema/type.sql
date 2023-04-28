@@ -1,5 +1,7 @@
 CREATE TYPE enum_country AS ENUM ('POLAND', 'UKRAINE', 'BELARUS');
 
+CREATE TYPE enum_type_goods AS ENUM ('Others', 'CPU', 'GPU', 'Cooling', 'RAM', 'Motherboards');
+
 CREATE TYPE enum_fifo_lifo AS ENUM ('fifo', 'lifo');
 
 CREATE TYPE type_id_amount AS (

@@ -1,5 +1,0 @@
-id_components,company,brand_modifier,socket,chipset,form_factor,max_speed_memory,memory_slots,support_ddr4,support_ddr5,pci_express_4,pci_express_5,market_launch_date
-7,ASUS,ROG Strix,LGA1700,Z690,ATX,6400,4,false,true,true,true,2021
-8,MSI,MEG,AM5,X670E,ATX,6666,4,false,true,true,true,2022
-9,Gigabyte,Aorus Elite,AM4,B550,mATX,4733,4,true,false,true,false,2020
-10,Gigabyte,UD AC,LGA1200,Z590,ATX,4800,4,true,false,true,false,2021

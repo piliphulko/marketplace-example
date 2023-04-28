@@ -1,7 +1,13 @@
-CREATE OR REPLACE FUNCTION function_create_order(
-	in_country varchar, in_name_vendor varchar, in_warehouse_name varchar,
-	in_name_goods varchar, in_amount_goods int, in_login_customer varchar, 
-	in_uuid varchar) 
+CREATE OR REPLACE FUNCTION function_create_order
+(
+	in_uuid varchar,
+	in_login_customer varchar,
+	in_country varchar,
+	in_warehouse_name varchar,
+	in_name_vendor varchar,
+	in_name_goods varchar,
+	in_amount_goods int
+) 
 RETURNS varchar AS $$
 DECLARE
 	ids_consigment_s type_id_amount ARRAY;
@@ -26,14 +32,15 @@ DECLARE
 	delivery_location_city_v varchar;
 BEGIN
 	--
-	SELECT id_vendor, id_goods, id_warehouse, price_goods 
+	SELECT table_consignment.id_vendor, table_consignment.id_goods, 
+		table_consignment.id_warehouse, table_vendor_price.price_goods 
 	INTO id_vendor_v, id_goods_v, id_warehouse_v, price_goods_v
 	FROM table_consignment
 	JOIN table_vendor_info USING (id_vendor) 
 	JOIN table_goods USING (id_goods) 
 	JOIN table_warehouse_info USING (id_warehouse)
-	JOIN table_vendor_price USING (id_vendor, id_goods)
-	WHERE table_vendor_info.name_vendor = in_login_vendor AND table_goods.name_goods = in_name_goods AND
+	JOIN table_vendor_price USING (id_goods)
+	WHERE table_vendor_info.name_vendor = in_name_vendor AND table_goods.name_goods = in_name_goods AND
 		  table_warehouse_info.name_warehouse = in_warehouse_name AND 
 		  table_warehouse_info.country = table_vendor_price.country;
 	--
@@ -52,11 +59,14 @@ BEGIN
 	END IF;
 	--
 	SELECT ARRAY (
-		SELECT ROW (id_consignment, amount_goods_available)::type_id_amount 
-		FROM view_market_all_countries_for_order
-		WHERE country = in_country::enum_country AND login_vendor = in_login_vendor AND name_goods = in_name_goods
-		ORDER BY CASE sales_model WHEN 'fifo' THEN sales_model ELSE NULL END DESC, 
-         		 CASE sales_model WHEN 'fifo' THEN NULL ELSE sales_model END ASC
+		SELECT ROW (t1.id_consignment, t1.amount_goods_available)::type_id_amount 
+		FROM table_consignment AS t1
+		JOIN table_vendor_price AS t2 USING (id_goods)
+		JOIN table_warehouse_info AS t3 USING (id_warehouse)
+		WHERE t1.id_warehouse = id_warehouse_v AND t1.id_vendor = id_vendor_v AND 
+			t1.id_goods = id_goods_v AND t3.country = t2.country
+		ORDER BY CASE t2.sales_model WHEN 'fifo' THEN t2.sales_model ELSE NULL END DESC, 
+         		 CASE t2.sales_model WHEN 'fifo' THEN NULL ELSE t2.sales_model END ASC
 	) INTO ids_consigment_s;
 	--
 	IF NOT FOUND THEN
