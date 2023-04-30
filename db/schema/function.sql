@@ -2,7 +2,6 @@ CREATE OR REPLACE FUNCTION function_create_order
 (
 	in_uuid varchar,
 	in_login_customer varchar,
-	in_country varchar,
 	in_warehouse_name varchar,
 	in_name_vendor varchar,
 	in_name_goods varchar,
@@ -30,11 +29,13 @@ DECLARE
 	money_system_credit_v domain_money = 0;
 	delivery_location_country_v varchar;
 	delivery_location_city_v varchar;
+	country_warehouse_v varchar;
 BEGIN
 	--
 	SELECT table_consignment.id_vendor, table_consignment.id_goods, 
-		table_consignment.id_warehouse, table_vendor_price.price_goods 
-	INTO id_vendor_v, id_goods_v, id_warehouse_v, price_goods_v
+		table_consignment.id_warehouse, table_vendor_price.price_goods,
+		table_warehouse_info.country
+	INTO id_vendor_v, id_goods_v, id_warehouse_v, price_goods_v, country_warehouse_v
 	FROM table_consignment
 	JOIN table_vendor_info USING (id_vendor) 
 	JOIN table_goods USING (id_goods) 
@@ -56,6 +57,8 @@ BEGIN
 	--
 	IF NOT FOUND THEN
 		RETURN 'No items or invalid request'::varchar;
+	ELSIF delivery_location_country_v != country_warehouse_v THEN
+		RETURN 'delivery country must match with warehouse side'::varchar
 	END IF;
 	--
 	SELECT ARRAY (
@@ -94,7 +97,7 @@ BEGIN
 	warehouse_commission_percentage = (SELECT commission_percentage FROM table_warehouse_commission
 									   WHERE id_warehouse = id_warehouse_v);
 	tax_vendor_commission_percentage = (SELECT vat FROM table_tax_plan
-									    WHERE country = in_country::enum_country);
+									    WHERE country = country_warehouse_v::enum_country);
 	system_commission_percentage = (SELECT commission_percentage FROM table_system_commission);
 	--
 	FOREACH i_v, a_v IN ARRAY ids_consigment
@@ -154,5 +157,103 @@ BEGIN
 	RETURN 'ok'::varchar;
 END;
 $$ LANGUAGE PLPGSQL;
+--------------------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION function_start_pay
+(
+	in_login_customer varchar,
+	in_uuid varchar
+) 
+RETURNS varchar AS $$
+DECLARE
+	order_price_v domain_money = 0;
+	id_customer_v int,
+	loop_id_vendor_v int;
+	loop_money_vendor_v domain_money = 0;
+	loop_tax_money_vendor_v domain_money = 0;
+	loop_id_warehouse_v int;
+	loop_money_warehouse_v domain_money = 0;
+	loop_money_system_v domain_money = 0;
+	array_details_ledger_v type_details_ledger ARRAY;
+BEGIN
+	--
+	SELECT sum(money_customer_debit), id_customer
+	INTO order_price_v, id_customer_v
+	FROM table_ledger
+	WHERE operation_uuid = in_uuid::uuid
+		AND confirmation_order_and_pay = false AND cancellation_pay = false
+	GROUP BY operation_uuid, id_customer;
+	--
+	IF NOT FOUND THEN
+		RETURN 'No items or invalid request'::varchar;
+	ELSIF order_price_v > (SELECT table_customer_wallet.amount_money FROM table_customer_wallet 
+						 JOIN table_customer USING (id_customer) 
+						 WHERE table_customer.login_customer = in_login_customer) THEN
+		RETURN 'not enough money'::varchar
+	END IF;
+	--
+	SELECT ARRAY (
+		SELECT ROW (
+			id_vendor, money_vendor_credit, 
+			tax_money_vendor_credit,
+			id_warehouse, money_warehouse_credit
+			money_system_credit)::type_id_id 
+		FROM table_orders
+		WHERE operation_uuid = in_uuid::uuid
+	) INTO array_details_ledger_v;
+	--
+	IF NOT FOUND THEN
+			RETURN 'problem1'::varchar;
+	END IF;
+	--
+	FOREACH loop_id_vendor_v, loop_money_vendor_v, loop_tax_money_vendor_v, loop_id_warehouse_v,
+		loop_money_warehouse_v, loop_money_system_v IN ARRAY array_details_ledger_v
+	LOOP
+		--
+		UPDATE table_vendor_wallet
+		SET blocked_money = blocked_money + loop_money_vendor_v AND
+			blocked_tax_money = blocked_tax_money + loop_tax_money_vendor_v
+		WHERE id_vendor = loop_id_vendor_v
+		--
+		IF NOT FOUND THEN
+			RETURN 'problem2'::varchar;
+		END IF;
+		--
+		UPDATE table_warehouse_wallet
+		SET blocked_money = blocked_money + loop_money_warehouse_v
+		WHERE id_warehouse = loop_id_warehouse_v
+		--
+		IF NOT FOUND THEN
+			RETURN 'problem3'::varchar;
+		END IF;
+		--
+		UPDATE table_system_wallet
+		SET blocked_money = blocked_money + loop_money_system_v
+		--
+		IF NOT FOUND THEN
+			RETURN 'problem4'::varchar;
+		END IF;
+		--
+	END LOOP;
+	--
+	UPDATE table_customer_wallet
+	SET amount_money = amount_money - order_price_v
+		AND blocked_money = blocked_money + order_price_v
+	WHERE id_customer = id_customer_v
+	--
+	IF NOT FOUND THEN
+			RETURN 'problem5'::varchar;
+	END IF;
+	--
+	UPDATE table_ledger
+	SET confirmation_order_and_pay = true
+	WHERE operation_uuid = in_uuid::uuid
+	--
+	IF NOT FOUND THEN
+			RETURN 'problem6'::varchar;
+	END IF;
+	--
+	RETURN 'ok'::varchar;
+	--
+END;
+$$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION function_pay
