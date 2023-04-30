@@ -154,3 +154,5 @@ BEGIN
 	RETURN 'ok'::varchar;
 END;
 $$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION function_pay

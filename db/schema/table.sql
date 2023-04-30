@@ -17,7 +17,7 @@ CREATE TABLE table_customer
 
 CREATE TABLE table_customer_info
 (
-	id_customer int,
+	id_customer int UNIQUE,
 	delivery_location_country enum_country,
 	delivery_location_city varchar(128),
 
@@ -36,7 +36,7 @@ CREATE TABLE table_vendor
 
 CREATE TABLE table_vendor_info
 (
-	id_vendor int,
+	id_vendor int UNIQUE,
 	name_vendor varchar(128) UNIQUE,
 
 	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor)
@@ -50,6 +50,7 @@ CREATE TABLE table_goods
 	name_goods varchar(128),
 	info_goods text,
 
+	UNIQUE(id_vendor, id_goods)
 	CONSTRAINT primery_key_id_goods PRIMARY KEY (id_goods),
 	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor)
 );
@@ -62,6 +63,7 @@ CREATE TABLE table_vendor_price
 	price_goods domain_money,
 	sales_model enum_fifo_lifo DEFAULT 'lifo'::enum_fifo_lifo,
 
+	UNIQUE(id_vendor, id_goods)
 	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor),
 	CONSTRAINT foreign_key_id_goods FOREIGN KEY (id_goods) REFERENCES table_goods(id_goods)
 );
@@ -77,7 +79,7 @@ CREATE TABLE table_warehouse
 
 CREATE TABLE table_warehouse_info
 (
-	id_warehouse int,
+	id_warehouse int UNIQUE,
 	name_warehouse varchar(128),
 	info_warehouse text,
 	country enum_country,
@@ -128,7 +130,7 @@ CREATE TABLE table_tax_plan
 
 CREATE TABLE table_warehouse_commission
 (
-	id_warehouse int,
+	id_warehouse int UNIQUE,
 	commission_percentage domain_percentage,
 
 	CONSTRAINT foreign_key_id_warehouse FOREIGN KEY (id_warehouse) REFERENCES table_warehouse(id_warehouse)
@@ -136,12 +138,13 @@ CREATE TABLE table_warehouse_commission
 
 CREATE TABLE table_system_commission
 (
+	id_system int UNIQUE DEFAULT 1 CHECK (id_system = 1)
 	commission_percentage domain_percentage
 );
 
 CREATE TABLE table_customer_wallet
 (
-	id_customer int NOT NULL,
+	id_customer int UNIQUE NOT NULL,
 	amount_money domain_money,
 	blocked_money domain_money,
 
@@ -150,7 +153,7 @@ CREATE TABLE table_customer_wallet
 
 CREATE TABLE table_vendor_wallet
 (
-	id_vendor int NOT NULL,
+	id_vendor int UNIQUE NOT NULL,
 	amount_money domain_money,
 	blocked_money domain_money,
 	tax_money domain_money,
@@ -161,7 +164,7 @@ CREATE TABLE table_vendor_wallet
 
 CREATE TABLE table_warehouse_wallet
 (
-	id_warehouse int NOT NULL,
+	id_warehouse int UNIQUE NOT NULL,
 	amount_money domain_money,
 	blocked_money domain_money,
 
@@ -170,6 +173,7 @@ CREATE TABLE table_warehouse_wallet
 
 CREATE TABLE table_system_wallet
 (
+	id_system int UNIQUE DEFAULT 1 CHECK (id_system = 1)
 	amount_money domain_money,
 	blocked_money domain_money
 );
