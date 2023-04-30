@@ -50,7 +50,7 @@ CREATE TABLE table_goods
 	name_goods varchar(128),
 	info_goods text,
 
-	UNIQUE(id_vendor, id_goods)
+	UNIQUE(id_vendor, id_goods),
 	CONSTRAINT primery_key_id_goods PRIMARY KEY (id_goods),
 	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor)
 );
@@ -63,7 +63,21 @@ CREATE TABLE table_vendor_price
 	price_goods domain_money,
 	sales_model enum_fifo_lifo DEFAULT 'lifo'::enum_fifo_lifo,
 
-	UNIQUE(id_vendor, id_goods)
+	UNIQUE(id_vendor, id_goods, country),
+	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor),
+	CONSTRAINT foreign_key_id_goods FOREIGN KEY (id_goods) REFERENCES table_goods(id_goods)
+);
+
+CREATE TABLE table_vendor_price_archive
+(
+	operation_cdu varchar(6),
+	id_vendor int,
+	id_goods int,
+	country enum_country,
+	price_goods domain_money,
+	sales_model enum_fifo_lifo DEFAULT 'lifo'::enum_fifo_lifo,
+
+	UNIQUE(id_vendor, id_goods, country),
 	CONSTRAINT foreign_key_id_vendor FOREIGN KEY (id_vendor) REFERENCES table_vendor(id_vendor),
 	CONSTRAINT foreign_key_id_goods FOREIGN KEY (id_goods) REFERENCES table_goods(id_goods)
 );
@@ -138,7 +152,7 @@ CREATE TABLE table_warehouse_commission
 
 CREATE TABLE table_system_commission
 (
-	id_system int UNIQUE DEFAULT 1 CHECK (id_system = 1)
+	id_system int UNIQUE DEFAULT 1 CHECK (id_system = 1),
 	commission_percentage domain_percentage
 );
 
@@ -173,7 +187,7 @@ CREATE TABLE table_warehouse_wallet
 
 CREATE TABLE table_system_wallet
 (
-	id_system int UNIQUE DEFAULT 1 CHECK (id_system = 1)
+	id_system int UNIQUE DEFAULT 1 CHECK (id_system = 1),
 	amount_money domain_money,
 	blocked_money domain_money
 );
@@ -193,9 +207,8 @@ CREATE TABLE table_orders
 	date_order_start TIMESTAMPTZ NOT NULL,
 	date_order_finish TIMESTAMPTZ,
 
-	delivery_status_order bool DEFAULT false,
+	delivery_status_order enum_status_order DEFAULT 'unconfirmed order'::enum_status_order,
 	id_problem int,
-	cancellation_order bool DEFAULT false,
 
 	operation_uuid uuid NOT NULL,
 
@@ -221,9 +234,7 @@ CREATE TABLE table_ledger
 	money_warehouse_credit domain_money,
 	money_system_credit domain_money,
 
-	cancellation_pay bool DEFAULT false,
-	confirmation_order_and_pay bool DEFAULT false,
-	delivery_status_order bool DEFAULT false,
+	delivery_status_order enum_status_order DEFAULT 'unconfirmed order'::enum_status_order,
 
 	operation_uuid uuid NOT NULL,
 

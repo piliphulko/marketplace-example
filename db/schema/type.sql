@@ -1,8 +1,29 @@
-CREATE TYPE enum_country AS ENUM ('POLAND', 'UKRAINE', 'BELARUS');
+CREATE TYPE enum_country AS ENUM (
+	'POLAND', 
+	'UKRAINE', 
+	'BELARUS'
+);
 
-CREATE TYPE enum_type_goods AS ENUM ('Others', 'CPU', 'GPU', 'Cooling', 'RAM', 'Motherboards');
+CREATE TYPE enum_type_goods AS ENUM (
+	'Others', 
+	'CPU', 
+	'GPU', 
+	'Cooling', 
+	'RAM', 
+	'Motherboards'
+);
 
-CREATE TYPE enum_fifo_lifo AS ENUM ('fifo', 'lifo');
+CREATE TYPE enum_fifo_lifo AS ENUM (
+	'fifo', 
+	'lifo'
+);
+
+CREATE TYPE enum_status_order AS ENUM (
+	'unconfirmed order', 
+	'confirmed order', 
+	'completed order', 
+	'cancellation'
+);
 
 CREATE DOMAIN domain_amount AS int NOT NULL CHECK (value >= 0) DEFAULT 0;
 

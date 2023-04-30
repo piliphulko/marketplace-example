@@ -34,8 +34,8 @@ JOIN table_customer USING (id_customer)
 JOIN table_vendor_info USING (id_vendor)
 JOIN table_goods USING (id_goods)
 JOIN table_warehouse_info USING (id_warehouse)
-WHERE table_orders.delivery_status_order = false AND table_orders.cancellation_order = false
-ORDER BY table_orders.operation_uuid
+WHERE table_orders.delivery_status_order = 'confirmed order'::enum_status_order
+ORDER BY table_orders.operation_uuid;
 
 CREATE OR REPLACE VIEW view_orders_closed AS SELECT
     table_orders.operation_uuid,
@@ -56,8 +56,8 @@ JOIN table_customer USING (id_customer)
 JOIN table_vendor_info USING (id_vendor)
 JOIN table_goods USING (id_goods)
 JOIN table_warehouse_info USING (id_warehouse)
-WHERE table_orders.delivery_status_order = true AND table_orders.cancellation_order = false
-ORDER BY table_orders.operation_uuid
+WHERE table_orders.delivery_status_order = 'completed order'::enum_status_order
+ORDER BY table_orders.operation_uuid;
 
 CREATE OR REPLACE VIEW view_ledger_active AS 
 SELECT 
@@ -87,9 +87,7 @@ FROM (
 	JOIN table_customer USING (id_customer)
 	JOIN table_vendor_info USING (id_vendor)
 	JOIN table_warehouse_info USING (id_warehouse)
-	WHERE table_ledger.delivery_status_order = false AND 
-		table_ledger.cancellation_pay = false AND
-		table_ledger.confirmation_order_and_pay = true
+	WHERE table_ledger.delivery_status_order = 'confirmed order'::enum_status_order
 	GROUP BY table_ledger.operation_uuid, table_customer.login_customer, 
 		table_vendor_info.name_vendor, table_warehouse_info.name_warehouse
 	ORDER BY table_ledger.operation_uuid, table_vendor_info.name_vendor
@@ -123,9 +121,7 @@ FROM (
 	JOIN table_customer USING (id_customer)
 	JOIN table_vendor_info USING (id_vendor)
 	JOIN table_warehouse_info USING (id_warehouse)
-	WHERE table_ledger.delivery_status_order = false AND 
-		table_ledger.cancellation_pay = false AND
-		table_ledger.confirmation_order_and_pay = true
+	WHERE table_ledger.delivery_status_order = 'completed order'::enum_status_order
 	GROUP BY table_ledger.operation_uuid, table_customer.login_customer, 
 		table_vendor_info.name_vendor, table_warehouse_info.name_warehouse
 	ORDER BY table_ledger.operation_uuid, table_vendor_info.name_vendor

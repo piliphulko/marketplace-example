@@ -13,4 +13,8 @@
 \COPY table_warehouse_commission (id_warehouse, commission_percentage) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_warehouse_commission.csv' DELIMITER ',' CSV HEADER;
 \COPY table_system_commission (commission_percentage) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_system_commission.csv' DELIMITER ',' CSV HEADER;
 \COPY table_customer_wallet (id_customer, amount_money) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_customer_wallet.csv' DELIMITER ',' CSV HEADER;
+\COPY table_vendor_wallet (id_vendor) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_vendor_wallet.csv' DELIMITER ',' CSV HEADER;
+\COPY table_warehouse_wallet (id_warehouse) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_warehouse_wallet.csv' DELIMITER ',' CSV HEADER;
+\COPY table_system_wallet (id_system) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_system_wallet.csv' DELIMITER ',' CSV HEADER;
+
 --\i 'C:/Users/pilip/go/src/github.com/piliphulko/marketplace-example/db/psql_import_csv.sql'
