@@ -128,7 +128,8 @@ BEGIN
 									   WHERE id_warehouse = id_warehouse_v);
 	tax_vendor_commission_percentage = (SELECT vat FROM table_tax_plan
 									    WHERE country = country_warehouse_v::enum_country);
-	system_commission_percentage = (SELECT commission_percentage FROM table_system_commission);
+	system_commission_percentage = (SELECT commission_percentage FROM table_system_commission
+									WHERE id_system = 1);
 	--
 	FOREACH i_v, a_v IN ARRAY ids_consigment
 	LOOP
@@ -157,13 +158,13 @@ BEGIN
 		--
 		money_customer_debit_v = price_goods_v * a_v;
 		--
-		tax_money_vendor_credit_v = money_customer_debit_v * tax_vendor_commission_percentage;
+		tax_money_vendor_credit_v = round(money_customer_debit_v * tax_vendor_commission_percentage, 2);
 		--
 		money_customer_debit_net = money_customer_debit_v - tax_money_vendor_credit_v;
 		--
-		money_warehouse_credit_v = money_customer_debit_net * warehouse_commission_percentage;
+		money_warehouse_credit_v = round(money_customer_debit_net * warehouse_commission_percentage, 2);
 		--
-		money_system_credit_v = money_customer_debit_net * system_commission_percentage;
+		money_system_credit_v = round(money_customer_debit_net * system_commission_percentage, 2);
 		--
 		money_vendor_credit_v = money_customer_debit_net - (money_warehouse_credit_v + money_system_credit_v);
 		--
@@ -239,8 +240,6 @@ BEGIN
 	FOREACH loop_id_vendor_v, loop_money_vendor_v, loop_tax_money_vendor_v, loop_id_warehouse_v,
 		loop_money_warehouse_v, loop_money_system_v IN ARRAY array_details_ledger_v
 	LOOP
-		RAISE INFO '%, %, %, %, %, %,', loop_id_vendor_v, loop_money_vendor_v, loop_tax_money_vendor_v, loop_id_warehouse_v,
-		loop_money_warehouse_v, loop_money_system_v;
 		--
 		UPDATE table_vendor_wallet
 		SET blocked_money = blocked_money + loop_money_vendor_v,
@@ -480,8 +479,9 @@ BEGIN
 	INTO status1_v, status2_v
 	FROM table_orders
 	JOIN table_ledger USING (id_order)
-	WHERE table_orders.operation_uuid = table_ledger.operation_uuid
-	GROUP BY table_orders.delivery_status_order, table_ledger.delivery_status_order
+	WHERE table_orders.operation_uuid = table_ledger.operation_uuid AND
+		table_ledger.operation_uuid = in_uuid::uuid
+	GROUP BY table_orders.delivery_status_order, table_ledger.delivery_status_order;
 	--
 	IF NOT FOUND THEN
 		RETURN 'No items or invalid request'::varchar;
@@ -498,7 +498,7 @@ BEGIN
 		RETURN 'No items or invalid request'::varchar;
 	ELSEIF status1_v != status2_v THEN
 		RETURN 'problem27'::varchar;
-	ELSEIF status1_v:enum_status_order = 'confirmed order':enum_status_order THEN
+	ELSEIF status1_v::enum_status_order = 'confirmed order'::enum_status_order THEN
 		--
 		SELECT ARRAY (
 			SELECT ROW (
@@ -552,18 +552,23 @@ BEGIN
 			RETURN 'problem33'::varchar;
 		END IF;
 			--
-	ELSEIF status1_v:enum_status_order = 'unconfirmed order':enum_status_order THEN
-		EXIT;
-	ELSEIF status1_v:enum_status_order = 'completed order':enum_status_order THEN 
+			UPDATE table_customer_wallet
+			SET blocked_money = blocked_money - order_price_v,
+				amount_money = amount_money + order_price_v
+			WHERE id_customer = id_customer_v;
+			--
+			IF NOT FOUND THEN
+				RETURN 'problem34'::varchar;
+			END IF;
+			--
+	ELSEIF status1_v::enum_status_order = 'completed order'::enum_status_order THEN 
 		RETURN 'order completed cannot be canceled'::varchar;
-	ELSE
-		RETURN 'problem34'::varchar;
 	END IF;
 	--
 	SELECT ARRAY (
 		SELECT ROW (id_consignment, amount_goods)::type_id_amount 
 		FROM table_orders
-		WHERE operation_uuid = in_uuid::uuid AND delivery_status_order = 'confirmed order'::enum_status_order
+		WHERE operation_uuid = in_uuid::uuid
 	) INTO ids_consigment_v;
 	--
 	IF NOT FOUND THEN
@@ -588,27 +593,18 @@ BEGIN
 		RETURN 'problem37'::varchar;
 	END IF;
 	--
-	UPDATE table_customer_wallet
-	SET blocked_money = blocked_money - order_price_v,
-		amount_money = amount_money + order_price_v
-	WHERE id_customer = id_customer_v;
+	DELETE FROM table_ledger
+	WHERE operation_uuid = in_uuid::uuid;
 	--
 	IF NOT FOUND THEN
 		RETURN 'problem38'::varchar;
 	END IF;
 	--
 	DELETE FROM table_orders
-	WHERE operation_uuid = in_uuid
+	WHERE operation_uuid = in_uuid::uuid;
 	--
 	IF NOT FOUND THEN
 		RETURN 'problem39'::varchar;
-	END IF;
-	--
-	DELETE FROM table_ledger
-	WHERE operation_uuid = in_uuid
-	--
-	IF NOT FOUND THEN
-		RETURN 'problem40'::varchar;
 	END IF;
 	--
 	RETURN 'ok'::varchar;
