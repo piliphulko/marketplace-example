@@ -1,19 +1,28 @@
-CREATE OR REPLACE FUNCTION function_trigger_archive() RETURNS trigger AS $$
+CREATE OR REPLACE FUNCTION function_trigger_archive_table_vendor_price() RETURNS trigger AS $$
 BEGIN
 	IF TG_OP = 'INSERT' THEN
 		INSERT INTO table_vendor_price_archive
-		SELECT 'INSERT', table_vendor_price.*
+		SELECT 'INSERT', now(), NEW.*
 		FROM table_vendor_price;
 	ELSEIF TG_OP = 'UPDATE' THEN
 		INSERT INTO table_vendor_price_archive
-		SELECT 'UPDATE', table_vendor_price.*
+		SELECT 'UPDATE', now(), NEW.*
 		FROM table_vendor_price;
 	ELSEIF TG_OP = 'DELETE' THEN
 		INSERT INTO table_vendor_price_archive
-		SELECT 'DELETE', table_vendor_price.*
+		SELECT 'DELETE', now(), OLD.*
 		FROM table_vendor_price;
 	END IF;
 	RETURN NULL;
+END;
+$$ LANGUAGE PLPGSQL;
+--------------------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION function_trigger_consignment() RETURNS trigger AS $$
+BEGIN
+	IF NEW.amount_goods_available = 0 AND NEW.amount_goods_blocked
+		NEW.goods_in_stock = false,
+		NEW.date_sold_out = now()
+	END IF;
 END;
 $$ LANGUAGE PLPGSQL;
 --------------------------------------------------------------------------------------------------------------------------------------
@@ -227,8 +236,6 @@ BEGIN
 			RETURN 'problem6'::varchar;
 	END IF;
 	--
-	RAISE INFO '%', array_details_ledger_v;
-	--
 	FOREACH loop_id_vendor_v, loop_money_vendor_v, loop_tax_money_vendor_v, loop_id_warehouse_v,
 		loop_money_warehouse_v, loop_money_system_v IN ARRAY array_details_ledger_v
 	LOOP
@@ -275,7 +282,7 @@ BEGIN
 	WHERE id_customer = id_customer_v;
 	--
 	IF NOT FOUND THEN
-			RETURN 'problem12'::varchar;
+		RETURN 'problem12'::varchar;
 	END IF;
 	--
 	UPDATE table_ledger
@@ -283,7 +290,7 @@ BEGIN
 	WHERE operation_uuid = in_uuid::uuid;
 	--
 	IF NOT FOUND THEN
-			RETURN 'problem13'::varchar;
+		RETURN 'problem13'::varchar;
 	END IF;
 	--
 	UPDATE table_orders
@@ -291,7 +298,7 @@ BEGIN
 	WHERE operation_uuid = in_uuid::uuid;
 	--
 	IF NOT FOUND THEN
-			RETURN 'problem14'::varchar;
+		RETURN 'problem14'::varchar;
 	END IF;
 	--
 	RETURN 'ok'::varchar;
@@ -303,11 +310,11 @@ CREATE OR REPLACE FUNCTION function_end_pay
 (
 	in_login_customer varchar,
 	in_uuid varchar
-) 
+)
 RETURNS varchar AS $$
 DECLARE
 	order_price_v domain_money = 0;
-	id_customer_v int,
+	id_customer_v int;
 	loop_id_vendor_v int;
 	loop_money_vendor_v domain_money = 0;
 	loop_tax_money_vendor_v domain_money = 0;
@@ -316,6 +323,9 @@ DECLARE
 	loop_money_system_v domain_money = 0;
 	array_details_ledger_v type_details_ledger ARRAY;
 	total_credit_v domain_money = 0;
+	ids_consigment_v type_id_amount ARRAY;
+	loop_id_consignment_v int;
+	loop_amount_goods int;
 BEGIN
 	--
 	SELECT sum(money_customer_debit), id_customer
@@ -340,7 +350,7 @@ BEGIN
 	) INTO array_details_ledger_v;
 	--
 	IF NOT FOUND THEN
-			RETURN 'problem14'::varchar;
+		RETURN 'problem15'::varchar;
 	END IF;
 	--
 	FOREACH loop_id_vendor_v, loop_money_vendor_v, loop_tax_money_vendor_v, loop_id_warehouse_v,
@@ -355,7 +365,7 @@ BEGIN
 		WHERE id_vendor = loop_id_vendor_v;
 		--
 		IF NOT FOUND THEN
-			RETURN 'problem15'::varchar;
+			RETURN 'problem16'::varchar;
 		END IF;
 		--
 		UPDATE table_warehouse_wallet
@@ -364,7 +374,7 @@ BEGIN
 		WHERE id_warehouse = loop_id_warehouse_v;
 		--
 		IF NOT FOUND THEN
-			RETURN 'problem16'::varchar;
+			RETURN 'problem17'::varchar;
 		END IF;
 		--
 		UPDATE table_system_wallet
@@ -372,7 +382,7 @@ BEGIN
 			amount_money = amount_money + loop_money_warehouse_v;
 		--
 		IF NOT FOUND THEN
-			RETURN 'problem17'::varchar;
+			RETURN 'problem18'::varchar;
 		END IF;
 		--
 		total_credit_v = total_credit_v + loop_money_vendor_v + loop_tax_money_vendor_v +  loop_money_warehouse_v + loop_money_system_v;
@@ -380,9 +390,36 @@ BEGIN
 	END LOOP;
 	--
 	IF NOT FOUND THEN
-			RETURN 'problem18'::varchar;
+		RETURN 'problem19'::varchar;
 	ELSEIF total_credit_v != order_price_v THEN
-			RETURN 'problem19'::varchar;
+		RETURN 'problem20'::varchar;
+	END IF;
+	--
+	SELECT ARRAY (
+		SELECT ROW (id_consignment, amount_goods)::type_id_amount 
+		FROM table_orders
+		WHERE operation_uuid = in_uuid::uuid AND delivery_status_order = 'confirmed order'::enum_status_order
+	) INTO ids_consigment_v;
+	--
+	IF NOT FOUND THEN
+		RETURN 'problem21'::varchar;
+	END IF;
+	--
+	FOREACH loop_id_consignment_v, loop_amount_goods IN ARRAY ids_consigment_v
+	LOOP
+		--
+		UPDATE table_consignment
+		SET amount_goods_blocked = amount_goods_blocked - loop_amount_goods
+		WHERE id_consignment = loop_id_consignment_v;
+		--
+		IF NOT FOUND THEN
+			RETURN 'problem22'::varchar;
+		END IF;
+		--
+	END LOOP;
+	--
+	IF NOT FOUND THEN
+		RETURN 'problem23'::varchar;
 	END IF;
 	--
 	UPDATE table_customer_wallet
@@ -390,18 +427,188 @@ BEGIN
 	WHERE id_customer = id_customer_v;
 	--
 	IF NOT FOUND THEN
-			RETURN 'problem20'::varchar;
+		RETURN 'problem24'::varchar;
 	END IF;
 	--
 	UPDATE table_ledger
-	JOIN table_orders USING (id_order)
-	SET table_ledger.delivery_status_order = 'completed order'::enum_status_order AND
-		table_orders.delivery_status_order = 'completed order'::enum_status_order AND
-	WHERE table_ledger.operation_uuid = in_uuid::uuid AND 
-		table_orders.operation_uuid = in_uuid::uuid
+	SET delivery_status_order = 'completed order'::enum_status_order
+	WHERE operation_uuid = in_uuid::uuid;
 	--
 	IF NOT FOUND THEN
-			RETURN 'problem21'::varchar;
+		RETURN 'problem25'::varchar;
+	END IF;
+	--
+	UPDATE table_orders
+	SET delivery_status_order = 'completed order'::enum_status_order,
+		date_order_finish = now()
+	WHERE operation_uuid = in_uuid::uuid;
+	--
+	IF NOT FOUND THEN
+		RETURN 'problem26'::varchar;
+	END IF;
+	--
+	RETURN 'ok'::varchar;
+	--
+END;
+$$ LANGUAGE PLPGSQL;
+--------------------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION function_cancellation_order
+(
+	in_login_customer varchar,
+	in_uuid varchar
+)
+RETURNS varchar AS $$
+DECLARE
+	order_price_v domain_money = 0;
+	id_customer_v int;
+	loop_id_vendor_v int;
+	loop_money_vendor_v domain_money = 0;
+	loop_tax_money_vendor_v domain_money = 0;
+	loop_id_warehouse_v int;
+	loop_money_warehouse_v domain_money = 0;
+	loop_money_system_v domain_money = 0;
+	array_details_ledger_v type_details_ledger ARRAY;
+	total_credit_v domain_money = 0;
+	ids_consigment_v type_id_amount ARRAY;
+	loop_id_consignment_v int;
+	loop_amount_goods int;
+	status1_v varchar;
+	status2_v varchar;
+BEGIN
+	--
+	SELECT table_orders.delivery_status_order, table_ledger.delivery_status_order
+	INTO status1_v, status2_v
+	FROM table_orders
+	JOIN table_ledger USING (id_order)
+	WHERE table_orders.operation_uuid = table_ledger.operation_uuid
+	GROUP BY table_orders.delivery_status_order, table_ledger.delivery_status_order
+	--
+	IF NOT FOUND THEN
+		RETURN 'No items or invalid request'::varchar;
+	END IF;
+	--
+	SELECT sum(money_customer_debit), id_customer
+	INTO order_price_v, id_customer_v
+	FROM table_ledger
+	WHERE operation_uuid = in_uuid::uuid
+		AND delivery_status_order = 'confirmed order'::enum_status_order
+	GROUP BY operation_uuid, id_customer;
+	--
+	IF NOT FOUND THEN
+		RETURN 'No items or invalid request'::varchar;
+	ELSEIF status1_v != status2_v THEN
+		RETURN 'problem27'::varchar;
+	ELSEIF status1_v:enum_status_order = 'confirmed order':enum_status_order THEN
+		--
+		SELECT ARRAY (
+			SELECT ROW (
+				id_vendor, money_vendor_credit, 
+				tax_money_vendor_credit,
+				id_warehouse, money_warehouse_credit,
+				money_system_credit)::type_details_ledger
+			FROM table_ledger
+			WHERE operation_uuid = in_uuid::uuid
+		) INTO array_details_ledger_v;
+		--
+		IF NOT FOUND THEN
+			RETURN 'problem28'::varchar;
+		END IF;
+		--
+		FOREACH loop_id_vendor_v, loop_money_vendor_v, loop_tax_money_vendor_v, loop_id_warehouse_v,
+			loop_money_warehouse_v, loop_money_system_v IN ARRAY array_details_ledger_v
+		LOOP
+			--
+			UPDATE table_vendor_wallet
+			SET blocked_money = blocked_money - loop_money_vendor_v,
+				blocked_tax_money = blocked_tax_money - loop_tax_money_vendor_v
+			WHERE id_vendor = loop_id_vendor_v;
+			--
+			IF NOT FOUND THEN
+				RETURN 'problem29'::varchar;
+			END IF;
+			--
+			UPDATE table_warehouse_wallet
+			SET blocked_money = blocked_money - loop_money_warehouse_v
+			WHERE id_warehouse = loop_id_warehouse_v;
+			--
+			IF NOT FOUND THEN
+				RETURN 'problem30'::varchar;
+			END IF;
+			--
+			UPDATE table_system_wallet
+			SET blocked_money = blocked_money - loop_money_system_v;
+			--
+			IF NOT FOUND THEN
+				RETURN 'problem31'::varchar;
+			END IF;
+			--
+			total_credit_v = total_credit_v + loop_money_vendor_v + loop_tax_money_vendor_v +  loop_money_warehouse_v + loop_money_system_v;
+			--
+		END LOOP;
+		--
+		IF NOT FOUND THEN
+			RETURN 'problem32'::varchar;
+		ELSEIF total_credit_v != order_price_v THEN
+			RETURN 'problem33'::varchar;
+		END IF;
+			--
+	ELSEIF status1_v:enum_status_order = 'unconfirmed order':enum_status_order THEN
+		EXIT;
+	ELSEIF status1_v:enum_status_order = 'completed order':enum_status_order THEN 
+		RETURN 'order completed cannot be canceled'::varchar;
+	ELSE
+		RETURN 'problem34'::varchar;
+	END IF;
+	--
+	SELECT ARRAY (
+		SELECT ROW (id_consignment, amount_goods)::type_id_amount 
+		FROM table_orders
+		WHERE operation_uuid = in_uuid::uuid AND delivery_status_order = 'confirmed order'::enum_status_order
+	) INTO ids_consigment_v;
+	--
+	IF NOT FOUND THEN
+		RETURN 'problem35'::varchar;
+	END IF;
+	--
+	FOREACH loop_id_consignment_v, loop_amount_goods IN ARRAY ids_consigment_v
+	LOOP
+		--
+		UPDATE table_consignment
+		SET amount_goods_blocked = amount_goods_blocked - loop_amount_goods,
+			amount_goods_available = amount_goods_available + loop_amount_goods
+		WHERE id_consignment = loop_id_consignment_v;
+		--
+		IF NOT FOUND THEN
+			RETURN 'problem36'::varchar;
+		END IF;
+		--
+	END LOOP;
+	--
+	IF NOT FOUND THEN
+		RETURN 'problem37'::varchar;
+	END IF;
+	--
+	UPDATE table_customer_wallet
+	SET blocked_money = blocked_money - order_price_v,
+		amount_money = amount_money + order_price_v
+	WHERE id_customer = id_customer_v;
+	--
+	IF NOT FOUND THEN
+		RETURN 'problem38'::varchar;
+	END IF;
+	--
+	DELETE FROM table_orders
+	WHERE operation_uuid = in_uuid
+	--
+	IF NOT FOUND THEN
+		RETURN 'problem39'::varchar;
+	END IF;
+	--
+	DELETE FROM table_ledger
+	WHERE operation_uuid = in_uuid
+	--
+	IF NOT FOUND THEN
+		RETURN 'problem40'::varchar;
 	END IF;
 	--
 	RETURN 'ok'::varchar;

@@ -71,6 +71,7 @@ CREATE TABLE table_vendor_price
 CREATE TABLE table_vendor_price_archive
 (
 	operation_cdu varchar(6),
+	date_change TIMESTAMPTZ,
 	id_vendor int,
 	id_goods int,
 	country enum_country,
@@ -123,6 +124,7 @@ CREATE TABLE table_consignment
 	amount_goods_defect domain_amount,
 	goods_in_stock bool DEFAULT false,
 	arrival_date_goods TIMESTAMPTZ,
+	date_sold_out TIMESTAMPTZ,
 	consignment_info text,
 	id_problem int,
 
