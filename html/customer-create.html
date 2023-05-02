@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
     <h1>CREATE ACCOUNT</h1>
-    <form>
+    <form action="/customer/create/send" method="POST">
         <div>
             <p>Authentication data:</p>
             <label for="login">Login:</label><br>
             <input type="text" id="login" name="login"><br>
-            <label for="passwort">Passwort</label><br>
-            <input type="password" id="password" name="password">
+            <label for="password_new">Passwort:</label><br>
+            <input type="password" id="password_new" name="password_new"><br>
         </div>
         <div>
             <p>Delivery address:</p>

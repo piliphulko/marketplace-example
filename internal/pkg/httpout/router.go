@@ -1,25 +1,24 @@
 package httpout
 
 import (
-	"html/template"
-	"log"
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 )
 
 func RouterHTML() *chi.Mux {
 	r := chi.NewRouter()
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		html, err := template.ParseFiles("../../html/main_page.html")
-		if err != nil {
-			log.Fatal(err)
-		}
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		if html.Execute(w, nil) != nil {
-			log.Fatal(err)
-		}
-		w.WriteHeader(http.StatusOK)
-	})
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
+
+	r.Get("/", HandlerMainPage)
+	r.Get("/customer/create", HandlerCustomerCreatePage)
+	r.Post("/customer/create/send", HandlerCustomerCreateSendPage)
+
 	return r
 }
