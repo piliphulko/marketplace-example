@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html>
     <h1>CREATE ACCOUNT</h1>
-    <form action="/customer/create/send" method="POST">
+    <form action="/warehouse/create/send" method="POST">
         <div>
             <p>Authentication data:</p>
             <label for="login">Login:</label><br>
             <input type="text" id="login" name="login"><br>
-            <label for="password_new">Passwort:</label><br>
-            <input type="password" id="password_new" name="password_new"><br>
+            <label for="password_warehose">Passwort:</label><br>
+            <input type="password" id="password_warehose" name="password_warehose"><br>
         </div>
         <div>
-            <p>Delivery address:</p>
+            <label for="name_warehouse">Name Warehouse:</label><br>
+            <input type="text" id="name_warehouse" name="name_warehouse"><br>
+        </div>
+        <div>
+            <p>Location:</p>
             <label for="country">Country:</label><br>
             <select id="country" name="country">
                 {{range .Countries}}
@@ -25,7 +29,12 @@
             </select><br>
         </div>
         <div>
+            <p>Optional info: </p>
+            <textarea name="info_warehouse" rows="10" cols="50">NOTHING</textarea>
+        </div>
+        <div>
             <br><input type="submit" value="Send">
+            <inpur type="reset" value="Reset">
         </div>
     </form>
 </html>

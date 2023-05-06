@@ -1,22 +1,23 @@
 package httpout
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 )
 
-func HandlerMainPage(w http.ResponseWriter, r *http.Request) {
-	html, err := template.ParseFiles("../../html/main-page.html")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if html.Execute(w, nil) != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+type Into struct {
+	Countries []string
+	Cities    []string
+}
+
+type Goods struct {
+	NameWarehouse string
+	NameVendor    string
+	TypeGoods     string
+	NameGoods     string
+	InfoGoods     string
+	PriceGoods    string
+	AmountGoods   string
 }
 
 func HandlerCustomerCreatePage(w http.ResponseWriter, r *http.Request) {
@@ -26,27 +27,76 @@ func HandlerCustomerCreatePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if html.Execute(w, nil) != nil {
+	if html.Execute(w, Into{
+		Countries: []string{
+			"BELARUS",
+			"POLAND",
+			"UKRAINE",
+		},
+		Cities: []string{
+			"MINSK",
+			"WARSAW",
+			"KYIV",
+		},
+	}) != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }
 
-func HandlerCustomerCreateSendPage(w http.ResponseWriter, r *http.Request) {
-	var (
-		login        = r.FormValue("login")
-		password_new = r.FormValue("password_new")
-		country      = r.FormValue("country")
-		city         = r.FormValue("city")
-	)
-	fmt.Println(login, password_new, country, city)
-	html, err := template.ParseFiles("../../html/response-create.html")
+func HandlerWarehouseCreatePage(w http.ResponseWriter, r *http.Request) {
+	html, err := template.ParseFiles("../../html/warehouse-create.html")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if html.Execute(w, nil) != nil {
+	if html.Execute(w, Into{
+		Countries: []string{
+			"BELARUS",
+			"POLAND",
+			"UKRAINE",
+		},
+		Cities: []string{
+			"MINSK",
+			"WARSAW",
+			"KYIV",
+		},
+	}) != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+func HandlerMarketplacePage(w http.ResponseWriter, r *http.Request) {
+	html, err := template.ParseFiles("../../html/marketplace.html")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if html.Execute(w, struct{ GoodsARRAY []Goods }{
+		GoodsARRAY: []Goods{
+			{
+				NameWarehouse: "1",
+				NameVendor:    "1",
+				TypeGoods:     "1",
+				NameGoods:     "1",
+				InfoGoods:     "1",
+				PriceGoods:    "1",
+				AmountGoods:   "1",
+			},
+			{
+				NameWarehouse: "2",
+				NameVendor:    "2",
+				TypeGoods:     "2",
+				NameGoods:     "2",
+				InfoGoods:     "2",
+				PriceGoods:    "2",
+				AmountGoods:   "2",
+			},
+		},
+	}) != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

@@ -2,7 +2,7 @@ CREATE OR REPLACE VIEW view_marketplace AS SELECT
     table_warehouse_info.country,
     table_warehouse_info.name_warehouse,
     table_vendor_info.name_vendor,
-    table_goods.type_googs,
+    table_goods.type_goods,
     table_goods.name_goods,
     table_goods.info_goods,
     table_consignment.amount_goods_available,
@@ -13,7 +13,7 @@ JOIN table_vendor_info USING (id_vendor)
 JOIN table_goods USING (id_goods)
 JOIN table_vendor_price USING (id_goods)
 WHERE table_warehouse_info.country = table_vendor_price.country AND goods_in_stock = true
-ORDER BY table_warehouse_info.country DESC, table_goods.type_googs;
+ORDER BY table_warehouse_info.country DESC, table_goods.type_goods;
 
 CREATE OR REPLACE VIEW view_orders_active AS SELECT
     table_orders.operation_uuid,

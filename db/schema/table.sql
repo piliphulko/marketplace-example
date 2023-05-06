@@ -46,7 +46,7 @@ CREATE TABLE table_goods
 (
 	id_goods int GENERATED ALWAYS AS IDENTITY,
 	id_vendor int,
-	type_googs enum_type_goods,
+	type_goods enum_type_goods,
 	name_goods varchar(128),
 	info_goods text,
 

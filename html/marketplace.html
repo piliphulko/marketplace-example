@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <table>
+        <tr>
+            <th>Name Warehouse</th>
+            <th>Name Vendor</th>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Info</th>
+            <th>Price</th>
+            <th>Amount</th>
+        </tr>
+        {{range .GoodsARRAY}}
+        <tr>
+            <th> {{.NameWarehouse}}</th>
+            <th> {{.NameVendor}}</th>
+            <th> {{.TypeGoods}}</th>
+            <th> {{.NameGoods}}</th>
+            <th> {{.InfoGoods}}</th>
+            <th> {{.PriceGoods}}</th>
+            <th> {{.AmountGoods}}</th>
+        </tr>
+        {{end}}
+    </table>
+</html>
