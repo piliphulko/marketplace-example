@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+    <h1>Goods list:</h1>
     <table>
         <tr>
             <th>Name Warehouse</th>
@@ -22,4 +23,46 @@
         </tr>
         {{end}}
     </table>
+    {{if BoolOrders}}
+        <h4>{{.OrderUuid}}</h4>
+        <tr>
+            <th>Name Warehouse</th>
+            <th>Name Vendor</th>
+            <th>Name Goods</th>
+            <th>Amount Goods</th>
+            <th>Price Goods</th>
+            <th>Total cost</th>
+        </tr>
+        {{range .OrdersARRAY}}
+        <tr>
+            <th>{{.NameWarehouse}}</th>
+            <th>{{.NameVendor}}</th>
+            <th>{{.NameGoods}}</th>
+            <th>{{.AmountGoods}}</th>
+            <th>{{.PriceGoods}}</th>
+            <th>{{.Totalcost}}</th>
+        </tr>
+        {{end}}
+    {{else}}
+        <h4>number to place an order: {{.OrderUuid}}</h4>
+    {{end}}
+    <h3>Create order:</h3>
+    <form>
+        <div>
+            {{if .BoolOrders}}
+                <label for="order_uuid">Name Warehouse:</label>
+                <input type="text" value="{{.OrderUuid}}" id="order_uuid" name="order_uuid" readonly>
+            {{else}}
+                <label for="order_uuid">Name Warehouse:</label><input type="text" id="order_uuid" name="order_uuid" placeholder="Введите номер заказа">
+            {{end}}
+            <label for="name_warehouse">Name Warehouse:</label><input type="text" id="name_warehouse" name="name_warehouse">
+            <label for="name_vendor">Name Vendor:</label><input type="text" id="name_vendor" name="name_vendor">
+            <label for="name_goods">Name Goods:</label><input type="text" id="name_goods" name="name_goods">
+            <label for="amount_goods">Amount Goods:</label><input type="number" id="amount_goods" name="amount_goods">
+        </div>
+        <div>
+            <br><input type="submit" value="Send">
+            <input type="reset" value="Reset">
+        </div>
+    </form>
 </html>
