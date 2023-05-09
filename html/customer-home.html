@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <h1>Welcome: {{.LoginCustomer}}</h1>
+    {{range .OrderStatusPlusOrdersARRAY}}
+    <h3>Orders: {{.OrderStatus}}</h3>
+    <table style="width:100%">
+        <tr>
+            <th>Name Warehouse</th>
+            <th>Name Vendor</th>
+            <th>Name Goods</th>
+            <th>Amount Goods</th>
+            <th>Price Goods</th>
+            <th>Total cost</th>
+        </tr>
+        {{- $prev := "" -}}
+        {{range .OrdersARRAY}}
+            {{- if ne $prev .OrderUuid -}}
+                {{- $prev = .OrderUuid -}}
+                <tr>
+                    <td colspan="6">{{.OrderUuid}}</td>
+                </tr>
+            {{end}}
+        <tr>
+            <th>{{.NameWarehouse}}</th>
+            <th>{{.NameVendor}}</th>
+            <th>{{.NameGoods}}</th>
+            <th>{{.AmountGoods}}</th>
+            <th>{{.PriceGoods}}</th>
+            <th>{{.Totalcost}}</th>
+        </tr>
+        {{end}}
+    </table>
+        {{if .OrderStatus == "unconfirmed order"}}
+        <form action="/country/marketplace/send" method="POST">
+            <label for="сonfirm_order_uuid">Сonfirm order:</label><br>
+            <input type="text" id="сonfirm_order_uuid" name="сonfirm_order_uuid" placeholder="Enter your order UUID here">
+            <br><input type="submit" value="Send">
+        </form>
+        {{else if .OrderStatus == "confirmed order"}}
+        <form action="/country/marketplace/send" method="POST">
+            <label for="pay_order_uuid">Pay for the order:</label><br>
+            <input type="text" id="pay_order_uuid" name="pay_order_uuid" placeholder="Enter your order UUID here">
+            <br><input type="submit" value="Send">
+        </form>
+        {{end}}
+    {{end}}
+    <h3></h3>
+</html>

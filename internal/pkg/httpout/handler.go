@@ -1,6 +1,7 @@
 package httpout
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -111,13 +112,13 @@ func HandlerMarketplacePage(w http.ResponseWriter, r *http.Request) {
 					AmountGoods:   "2",
 				},
 			},
-			BoolOrders: false,
+			BoolOrders: true,
 			OrderUuid:  "qscdsad",
 			OrdersARRAY: []Order{
 				{
-					NameWarehouse: "",
-					NameVendor:    "",
-					NameGoods:     "",
+					NameWarehouse: "aa",
+					NameVendor:    "aa",
+					NameGoods:     "aa",
 					AmountGoods:   1,
 					PriceGoods:    1,
 					Totalcost:     1,
@@ -127,4 +128,15 @@ func HandlerMarketplacePage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+func HandlerMarketplaceSend(w http.ResponseWriter, r *http.Request) {
+	var (
+		order_uuid     = r.FormValue("order_uuid")
+		name_warehouse = r.FormValue("name_warehouse")
+		name_vendor    = r.FormValue("name_vendor")
+		name_goods     = r.FormValue("name_goods")
+		amount_goods   = r.FormValue("amount_goods")
+	)
+	fmt.Println(order_uuid, name_warehouse, name_vendor, name_goods, amount_goods)
 }

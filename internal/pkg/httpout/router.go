@@ -19,6 +19,8 @@ func RouterHTML() *chi.Mux {
 	r.Get("/belarus/marketplace", HandlerMarketplacePage)
 	r.Get("/poland/marketplace", HandlerMarketplacePage)
 	r.Get("/ukraine/marketplace", HandlerMarketplacePage)
+	r.Post("/country/marketplace/send", HandlerMarketplaceSend)
+	r.Get("/error", nil)
 
 	r.Get("/", HandlerСleanPage("../../html/main-page.html"))
 	r.Get("/customer/create", HandlerCustomerCreatePage)
@@ -40,6 +42,21 @@ func RouterHTML() *chi.Mux {
 
 	r.Get("/warehouse/authorization", HandlerСleanPage("../../html/warehouse-authorization.html"))
 	r.Post("/warehouse/authorization/send", nil)
+
+	r.Get("/{login_customer}/marketplace", nil)
+	r.Post("/{login_customer}/marketplace/send", nil)
+
+	r.Get("/{login_customer}/home", nil)
+	r.Post("/{login_customer}/home/order/repeal/{order_uuid}", nil)
+	r.Post("/{login_customer}/home/order/confirm/{order_uuid}", nil)
+	r.Post("/{login_customer}/home/order/pay/{order_uuid}", nil)
+
+	r.Get("/{login_customer}/home/delivery/confirm", nil)
+
+	r.Get("/{login_customer}/home/wallet", nil)
+
+	r.Get("/{login_customer}/home/wallet/replenishment", nil)
+	r.Post("/{login_customer}/home/wallet/replenishment/send", nil)
 
 	return r
 }
