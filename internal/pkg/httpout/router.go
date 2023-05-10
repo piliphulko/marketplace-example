@@ -46,7 +46,7 @@ func RouterHTML() *chi.Mux {
 	r.Get("/{login_customer}/marketplace", nil)
 	r.Post("/{login_customer}/marketplace/send", nil)
 
-	r.Get("/{login_customer}/home", nil)
+	r.Get("/{login_customer}/home", HandlerCustomerHomePage)
 	r.Post("/{login_customer}/home/order/repeal/{order_uuid}", nil)
 	r.Post("/{login_customer}/home/order/confirm/{order_uuid}", nil)
 	r.Post("/{login_customer}/home/order/pay/{order_uuid}", nil)

@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/gofrs/uuid"
 )
 
 type Into struct {
@@ -139,4 +142,85 @@ func HandlerMarketplaceSend(w http.ResponseWriter, r *http.Request) {
 		amount_goods   = r.FormValue("amount_goods")
 	)
 	fmt.Println(order_uuid, name_warehouse, name_vendor, name_goods, amount_goods)
+}
+
+func HandlerCustomerHomePage(w http.ResponseWriter, r *http.Request) {
+	login_customer := chi.URLParam(r, "login_customer")
+	html, err := template.ParseFiles("../../html/customer-home.html")
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	u1, _ := uuid.NewV4()
+	u2, _ := uuid.NewV4()
+	if err = html.Execute(w, struct {
+		LoginCustomer              string
+		WalletMoney                float64
+		DeliveryConfirmARRAY       []string
+		OrderStatusPlusOrdersARRAY []struct {
+			OrderStatus string
+			OrdersARRAY []struct {
+				OrderUuid     string
+				NameWarehouse string
+				NameVendor    string
+				NameGoods     string
+				AmountGoods   int
+				PriceGoods    float64
+				Totalcost     float64
+			}
+		}
+	}{
+		LoginCustomer:        login_customer,
+		WalletMoney:          1503.59,
+		DeliveryConfirmARRAY: []string{u1.String(), u2.String()},
+		OrderStatusPlusOrdersARRAY: []struct {
+			OrderStatus string
+			OrdersARRAY []struct {
+				OrderUuid     string
+				NameWarehouse string
+				NameVendor    string
+				NameGoods     string
+				AmountGoods   int
+				PriceGoods    float64
+				Totalcost     float64
+			}
+		}{
+			{
+				OrderStatus: "unconfirmed order",
+				OrdersARRAY: []struct {
+					OrderUuid     string
+					NameWarehouse string
+					NameVendor    string
+					NameGoods     string
+					AmountGoods   int
+					PriceGoods    float64
+					Totalcost     float64
+				}{
+					{
+						OrderUuid:     u1.String(),
+						NameWarehouse: "111",
+						NameVendor:    "111",
+						NameGoods:     "111",
+						AmountGoods:   5,
+						PriceGoods:    10.3,
+						Totalcost:     51.5,
+					},
+					{
+						OrderUuid:     u2.String(),
+						NameWarehouse: "111",
+						NameVendor:    "111",
+						NameGoods:     "111",
+						AmountGoods:   1,
+						PriceGoods:    10,
+						Totalcost:     10,
+					},
+				},
+			},
+		},
+	}); err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
