@@ -8,6 +8,7 @@
     </style>
     <h1>Welcome: {{.LoginCustomer}}</h1>
     <h3>Wallet: <a href="/{{.LoginCustomer}}/home/wallet">{{.WalletMoney}} USDT</a></h3>
+    <h3>Change account details: <a href="/{{.LoginCustomer}}/home/change">change</a></h3>
     {{range .OrderStatusPlusOrdersARRAY}}
     <h3>Orders: {{.OrderStatus}}</h3>
     <table style="width:100%">

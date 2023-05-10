@@ -47,16 +47,15 @@ func RouterHTML() *chi.Mux {
 	r.Post("/{login_customer}/marketplace/send", nil)
 
 	r.Get("/{login_customer}/home", HandlerCustomerHomePage)
+	r.Get("/{login_customer}/home/change", HandlerCustomerHomeChangePage)
 	r.Post("/{login_customer}/home/order/repeal/{order_uuid}", nil)
 	r.Post("/{login_customer}/home/order/confirm/{order_uuid}", nil)
 	r.Post("/{login_customer}/home/order/pay/{order_uuid}", nil)
 
 	r.Get("/{login_customer}/home/delivery/confirm", nil)
 
-	r.Get("/{login_customer}/home/wallet", nil)
-
-	r.Get("/{login_customer}/home/wallet/replenishment", nil)
-	r.Post("/{login_customer}/home/wallet/replenishment/send", nil)
+	r.Get("/{login_customer}/home/wallet", HandlerCustomerHomeWalletPage)
+	r.Post("/{login_customer}/home/wallet/promo/send", HandlerCustomerHomeWalletPromoSend)
 
 	return r
 }

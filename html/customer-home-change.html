@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <h1>CHANGE ACCOUNT</h1>
+    <form action="/customer/create/send" method="POST">
+        <div>
+            <p>Authentication data:</p>
+            <label for="login">Login:</label><br>
+            <input type="text" id="login" name="login"><br>
+            <label for="password_new">Passwort:</label><br>
+            <input type="password" id="password_new" name="password_new"><br>
+        </div>
+        <div>
+            <p>Authentication data:</p>
+            <label for="login_new">New Login:</label><br>
+            <input type="text" id="login_new" name="login_new"><br>
+            <label for="password_new">New Passwort:</label><br>
+            <input type="password" id="password_new" name="password_new"><br>
+        </div>
+        <div>
+            <p>Delivery address:</p>
+            <label for="country">Country:</label><br>
+            <select id="country" name="country">
+                {{range .Countries}}
+                <option value = "{{.}}">{{.}}</option>
+                {{end}}
+            </select><br>
+            <label for="city">City:</label><br>
+            <select id="city" name="city">
+                {{range .Cities}}
+                <option value = "{{.}}">{{.}}</option>
+                {{end}}
+            </select><br>
+            <script>
+                document.getElementById("country").value = "{{.CountryCustomer}}";
+                document.getElementById("city").value = "{{.CountryCity}}";
+            </script>
+        </div>
+        <div>
+            <br><input type="submit" value="Send">
+        </div>
+    </form>
+</html>

@@ -10,8 +10,11 @@ import (
 )
 
 type Into struct {
-	Countries []string
-	Cities    []string
+	Countries       []string
+	Cities          []string
+	LoginCustomer   string
+	CountryCustomer string
+	CountryCity     string
 }
 
 type Goods struct {
@@ -154,6 +157,7 @@ func HandlerCustomerHomePage(w http.ResponseWriter, r *http.Request) {
 	}
 	u1, _ := uuid.NewV4()
 	u2, _ := uuid.NewV4()
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err = html.Execute(w, struct {
 		LoginCustomer              string
 		WalletMoney                float64
@@ -217,6 +221,65 @@ func HandlerCustomerHomePage(w http.ResponseWriter, r *http.Request) {
 					},
 				},
 			},
+		},
+	}); err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+func HandlerCustomerHomeWalletPage(w http.ResponseWriter, r *http.Request) {
+	login_customer := chi.URLParam(r, "login_customer")
+	html, err := template.ParseFiles("../../html/customer-home-wallet.html")
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err = html.Execute(w, struct {
+		WalletMoney   float64
+		LoginCustomer string
+	}{
+		WalletMoney:   100.56,
+		LoginCustomer: login_customer,
+	}); err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+func HandlerCustomerHomeWalletPromoSend(w http.ResponseWriter, r *http.Request) {
+	var (
+		promo_code = r.FormValue("promo_code")
+	)
+	fmt.Println(promo_code)
+}
+
+func HandlerCustomerHomeChangePage(w http.ResponseWriter, r *http.Request) {
+	login_customer := chi.URLParam(r, "login_customer")
+	html, err := template.ParseFiles("../../html/customer-home-change.html")
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if err = html.Execute(w, Into{
+		LoginCustomer:   login_customer,
+		CountryCustomer: "BELARUS",
+		CountryCity:     "MINSK",
+		Countries: []string{
+			"BELARUS",
+			"POLAND",
+			"UKRAINE",
+		},
+		Cities: []string{
+			"MINSK",
+			"WARSAW",
+			"KYIV",
 		},
 	}); err != nil {
 		fmt.Println(err)
