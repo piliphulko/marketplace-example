@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+    </style>
+    <h1>Goods list:</h1>
+    <table style="width:100%">
+        <tr>
+            <th>Arrival date</th>
+            <th>Name Vendor</th>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Info</th>
+            <th>Price</th>
+            <th>Amount goods available</th>
+            <th>Amount goods blocked</th>
+            <th>Amount goods gefect</th>
+        </tr>
+        {{range .GoodsARRAY}}
+        <tr>
+            <th> {{.ArrivalDate}}</th>
+            <th> {{.NameVendor}}</th>
+            <th> {{.TypeGoods}}</th>
+            <th> {{.NameGoods}}</th>
+            <th> {{.InfoGoods}}</th>
+            <th> {{.PriceGoods}}</th>
+            <th> {{.AmountGoodsAvailable}}</th>
+            <th> {{.AmountGoodsBlocked}}</th>
+            <th> {{.AmountGoodsDefect}}</th>
+        </tr>
+        {{end}}
+    </table>
+</html>

@@ -48,14 +48,28 @@ func RouterHTML() *chi.Mux {
 
 	r.Get("/{login_customer}/home", HandlerCustomerHomePage)
 	r.Get("/{login_customer}/home/change", HandlerCustomerHomeChangePage)
-	r.Post("/{login_customer}/home/order/repeal/{order_uuid}", nil)
-	r.Post("/{login_customer}/home/order/confirm/{order_uuid}", nil)
-	r.Post("/{login_customer}/home/order/pay/{order_uuid}", nil)
+	r.Post("/{login_customer}/home/change/send", HandlerCustomerHomeChangeSend)
+
+	r.Post("/{login_customer}/home/order/repeal/send", HandlerOrderPepealSend)
+	r.Post("/{login_customer}/home/order/confirm/send", HandlerOrderConfirmSend)
+	r.Post("/{login_customer}/home/order/pay/send", HandlerOrderPaySend)
 
 	r.Get("/{login_customer}/home/delivery/confirm", nil)
 
 	r.Get("/{login_customer}/home/wallet", HandlerCustomerHomeWalletPage)
 	r.Post("/{login_customer}/home/wallet/promo/send", HandlerCustomerHomeWalletPromoSend)
 
+	r.Get("/{login_warehouse}/warehouse/home", HandlerWarehouseHomePage)
+	r.Get("/{login_warehouse}/warehouse/home/change", nil)
+	r.Post("/{login_warehouse}/warehouse/home/change/send", nil)
+
+	r.Get("/{login_warehouse}/warehouse/home/wallet", HandlerWarehouseHomeWalletPage)
+
+	r.Get("/{login_warehouse}/in-stock/goods", HandlerWarehouseInStockPage)
+
+	r.Get("/{login_warehouse}/receiving/goods", HandlerReceivingGoodsPage)
+	r.Post("/{login_warehouse}/receiving/goods/send", HandlerReceivingGoodsSend)
+
+	r.Post("/{login_warehouse}/{login_customer}/{order_uuid}/delivery/confirm", HandlerWarehouseDeliveryConfirmSend)
 	return r
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+    </style>
+    <style>
+        #uuid {
+          background-color: rgb(207, 233, 207);
+          color: black;
+        }
+    </style>
+    <h1>Welcome: {{.LoginWarehouse}}</h1>
+    <h3>Wallet: <a href="/{{.LoginWarehouse}}/warehouse/home/wallet">{{.WalletMoney}} USDT</a></h3>
+    <h3>Change account details: <a href="/{{.LoginWarehouse}}/warehouse/home/change">change</a></h3>
+    <h2><a href="/{{.LoginWarehouse}}/receiving/goods">receiving goods at the warehouse</a></h2>
+    <h2><a href="/{{.LoginWarehouse}}/in-stock/goods">goods in stock</a></h2>
+    <h3>Orders:</h3>
+    <table style="width:100%">
+        <tr>
+            <th>Login Customer:</th>
+            <th>Name Vendor</th>
+            <th>Name Goods</th>
+            <th>Amount Goods</th>
+            <th>Price Goods</th>
+            <th>Total cost</th>
+        </tr>
+        {{- $prev := "" -}}
+        {{- $login_warehouse := .LoginWarehouse -}}
+        {{range .OrdersARRAY}}
+            {{- if ne $prev .OrderUuid -}}
+                {{- $prev = .OrderUuid -}}
+                <tr id="uuid">
+                    <td>Order UUID:</td>
+                    <td>{{.OrderUuid}}</td>
+                    <td colspan="4">
+                        <form action="/{{$login_warehouse}}/{{.LoginCustomer}}/{{.OrderUuid}}/delivery/confirm" method="POST">
+                            <label for="confirmation_code">Issuing an order:</label>
+                            <input type="text" id="confirmation_code" name="confirmation_code" placeholder="enter the order confirmation code from the buyer">
+                            <input type="submit" value="Send">
+                        </form>
+                    </td>
+                </tr>
+            {{end}}
+        <tr>
+            <th>{{.LoginCustomer}}</th>
+            <th>{{.NameVendor}}</th>
+            <th>{{.NameGoods}}</th>
+            <th>{{.AmountGoods}}</th>
+            <th>{{.PriceGoods}}</th>
+            <th>{{.Totalcost}}</th>
+        </tr>
+        {{end}}
+    </table>
+</html>
+
+<!-- 
+<td colspan="4"><a href="/{{$login_warehouse}}/{{.LoginCustomer}}/{{.OrderUuid}}/delivery/confirm">Issuing an order</a></td>
+ -->

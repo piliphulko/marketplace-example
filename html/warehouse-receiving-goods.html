@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <form action="/{{.LoginWarehouse}}/receiving/goods/send" method="POST">
+        <div>
+            <p>Goods data:</p>
+            <label for="name_vendor">Name Vendor:</label>
+            <select id="name_vendor" name="name_vendor">
+                {{range .GoodsARRAY}}
+                <option value = "{{.NameVendor}}">{{.NameVendor}}</option>
+                {{end}}
+            </select>
+            <br><label for="name_goods">Name Goods:</label>
+            <select id="name_goods" name="name_goods">
+                {{range .GoodsARRAY}}
+                <option value = "{{.NameGoods}}">{{.NameGoods}}</option>
+                {{end}}
+            </select>
+            <br><label for="amount_goods">Amount Goods:</label>
+            <input type="number" min="0" id="amount_goods" name="amount_goods">
+        </div>
+        <div>
+            <br><input type="submit" value="Send">
+            <inpur type="reset" value="Reset">
+        </div>
+    </form>
+</html>

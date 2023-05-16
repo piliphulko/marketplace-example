@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
     <h1>CHANGE ACCOUNT</h1>
-    <form action="/customer/create/send" method="POST">
+    <form action="{{.LoginCustomer}}/home/change/send" method="POST">
         <div>
             <p>Authentication data:</p>
             <label for="login">Login:</label><br>
             <input type="text" id="login" name="login"><br>
-            <label for="password_new">Passwort:</label><br>
-            <input type="password" id="password_new" name="password_new"><br>
+            <label for="password_old">Passwort:</label><br>
+            <input type="password" id="password_old" name="password_old"><br>
         </div>
         <div>
             <p>Authentication data:</p>

@@ -40,18 +40,23 @@
         {{end}}
     </table>
         {{if eq .OrderStatus "unconfirmed order"}}
-        <form action="/country/marketplace/send" method="POST">
+        <form action="/{.LoginCustomer}/home/order/confirm/send" method="POST">
             <label for="сonfirm_order_uuid">Сonfirm order:</label><br>
             <input type="text" id="сonfirm_order_uuid" name="сonfirm_order_uuid" placeholder="Enter your order UUID here">
             <br><input type="submit" value="Send">
         </form>
         {{else if eq .OrderStatus "confirmed order"}}
-        <form action="/country/marketplace/send" method="POST">
+        <form action="/{.LoginCustomer}/home/order/pay/send" method="POST">
             <label for="pay_order_uuid">Pay for the order:</label><br>
             <input type="text" id="pay_order_uuid" name="pay_order_uuid" placeholder="Enter your order UUID here">
             <br><input type="submit" value="Send">
         </form>
         {{end}}
+        <form action="/{.LoginCustomer}/home/order/repeal/send" method="POST">
+            <label for="repeal_order_uuid">Cancel the order:</label><br>
+            <input type="text" id="repeal_order_uuid" name="repeal_order_uuid" placeholder="Enter your order UUID here">
+            <br><input type="submit" value="Send">
+        </form>
     {{end}}
     {{if .DeliveryConfirmARRAY}}
     <h3>Delivery:</h3>
