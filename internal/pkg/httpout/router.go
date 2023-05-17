@@ -1,6 +1,9 @@
 package httpout
 
 import (
+	"context"
+	"time"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 )
@@ -63,11 +66,24 @@ func RouterHTML() *chi.Mux {
 	r.Get("/{login_warehouse}/warehouse/home/change", nil)
 	r.Post("/{login_warehouse}/warehouse/home/change/send", nil)
 
-	r.Get("/{login_warehouse}/warehouse/home/wallet", HandlerWarehouseHomeWalletPage)
+	r.Get("/{login_warehouse}/warehouse/home/wallet", StartOptionsHTTP().
+		WithHTML(TempHTML, "warehouse-home.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), time.Duration(5*time.Second), warehouseHomePage))
 
-	r.Get("/{login_warehouse}/in-stock/goods", HandlerWarehouseInStockPage)
+	r.Get("/{login_warehouse}/in-stock/goods", StartOptionsHTTP().
+		WithHTML(TempHTML, "warehouse-in-stock.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), time.Duration(5*time.Second), testW))
 
-	r.Get("/{login_warehouse}/receiving/goods", HandlerReceivingGoodsPage)
+	r.Get("/{login_warehouse}/receiving/goods", StartOptionsHTTP().
+		WithHTML(TempHTML, "warehouse-receiving-goods.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), time.Duration(5*time.Second), receivingGoodsPage))
+
 	r.Post("/{login_warehouse}/receiving/goods/send", HandlerReceivingGoodsSend)
 
 	r.Post("/{login_warehouse}/{login_customer}/{order_uuid}/delivery/confirm", HandlerWarehouseDeliveryConfirmSend)
