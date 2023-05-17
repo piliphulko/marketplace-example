@@ -50,7 +50,7 @@ func (optHTTP OptionsHTTP) HeaderSet(w http.ResponseWriter) {
 func (optHTTP *OptionsHTTP) WithHTML(temp *template.Template, nameHTML string) *OptionsHTTP {
 	html := temp.Lookup(nameHTML)
 	if html == nil {
-		LogHTTP.Panic("")
+		LogHTTP.Panic("WithHTML")
 		log.Panic()
 	}
 	optHTTP.HTML = html
@@ -71,7 +71,7 @@ func (optHTTP *OptionsHTTP) handlerRun(ctx context.Context, timeCtx time.Duratio
 		select {
 		case <-ctx.Done():
 			if ctx.Err() == context.DeadlineExceeded {
-				LogHTTP.Error(fmt.Sprintf("func: handlerTest | context dedline: %d sec", timeCtx))
+				LogHTTP.Error(fmt.Sprintf("context dedline: %d sec", timeCtx))
 				w.WriteHeader(http.StatusRequestTimeout)
 			} else {
 				LogHTTP.Error(context.Cause(ctx).Error())

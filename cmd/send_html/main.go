@@ -6,24 +6,27 @@ import (
 
 	"github.com/piliphulko/marketplace-example/internal/pkg/httpout"
 	"github.com/piliphulko/marketplace-example/internal/pkg/logwriter"
-	"go.uber.org/zap"
+	"github.com/spf13/viper"
 )
 
 func init() {
-	if err := logwriter.InitializeLogger(httpout.LogHTTP, "infoHTTP.log", "errorHTTP.log", "panicHTTP.log"); err != nil {
+	viper.SetConfigFile("../../config/config.yaml")
+	err := viper.ReadInConfig()
+	if err != nil {
 		log.Fatal(err)
 	}
+	if err := logwriter.InitializeLogger(&httpout.LogHTTP,
+		viper.GetString("SEND_HTML_SEVER.LOG_FILE.INFO_LEVEL"),
+		viper.GetString("SEND_HTML_SEVER.LOG_FILE.ERROR_LEVEL"),
+		viper.GetString("SEND_HTML_SEVER.LOG_FILE.PANIC_LEVEL")); err != nil {
+		log.Fatal(err)
+	}
+	httpout.FillTempHTMLfromDir(viper.GetString("SEND_HTML_SEVER.HTML_DIR"))
+
 }
 
 func main() {
-	var logger *zap.Logger
-	if err := logwriter.InitializeLogger(logger, "infoHTTPtest.log", "errorHTTPtest.log", "panicHTTPtest.log"); err != nil {
-		log.Fatal(err)
-	}
-	logger.Info("fdsz")
-
-	httpout.FillTempHTMLfromDir("../../html")
 	log.Fatal(
-		http.ListenAndServe(":8080", httpout.RouterHTML()),
+		http.ListenAndServe(viper.GetString("SEND_HTML_SEVER.PORT"), httpout.RouterHTML()),
 	)
 }

@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func InitializeLogger(logger *zap.Logger, pathInfoLevel, pathErrorLevel, pathPanicLevel string) error {
+func InitializeLogger(logger **zap.Logger, pathInfoLevel, pathErrorLevel, pathPanicLevel string) error {
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
 	logFileInfo, err := os.OpenFile(pathInfoLevel, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.FileMode(0755))
@@ -27,7 +27,7 @@ func InitializeLogger(logger *zap.Logger, pathInfoLevel, pathErrorLevel, pathPan
 		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.AddSync(logFileError), zapcore.ErrorLevel),
 		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.AddSync(logFilePanic), zapcore.PanicLevel),
 	)
-	logger = zap.New(core) // zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+	*logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 	return nil
 }
 

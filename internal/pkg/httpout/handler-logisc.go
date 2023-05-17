@@ -67,7 +67,6 @@ func testW(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP 
 
 func warehouseHomePage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
 	buf := bytes.Buffer{}
-	LogHTTP.Info("dxz")
 	login_warehouse := chi.URLParam(r, "login_warehouse")
 	u1, _ := uuid.NewV4()
 	u2, _ := uuid.NewV4()
