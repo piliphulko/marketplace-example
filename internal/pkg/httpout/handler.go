@@ -537,11 +537,11 @@ func HandlerReceivingGoodsPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandlerReceivingGoodsSend(w http.ResponseWriter, r *http.Request) {
-	login_warehouse := chi.URLParam(r, "login_warehouse")
 	var (
-		name_vendor  = r.FormValue("name_vendor")
-		name_goods   = r.FormValue("name_goods")
-		amount_goods = r.FormValue("amount_goods")
+		login_warehouse = chi.URLParam(r, "login_warehouse")
+		name_vendor     = r.FormValue("name_vendor")
+		name_goods      = r.FormValue("name_goods")
+		amount_goods    = r.FormValue("amount_goods")
 	)
 	fmt.Println(login_warehouse, name_vendor, name_goods, amount_goods)
 }

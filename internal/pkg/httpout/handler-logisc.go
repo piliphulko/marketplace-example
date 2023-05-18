@@ -3,7 +3,10 @@ package httpout
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"io"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gofrs/uuid"
@@ -123,6 +126,7 @@ func warehouseHomePage(ctx context.Context, cancelCtxError context.CancelCauseFu
 			},
 		},
 	}); err != nil {
+		fmt.Println(err)
 		cancelCtxError(err)
 		return
 	}
@@ -132,14 +136,28 @@ func warehouseHomePage(ctx context.Context, cancelCtxError context.CancelCauseFu
 func receivingGoodsPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
 	buf := bytes.Buffer{}
 	login_warehouse := chi.URLParam(r, "login_warehouse")
-	_ = login_warehouse
+	params := r.URL.Query()
+	defer r.Body.Close()
+	data := params.Get("data")
+	redirectAnswer := RedirectAnswer{}
+	fmt.Println(data)
+	if err := JSON.NewDecoder(strings.NewReader(data)).Decode(&redirectAnswer); err != nil {
+		if err == io.EOF {
+		} else {
+			cancelCtxError(err)
+			return
+		}
+	}
+	fmt.Println(redirectAnswer)
 	if err := optHTTP.HTML.Execute(&buf, struct {
+		RedirectAnswer
 		LoginWarehouse string
 		GoodsARRAY     []struct {
 			NameVendor string
 			NameGoods  string
 		}
 	}{
+		RedirectAnswer: redirectAnswer,
 		LoginWarehouse: login_warehouse,
 		GoodsARRAY: []struct {
 			NameVendor string
@@ -162,5 +180,47 @@ func receivingGoodsPage(ctx context.Context, cancelCtxError context.CancelCauseF
 		cancelCtxError(err)
 		return
 	}
+	ch <- buf.Bytes()
+}
+
+func warehouseHomeWalletPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	login_warehouse := chi.URLParam(r, "login_warehouse")
+	_ = login_warehouse
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		WalletMoneyAvailable float64
+		WalletMoneyBlocked   float64
+		CommissionPercentage float64
+	}{
+		WalletMoneyAvailable: 125.32,
+		WalletMoneyBlocked:   4446.2,
+		CommissionPercentage: 0.09 * 100,
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+	ch <- buf.Bytes()
+}
+
+func handlerReceivingGoodsSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	var (
+		login_warehouse = chi.URLParam(r, "login_warehouse")
+		name_vendor     = r.FormValue("name_vendor")
+		name_goods      = r.FormValue("name_goods")
+		amount_goods    = r.FormValue("amount_goods")
+	)
+	optHTTP.RedirectOK = strings.ReplaceAll(optHTTP.RedirectOK, "{login_warehouse}", login_warehouse)
+	optHTTP.RedirectERR = strings.ReplaceAll(optHTTP.RedirectOK, "{login_warehouse}", login_warehouse)
+
+	fmt.Println(login_warehouse, name_vendor, name_goods, amount_goods)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Goods was added successfully",
+	}); err != nil {
+		cancelCtxError(err)
+	}
+
 	ch <- buf.Bytes()
 }

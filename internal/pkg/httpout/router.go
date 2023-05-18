@@ -62,29 +62,39 @@ func RouterHTML() *chi.Mux {
 	r.Get("/{login_customer}/home/wallet", HandlerCustomerHomeWalletPage)
 	r.Post("/{login_customer}/home/wallet/promo/send", HandlerCustomerHomeWalletPromoSend)
 
-	r.Get("/{login_warehouse}/warehouse/home", HandlerWarehouseHomePage)
-	r.Get("/{login_warehouse}/warehouse/home/change", nil)
-	r.Post("/{login_warehouse}/warehouse/home/change/send", nil)
-
-	r.Get("/{login_warehouse}/warehouse/home/wallet", StartOptionsHTTP().
+	r.Get("/{login_warehouse}/warehouse/home", StartOptionsHTTP().
 		WithHTML(TempHTML, "warehouse-home.html").
 		HeaderHTTPResponse(map[string]string{
 			"Content-Type": "text/html; charset=utf-8"}).
 		handlerRun(context.Background(), time.Duration(5*time.Second), warehouseHomePage))
 
+	r.Get("/{login_warehouse}/warehouse/home/change", nil)
+	r.Post("/{login_warehouse}/warehouse/home/change/send", nil)
+
+	r.Get("/{login_warehouse}/warehouse/home/wallet", StartOptionsHTTP().
+		WithHTML(TempHTML, "warehouse-home-wallet.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), warehouseHomeWalletPage))
+
 	r.Get("/{login_warehouse}/in-stock/goods", StartOptionsHTTP().
 		WithHTML(TempHTML, "warehouse-in-stock.html").
 		HeaderHTTPResponse(map[string]string{
 			"Content-Type": "text/html; charset=utf-8"}).
-		handlerRun(context.Background(), time.Duration(5*time.Second), testW))
+		handlerRun(context.Background(), withTimeoutSecond(5), testW))
 
 	r.Get("/{login_warehouse}/receiving/goods", StartOptionsHTTP().
+		ReceptionRedirectOK().
 		WithHTML(TempHTML, "warehouse-receiving-goods.html").
 		HeaderHTTPResponse(map[string]string{
 			"Content-Type": "text/html; charset=utf-8"}).
-		handlerRun(context.Background(), time.Duration(5*time.Second), receivingGoodsPage))
+		handlerRun(context.Background(), withTimeoutSecond(5), receivingGoodsPage))
 
-	r.Post("/{login_warehouse}/receiving/goods/send", HandlerReceivingGoodsSend)
+	r.Post("/{login_warehouse}/receiving/goods/send", StartOptionsHTTP().
+		RedirectUse().
+		SetPathRedirectOK("/{login_warehouse}/receiving/goods").
+		SetPathRedirectERR("/{login_warehouse}/receiving/goods").
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerReceivingGoodsSend))
 
 	r.Post("/{login_warehouse}/{login_customer}/{order_uuid}/delivery/confirm", HandlerWarehouseDeliveryConfirmSend)
 	return r

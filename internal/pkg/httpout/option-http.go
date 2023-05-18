@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"strings"
 	"time"
@@ -30,20 +31,35 @@ func FillTempHTMLfromDir(pathDir string) {
 }
 
 type OptionsHTTP struct {
-	HeaderResponseWriterMap map[string]string
-	HTML                    *template.Template
+	HeaderResponseMap map[string]string
+	HeaderRequestMap  map[string]string
+	HTML              *template.Template
+	Redirect          bool
+	RedirectOK        string
+	RedirectERR       string
 }
 
 func StartOptionsHTTP() *OptionsHTTP { return &OptionsHTTP{} }
 
 func (optHTTP *OptionsHTTP) HeaderHTTPResponse(header map[string]string) *OptionsHTTP {
-	optHTTP.HeaderResponseWriterMap = header
+	optHTTP.HeaderResponseMap = header
 	return optHTTP
 }
 
-func (optHTTP OptionsHTTP) HeaderSet(w http.ResponseWriter) {
-	for k, v := range optHTTP.HeaderResponseWriterMap {
+func (optHTTP *OptionsHTTP) HeaderHTTPRequest(header map[string]string) *OptionsHTTP {
+	optHTTP.HeaderRequestMap = header
+	return optHTTP
+}
+
+func (optHTTP OptionsHTTP) HeaderResponseSet(w http.ResponseWriter) {
+	for k, v := range optHTTP.HeaderResponseMap {
 		w.Header().Set(k, v)
+	}
+}
+
+func (optHTTP OptionsHTTP) HeaderRequestAdd(r *http.Request) {
+	for k, v := range optHTTP.HeaderRequestMap {
+		r.Header.Add(k, v)
 	}
 }
 
@@ -79,9 +95,41 @@ func (optHTTP *OptionsHTTP) handlerRun(ctx context.Context, timeCtx time.Duratio
 			}
 			return
 		case b := <-ch:
-			optHTTP.HeaderSet(w)
+			if optHTTP.Redirect {
+				optHTTP.RedirectOK = optHTTP.RedirectOK + "?data=" + url.QueryEscape(string(b))
+				http.Redirect(w, r, optHTTP.RedirectOK, 301)
+				return
+			}
+			optHTTP.HeaderResponseSet(w)
 			w.Write(b)
 			return
 		}
 	}
+}
+
+func (optHTTP *OptionsHTTP) SetPathRedirectOK(redirectOK string) *OptionsHTTP {
+	optHTTP.RedirectOK = redirectOK
+	return optHTTP
+}
+
+func (optHTTP *OptionsHTTP) SetPathRedirectERR(redirectERR string) *OptionsHTTP {
+	optHTTP.RedirectOK = redirectERR
+	return optHTTP
+}
+
+func (optHTTP *OptionsHTTP) ReceptionRedirectOK() *OptionsHTTP { return optHTTP }
+
+type RedirectAnswer struct {
+	Ok      bool
+	OkInfo  string
+	ErrInfo string
+}
+
+func withTimeoutSecond(t int) time.Duration {
+	return time.Duration(t) * time.Second
+}
+
+func (optHTTP *OptionsHTTP) RedirectUse() *OptionsHTTP {
+	optHTTP.Redirect = true
+	return optHTTP
 }

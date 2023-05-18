@@ -1,5 +1,17 @@
 <!DOCTYPE html>
 <html>
+    <dif>
+        <p>
+            {{if .RedirectAnswer.Ok}}
+                {{- if ne .RedirectAnswer.Info "" -}}
+                <p>{{.RedirectAnswer.Info}}</p>
+                {{end}}
+                {{- if ne .RedirectAnswer.Err "" -}}
+                <p>ERROR:{{.RedirectAnswer.Err}}</p>
+                {{end}}
+            {{end}}
+        </p>
+    </dif>
     <form action="/{{.LoginWarehouse}}/receiving/goods/send" method="POST">
         <div>
             <p>Goods data:</p>
