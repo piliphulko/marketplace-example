@@ -150,7 +150,7 @@ func receivingGoodsPage(ctx context.Context, cancelCtxError context.CancelCauseF
 	}
 	fmt.Println(redirectAnswer)
 	if err := optHTTP.HTML.Execute(&buf, struct {
-		RedirectAnswer
+		RedirectAnswer RedirectAnswer
 		LoginWarehouse string
 		GoodsARRAY     []struct {
 			NameVendor string
@@ -210,14 +210,59 @@ func handlerReceivingGoodsSend(ctx context.Context, cancelCtxError context.Cance
 		name_goods      = r.FormValue("name_goods")
 		amount_goods    = r.FormValue("amount_goods")
 	)
-	optHTTP.RedirectOK = strings.ReplaceAll(optHTTP.RedirectOK, "{login_warehouse}", login_warehouse)
-	optHTTP.RedirectERR = strings.ReplaceAll(optHTTP.RedirectOK, "{login_warehouse}", login_warehouse)
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_warehouse}", login_warehouse)
 
 	fmt.Println(login_warehouse, name_vendor, name_goods, amount_goods)
 
 	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
 		Ok:     true,
 		OkInfo: "Goods was added successfully",
+	}); err != nil {
+		cancelCtxError(err)
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerWarehouseHomeChange(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	login_warehouse := chi.URLParam(r, "login_warehouse")
+	_ = login_warehouse
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		InfoWarehouse        string
+		CommissionPercentage float64
+	}{
+		InfoWarehouse:        "NOTHING",
+		CommissionPercentage: 0.09 * 100,
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerWarehouseHomeChangeSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	var (
+		login_warehouseURL = chi.URLParam(r, "login_warehouse")
+
+		login_warehouse       = r.FormValue("login_warehouse")
+		password_warehose     = r.FormValue("password_warehose")
+		login_warehouse_new   = r.FormValue("login_warehouse_new")
+		password_warehose_new = r.FormValue("password_warehose_new")
+		commission_percentage = r.FormValue("commission_percentage")
+		info_warehouse        = r.FormValue("info_warehouse")
+	)
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_warehouse}", login_warehouse)
+
+	fmt.Println(login_warehouseURL, login_warehouse, password_warehose, login_warehouse_new, password_warehose_new, commission_percentage, info_warehouse)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Account update completed successfully",
 	}); err != nil {
 		cancelCtxError(err)
 	}

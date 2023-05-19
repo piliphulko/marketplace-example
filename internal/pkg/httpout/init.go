@@ -1,6 +1,7 @@
 package httpout
 
 import (
+	"errors"
 	"html/template"
 
 	jsoniter "github.com/json-iterator/go"
@@ -8,8 +9,11 @@ import (
 )
 
 var (
-	redirectUrl = "/{redirect_json}"
-	LogHTTP     *zap.Logger
-	TempHTML    *template.Template = template.New("html")
-	JSON                           = jsoniter.ConfigCompatibleWithStandardLibrary
+	LogHTTP  *zap.Logger
+	TempHTML *template.Template = template.New("html")
+	JSON                        = jsoniter.ConfigCompatibleWithStandardLibrary
+)
+
+var (
+	ErrReportedErrorNotList = errors.New("the reported error for the client does not match the list of possible errors")
 )

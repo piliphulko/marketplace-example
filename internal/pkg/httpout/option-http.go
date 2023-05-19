@@ -1,7 +1,9 @@
 package httpout
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"html/template"
 	"io/fs"
@@ -31,12 +33,16 @@ func FillTempHTMLfromDir(pathDir string) {
 }
 
 type OptionsHTTP struct {
-	HeaderResponseMap map[string]string
-	HeaderRequestMap  map[string]string
-	HTML              *template.Template
-	Redirect          bool
-	RedirectOK        string
-	RedirectERR       string
+	HeaderResponseMap     map[string]string
+	HeaderRequestMap      map[string]string
+	HTML                  *template.Template
+	OkRedirectUse         bool
+	OkRedirectUseDataURL  bool
+	OkRedirectPath        string
+	ErrRedirectUse        bool
+	ErrRedirectUseDataURL bool
+	ErrRedirectPath       string
+	PossibleErrorsClient  []error
 }
 
 func StartOptionsHTTP() *OptionsHTTP { return &OptionsHTTP{} }
@@ -89,35 +95,67 @@ func (optHTTP *OptionsHTTP) handlerRun(ctx context.Context, timeCtx time.Duratio
 			if ctx.Err() == context.DeadlineExceeded {
 				LogHTTP.Error(fmt.Sprintf("context dedline: %d sec", timeCtx))
 				w.WriteHeader(http.StatusRequestTimeout)
+				return
 			} else {
+				if optHTTP.ErrRedirectUseDataURL {
+					buf := bytes.Buffer{}
+					if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+						Ok:      true,
+						ErrInfo: context.Cause(ctx).Error(),
+					}); err != nil {
+						LogHTTP.Error(err.Error())
+						goto errorFinish
+					}
+					optHTTP.ErrRedirectPath = optHTTP.ErrRedirectPath + "?data=" + url.QueryEscape(buf.String())
+					LogHTTP.Info(context.Cause(ctx).Error())
+					http.Redirect(w, r, optHTTP.ErrRedirectPath, http.StatusMovedPermanently)
+					return
+				} else if optHTTP.ErrRedirectUse {
+					http.Redirect(w, r, optHTTP.ErrRedirectPath, http.StatusMovedPermanently)
+				}
+			errorFinish:
 				LogHTTP.Error(context.Cause(ctx).Error())
 				w.WriteHeader(http.StatusInternalServerError)
 			}
 			return
 		case b := <-ch:
-			if optHTTP.Redirect {
-				optHTTP.RedirectOK = optHTTP.RedirectOK + "?data=" + url.QueryEscape(string(b))
-				http.Redirect(w, r, optHTTP.RedirectOK, 301)
-				return
+			if optHTTP.OkRedirectUseDataURL {
+				optHTTP.OkRedirectPath = optHTTP.OkRedirectPath + "?data=" + url.QueryEscape(string(b))
+				http.Redirect(w, r, optHTTP.OkRedirectPath, http.StatusMovedPermanently)
+			} else if optHTTP.OkRedirectUse {
+				http.Redirect(w, r, optHTTP.OkRedirectPath, http.StatusMovedPermanently)
+			} else {
+				optHTTP.HeaderResponseSet(w)
+				w.Write(b)
 			}
-			optHTTP.HeaderResponseSet(w)
-			w.Write(b)
 			return
 		}
 	}
 }
 
-func (optHTTP *OptionsHTTP) SetPathRedirectOK(redirectOK string) *OptionsHTTP {
-	optHTTP.RedirectOK = redirectOK
+func (optHTTP *OptionsHTTP) UseOkRedirect(pathRedirect string) *OptionsHTTP {
+	optHTTP.OkRedirectUse = true
+	optHTTP.OkRedirectPath = pathRedirect
 	return optHTTP
 }
 
-func (optHTTP *OptionsHTTP) SetPathRedirectERR(redirectERR string) *OptionsHTTP {
-	optHTTP.RedirectOK = redirectERR
+func (optHTTP *OptionsHTTP) UseErrRedirect(pathRedirect string) *OptionsHTTP {
+	optHTTP.ErrRedirectUse = true
+	optHTTP.ErrRedirectPath = pathRedirect
 	return optHTTP
 }
 
-func (optHTTP *OptionsHTTP) ReceptionRedirectOK() *OptionsHTTP { return optHTTP }
+func (optHTTP *OptionsHTTP) UseOkRedirectDataURL(pathRedirect string) *OptionsHTTP {
+	optHTTP.OkRedirectUseDataURL = true
+	optHTTP.OkRedirectPath = pathRedirect
+	return optHTTP
+}
+
+func (optHTTP *OptionsHTTP) UseErrRedirectDataURL(pathRedirect string) *OptionsHTTP {
+	optHTTP.ErrRedirectUseDataURL = true
+	optHTTP.ErrRedirectPath = pathRedirect
+	return optHTTP
+}
 
 type RedirectAnswer struct {
 	Ok      bool
@@ -129,7 +167,23 @@ func withTimeoutSecond(t int) time.Duration {
 	return time.Duration(t) * time.Second
 }
 
-func (optHTTP *OptionsHTTP) RedirectUse() *OptionsHTTP {
-	optHTTP.Redirect = true
+func (optHTTP *OptionsHTTP) ReceptionRedirectURL() *OptionsHTTP { return optHTTP }
+
+func ErrorIntoClient(err error, clientErr error) error {
+	return fmt.Errorf("%v %w", clientErr, err)
+}
+
+func (optHTTP *OptionsHTTP) SetErrorClientList(errArray ...error) *OptionsHTTP {
+	optHTTP.PossibleErrorsClient = errArray
 	return optHTTP
+}
+
+func (optHTTP OptionsHTTP) TakeBackendFrontendError(err error) (error, error, error) {
+	errBackend := errors.Unwrap(err)
+	for _, errPossible := range optHTTP.PossibleErrorsClient {
+		if errors.Is(err, errPossible) {
+			return errBackend, errPossible, nil
+		}
+	}
+	return nil, nil, ErrReportedErrorNotList
 }

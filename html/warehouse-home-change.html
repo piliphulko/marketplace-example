@@ -1,36 +1,32 @@
 <!DOCTYPE html>
 <html>
-    <h1>CREATE ACCOUNT</h1>
+    <h1>CHANGE ACCOUNT</h1>
+    <script>
+        document.getElementById("info_warehouse").value = "{{.InfoWarehouse}}";
+        document.getElementById("commission_percentage").value = "{{.CommissionPercentage}}";
+    </script>
     <form action="/warehouse/create/send" method="POST">
         <div>
-            <p>Authentication data:</p>
+            <p>Authentication data OLD:</p>
             <label for="login">Login:</label><br>
             <input type="text" id="login" name="login"><br>
             <label for="password_warehose">Passwort:</label><br>
             <input type="password" id="password_warehose" name="password_warehose"><br>
         </div>
         <div>
+            <p>Authentication data NEW:</p>
+            <label for="login_new">New Login:</label><br>
+            <input type="text" id="login_new" name="login_new"><br>
+            <label for="password_warehose_new">New Passwort:</label><br>
+            <input type="password" id="password_warehose_new" name="password_warehose_new"><br>
+        </div>
+        <div>
             <label for="name_warehouse">Name Warehouse:</label><br>
             <input type="text" id="name_warehouse" name="name_warehouse"><br>
         </div>
         <div>
-            <p>Location:</p>
-            <label for="country">Country:</label><br>
-            <select id="country" name="country">
-                {{range .Countries}}
-                <option value = "{{.}}">{{.}}</option>
-                {{end}}
-            </select><br>
-            <label for="city">City:</label><br>
-            <select id="city" name="city">
-                {{range .Cities}}
-                <option value = "{{.}}">{{.}}</option>
-                {{end}}
-            </select><br>
-        </div>
-        <div>
             <p>Optional info: </p>
-            <textarea name="info_warehouse" rows="10" cols="50">NOTHING</textarea>
+            <textarea name="info_warehouse" id="info_warehouse" rows="10" cols="50">NOTHING</textarea>
         </div>
         <div>
             <br><label for="commission_percentage">Commission percentage:%</label>

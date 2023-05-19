@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html>
     <dif>
-        <p>
-            {{if .RedirectAnswer.Ok}}
-                {{- if ne .RedirectAnswer.Info "" -}}
-                <p>{{.RedirectAnswer.Info}}</p>
-                {{end}}
-                {{- if ne .RedirectAnswer.Err "" -}}
-                <p>ERROR:{{.RedirectAnswer.Err}}</p>
-                {{end}}
+        {{if .RedirectAnswer.Ok}}
+            {{- if ne .RedirectAnswer.OkInfo "" -}}
+            <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
             {{end}}
-        </p>
+            {{- if ne .RedirectAnswer.ErrInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{end}}
+        {{end}}
     </dif>
     <form action="/{{.LoginWarehouse}}/receiving/goods/send" method="POST">
         <div>
