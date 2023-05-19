@@ -68,8 +68,16 @@ func RouterHTML() *chi.Mux {
 			"Content-Type": "text/html; charset=utf-8"}).
 		handlerRun(context.Background(), time.Duration(5*time.Second), warehouseHomePage))
 
-	r.Get("/{login_warehouse}/warehouse/home/change", nil)
-	r.Post("/{login_warehouse}/warehouse/home/change/send", nil)
+	r.Get("/{login_warehouse}/warehouse/home/change", StartOptionsHTTP().
+		WithHTML(TempHTML, "warehouse-home-change.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerWarehouseHomeChange))
+
+	r.Post("/{login_warehouse}/warehouse/home/change/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_warehouse}/warehouse/home").
+		UseErrRedirectDataURL("/{login_warehouse}/warehouse/home").
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerReceivingGoodsSend))
 
 	r.Get("/{login_warehouse}/warehouse/home/wallet", StartOptionsHTTP().
 		WithHTML(TempHTML, "warehouse-home-wallet.html").
@@ -84,16 +92,15 @@ func RouterHTML() *chi.Mux {
 		handlerRun(context.Background(), withTimeoutSecond(5), testW))
 
 	r.Get("/{login_warehouse}/receiving/goods", StartOptionsHTTP().
-		ReceptionRedirectOK().
+		ReceptionRedirectURL().
 		WithHTML(TempHTML, "warehouse-receiving-goods.html").
 		HeaderHTTPResponse(map[string]string{
 			"Content-Type": "text/html; charset=utf-8"}).
 		handlerRun(context.Background(), withTimeoutSecond(5), receivingGoodsPage))
 
 	r.Post("/{login_warehouse}/receiving/goods/send", StartOptionsHTTP().
-		RedirectUse().
-		SetPathRedirectOK("/{login_warehouse}/receiving/goods").
-		SetPathRedirectERR("/{login_warehouse}/receiving/goods").
+		UseOkRedirectDataURL("/{login_warehouse}/receiving/goods").
+		UseErrRedirectDataURL("/{login_warehouse}/receiving/goods").
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerReceivingGoodsSend))
 
 	r.Post("/{login_warehouse}/{login_customer}/{order_uuid}/delivery/confirm", HandlerWarehouseDeliveryConfirmSend)
