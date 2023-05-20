@@ -73,9 +73,11 @@ func warehouseHomePage(ctx context.Context, cancelCtxError context.CancelCauseFu
 	u1, _ := uuid.NewV4()
 	u2, _ := uuid.NewV4()
 	redirectAnswer := RedirectAnswer{}
+	defer r.Body.Close()
 	if err := TakeRedirectAnswerFromURL(r, &redirectAnswer); err != nil {
 		cancelCtxError(err)
 	}
+	fmt.Println(redirectAnswer, "++++")
 	if err := optHTTP.HTML.Execute(&buf, struct {
 		RedirectAnswer RedirectAnswer
 		LoginWarehouse string
@@ -207,20 +209,23 @@ func handlerReceivingGoodsSend(ctx context.Context, cancelCtxError context.Cance
 		name_goods      = r.FormValue("name_goods")
 		amount_goods    = r.FormValue("amount_goods")
 	)
-	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse)
-	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_warehouse}", login_warehouse)
 
 	fmt.Println(login_warehouse, name_vendor, name_goods, amount_goods)
+
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_warehouse}", login_warehouse)
 
 	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
 		Ok:     true,
 		OkInfo: "Goods was added successfully",
 	}); err != nil {
 		cancelCtxError(err)
+		//ch <- []byte(strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_warehouse}", login_warehouse))
+		return
 	}
-	cancelCtxError(ErrorIntoClient(ErrSpiderMan, ErrSpiderMan))
 
 	ch <- buf.Bytes()
+	//ch <- []byte(strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse))
 }
 
 func handlerWarehouseHomeChange(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
@@ -258,7 +263,7 @@ func handlerWarehouseHomeChangeSend(ctx context.Context, cancelCtxError context.
 	)
 	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse)
 	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_warehouse}", login_warehouse)
-	fmt.Println(optHTTP.OkRedirectPath)
+
 	fmt.Println(login_warehouseURL, login_warehouse, password_warehouse, login_warehouse_new, password_warehouse_new, commission_percentage, info_warehouse)
 
 	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
@@ -266,7 +271,10 @@ func handlerWarehouseHomeChangeSend(ctx context.Context, cancelCtxError context.
 		OkInfo: "Account update completed successfully",
 	}); err != nil {
 		cancelCtxError(err)
+		//ch <- []byte(strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_warehouse}", login_warehouse))
+		return
 	}
-
 	ch <- buf.Bytes()
+	//ch <- []byte(strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse))
+	return
 }

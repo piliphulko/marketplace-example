@@ -115,11 +115,12 @@ func (optHTTP *OptionsHTTP) handlerRun(ctx context.Context, timeCtx time.Duratio
 						LogHTTP.Error(err.Error())
 						goto errorFinish
 					}
-
-					optHTTP.ErrRedirectPath = optHTTP.ErrRedirectPath + "?data=" + url.QueryEscape(buf.String())
-					http.Redirect(w, r, optHTTP.ErrRedirectPath, http.StatusMovedPermanently)
-					return
+					//RedirectPath := string(<-ch)
+					//http.Redirect(w, r, RedirectPath+"?data="+url.QueryEscape(buf.String()), http.StatusMovedPermanently)
+					http.Redirect(w, r, optHTTP.ErrRedirectPath+"?data="+url.QueryEscape(buf.String()), http.StatusMovedPermanently)
 				} else if optHTTP.ErrRedirectUse {
+					//RedirectPath := string(<-ch)
+					//http.Redirect(w, r, RedirectPath, http.StatusMovedPermanently)
 					http.Redirect(w, r, optHTTP.ErrRedirectPath, http.StatusMovedPermanently)
 				}
 			errorFinish:
@@ -129,14 +130,17 @@ func (optHTTP *OptionsHTTP) handlerRun(ctx context.Context, timeCtx time.Duratio
 			return
 		case b := <-ch:
 			if optHTTP.OkRedirectUseDataURL {
-				optHTTP.OkRedirectPath = optHTTP.OkRedirectPath + "?data=" + url.QueryEscape(string(b))
-				http.Redirect(w, r, optHTTP.OkRedirectPath, http.StatusMovedPermanently)
+				//RedirectPath := string(<-ch)
+				//http.Redirect(w, r, RedirectPath+"?data="+url.QueryEscape(string(b)), http.StatusMovedPermanently)
+				http.Redirect(w, r, optHTTP.OkRedirectPath+"?data="+url.QueryEscape(string(b)), http.StatusMovedPermanently)
+				return
 			} else if optHTTP.OkRedirectUse {
-				http.Redirect(w, r, optHTTP.OkRedirectPath, http.StatusMovedPermanently)
-			} else {
-				optHTTP.HeaderResponseSet(w)
-				w.Write(b)
+				//RedirectPath := string(<-ch)
+				//http.Redirect(w, r, RedirectPath, http.StatusMovedPermanently)
+				return
 			}
+			optHTTP.HeaderResponseSet(w)
+			w.Write(b)
 			return
 		}
 	}
