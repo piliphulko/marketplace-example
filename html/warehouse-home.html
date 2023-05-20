@@ -12,6 +12,16 @@
           color: black;
         }
     </style>
+    <dif>
+        {{if .RedirectAnswer.Ok}}
+            {{- if ne .RedirectAnswer.OkInfo "" -}}
+            <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
+            {{end}}
+            {{- if ne .RedirectAnswer.ErrInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{end}}
+        {{end}}
+    </dif>
     <h1>Welcome: {{.LoginWarehouse}}</h1>
     <h3>Wallet: <a href="/{{.LoginWarehouse}}/warehouse/home/wallet">{{.WalletMoney}} USDT</a></h3>
     <h3>Change account details: <a href="/{{.LoginWarehouse}}/warehouse/home/change">change</a></h3>

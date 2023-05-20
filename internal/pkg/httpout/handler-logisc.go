@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
@@ -73,7 +72,12 @@ func warehouseHomePage(ctx context.Context, cancelCtxError context.CancelCauseFu
 	login_warehouse := chi.URLParam(r, "login_warehouse")
 	u1, _ := uuid.NewV4()
 	u2, _ := uuid.NewV4()
+	redirectAnswer := RedirectAnswer{}
+	if err := TakeRedirectAnswerFromURL(r, &redirectAnswer); err != nil {
+		cancelCtxError(err)
+	}
 	if err := optHTTP.HTML.Execute(&buf, struct {
+		RedirectAnswer RedirectAnswer
 		LoginWarehouse string
 		WalletMoney    float64
 		OrdersARRAY    []struct {
@@ -86,6 +90,7 @@ func warehouseHomePage(ctx context.Context, cancelCtxError context.CancelCauseFu
 			Totalcost     float64
 		}
 	}{
+		RedirectAnswer: redirectAnswer,
 		LoginWarehouse: login_warehouse,
 		WalletMoney:    13432,
 		OrdersARRAY: []struct {
@@ -136,19 +141,11 @@ func warehouseHomePage(ctx context.Context, cancelCtxError context.CancelCauseFu
 func receivingGoodsPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
 	buf := bytes.Buffer{}
 	login_warehouse := chi.URLParam(r, "login_warehouse")
-	params := r.URL.Query()
 	defer r.Body.Close()
-	data := params.Get("data")
 	redirectAnswer := RedirectAnswer{}
-	fmt.Println(data)
-	if err := JSON.NewDecoder(strings.NewReader(data)).Decode(&redirectAnswer); err != nil {
-		if err == io.EOF {
-		} else {
-			cancelCtxError(err)
-			return
-		}
+	if err := TakeRedirectAnswerFromURL(r, &redirectAnswer); err != nil {
+		cancelCtxError(err)
 	}
-	fmt.Println(redirectAnswer)
 	if err := optHTTP.HTML.Execute(&buf, struct {
 		RedirectAnswer RedirectAnswer
 		LoginWarehouse string
@@ -221,6 +218,7 @@ func handlerReceivingGoodsSend(ctx context.Context, cancelCtxError context.Cance
 	}); err != nil {
 		cancelCtxError(err)
 	}
+	cancelCtxError(ErrorIntoClient(ErrSpiderMan, ErrSpiderMan))
 
 	ch <- buf.Bytes()
 }
@@ -228,11 +226,14 @@ func handlerReceivingGoodsSend(ctx context.Context, cancelCtxError context.Cance
 func handlerWarehouseHomeChange(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
 	buf := bytes.Buffer{}
 	login_warehouse := chi.URLParam(r, "login_warehouse")
-	_ = login_warehouse
 	if err := optHTTP.HTML.Execute(&buf, struct {
+		LoginWarehouse       string
+		NameWarehouse        string
 		InfoWarehouse        string
 		CommissionPercentage float64
 	}{
+		LoginWarehouse:       login_warehouse,
+		NameWarehouse:        "test",
 		InfoWarehouse:        "NOTHING",
 		CommissionPercentage: 0.09 * 100,
 	}); err != nil {
@@ -248,17 +249,17 @@ func handlerWarehouseHomeChangeSend(ctx context.Context, cancelCtxError context.
 	var (
 		login_warehouseURL = chi.URLParam(r, "login_warehouse")
 
-		login_warehouse       = r.FormValue("login_warehouse")
-		password_warehose     = r.FormValue("password_warehose")
-		login_warehouse_new   = r.FormValue("login_warehouse_new")
-		password_warehose_new = r.FormValue("password_warehose_new")
-		commission_percentage = r.FormValue("commission_percentage")
-		info_warehouse        = r.FormValue("info_warehouse")
+		login_warehouse        = r.FormValue("login_warehouse")
+		password_warehouse     = r.FormValue("password_warehouse")
+		login_warehouse_new    = r.FormValue("login_warehouse_new")
+		password_warehouse_new = r.FormValue("password_warehouse_new")
+		commission_percentage  = r.FormValue("commission_percentage")
+		info_warehouse         = r.FormValue("info_warehouse")
 	)
 	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse)
 	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_warehouse}", login_warehouse)
-
-	fmt.Println(login_warehouseURL, login_warehouse, password_warehose, login_warehouse_new, password_warehose_new, commission_percentage, info_warehouse)
+	fmt.Println(optHTTP.OkRedirectPath)
+	fmt.Println(login_warehouseURL, login_warehouse, password_warehouse, login_warehouse_new, password_warehouse_new, commission_percentage, info_warehouse)
 
 	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
 		Ok:     true,

@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <html>
     <h1>CHANGE ACCOUNT</h1>
-    <script>
-        document.getElementById("info_warehouse").value = "{{.InfoWarehouse}}";
-        document.getElementById("commission_percentage").value = "{{.CommissionPercentage}}";
-    </script>
-    <form action="/warehouse/create/send" method="POST">
+    <form action="/{{.LoginWarehouse}}/warehouse/home/change/send" method="POST">
         <div>
             <p>Authentication data OLD:</p>
-            <label for="login">Login:</label><br>
-            <input type="text" id="login" name="login"><br>
-            <label for="password_warehose">Passwort:</label><br>
-            <input type="password" id="password_warehose" name="password_warehose"><br>
+            <label for="login_warehouse">Login:</label><br>
+            <input type="text" id="login_warehouse" name="login_warehouse"><br>
+            <label for="password_warehouse">Passwort:</label><br>
+            <input type="password" id="password_warehouse" name="password_warehouse"><br>
         </div>
         <div>
             <p>Authentication data NEW:</p>
-            <label for="login_new">New Login:</label><br>
-            <input type="text" id="login_new" name="login_new"><br>
-            <label for="password_warehose_new">New Passwort:</label><br>
-            <input type="password" id="password_warehose_new" name="password_warehose_new"><br>
+            <label for="login_warehouse_new">New Login:</label><br>
+            <input type="text" id="login_warehouse_new" name="login_warehouse_new"><br>
+            <label for="password_warehouse_new">New Passwort:</label><br>
+            <input type="password" id="password_warehouse_new" name="password_warehouse_new"><br>
         </div>
         <div>
             <label for="name_warehouse">Name Warehouse:</label><br>
@@ -37,4 +33,10 @@
             <inpur type="reset" value="Reset">
         </div>
     </form>
+    <script>
+        document.getElementById("login_warehouse").value = "{{.LoginWarehouse}}";
+        document.getElementById("info_warehouse").value = "{{.InfoWarehouse}}";
+        document.getElementById("name_warehouse").value = "{{.NameWarehouse}}";
+        document.getElementById("commission_percentage").value = "{{.CommissionPercentage}}";
+    </script>
 </html>

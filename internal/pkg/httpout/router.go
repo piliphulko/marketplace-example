@@ -63,6 +63,7 @@ func RouterHTML() *chi.Mux {
 	r.Post("/{login_customer}/home/wallet/promo/send", HandlerCustomerHomeWalletPromoSend)
 
 	r.Get("/{login_warehouse}/warehouse/home", StartOptionsHTTP().
+		ReceptionRedirectURL().
 		WithHTML(TempHTML, "warehouse-home.html").
 		HeaderHTTPResponse(map[string]string{
 			"Content-Type": "text/html; charset=utf-8"}).
@@ -77,7 +78,7 @@ func RouterHTML() *chi.Mux {
 	r.Post("/{login_warehouse}/warehouse/home/change/send", StartOptionsHTTP().
 		UseOkRedirectDataURL("/{login_warehouse}/warehouse/home").
 		UseErrRedirectDataURL("/{login_warehouse}/warehouse/home").
-		handlerRun(context.Background(), withTimeoutSecond(5), handlerReceivingGoodsSend))
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerWarehouseHomeChangeSend))
 
 	r.Get("/{login_warehouse}/warehouse/home/wallet", StartOptionsHTTP().
 		WithHTML(TempHTML, "warehouse-home-wallet.html").
@@ -101,6 +102,7 @@ func RouterHTML() *chi.Mux {
 	r.Post("/{login_warehouse}/receiving/goods/send", StartOptionsHTTP().
 		UseOkRedirectDataURL("/{login_warehouse}/receiving/goods").
 		UseErrRedirectDataURL("/{login_warehouse}/receiving/goods").
+		SetErrorClientList(ErrSpiderMan).
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerReceivingGoodsSend))
 
 	r.Post("/{login_warehouse}/{login_customer}/{order_uuid}/delivery/confirm", HandlerWarehouseDeliveryConfirmSend)

@@ -16,4 +16,6 @@ var (
 
 var (
 	ErrReportedErrorNotList = errors.New("the reported error for the client does not match the list of possible errors")
+	ErrNoClientError        = errors.New("no client error")
+	ErrSpiderMan            = errors.New("SPIDER MAN")
 )

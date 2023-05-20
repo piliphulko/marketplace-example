@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
 	"log"
 	"net/http"
@@ -98,16 +99,24 @@ func (optHTTP *OptionsHTTP) handlerRun(ctx context.Context, timeCtx time.Duratio
 				return
 			} else {
 				if optHTTP.ErrRedirectUseDataURL {
+					errBackend, errFrontend, err := optHTTP.TakeBackendFrontendError(context.Cause(ctx))
+					if err == ErrNoClientError {
+						errFrontend = ErrSpiderMan
+					} else if err == ErrReportedErrorNotList {
+						LogHTTP.Info(ErrReportedErrorNotList.Error())
+					}
+					LogHTTP.Error(errBackend.Error())
+
 					buf := bytes.Buffer{}
 					if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
 						Ok:      true,
-						ErrInfo: context.Cause(ctx).Error(),
+						ErrInfo: errFrontend.Error(),
 					}); err != nil {
 						LogHTTP.Error(err.Error())
 						goto errorFinish
 					}
+
 					optHTTP.ErrRedirectPath = optHTTP.ErrRedirectPath + "?data=" + url.QueryEscape(buf.String())
-					LogHTTP.Info(context.Cause(ctx).Error())
 					http.Redirect(w, r, optHTTP.ErrRedirectPath, http.StatusMovedPermanently)
 					return
 				} else if optHTTP.ErrRedirectUse {
@@ -180,10 +189,25 @@ func (optHTTP *OptionsHTTP) SetErrorClientList(errArray ...error) *OptionsHTTP {
 
 func (optHTTP OptionsHTTP) TakeBackendFrontendError(err error) (error, error, error) {
 	errBackend := errors.Unwrap(err)
+	if errBackend == nil {
+		return err, nil, ErrNoClientError
+	}
 	for _, errPossible := range optHTTP.PossibleErrorsClient {
 		if errors.Is(err, errPossible) {
 			return errBackend, errPossible, nil
 		}
 	}
-	return nil, nil, ErrReportedErrorNotList
+	return err, fmt.Errorf(strings.Replace(err.Error(), errBackend.Error(), "", 1)), ErrReportedErrorNotList
+}
+
+func TakeRedirectAnswerFromURL(r *http.Request, redirectAnswer *RedirectAnswer) error {
+	params := r.URL.Query()
+	data := params.Get("data")
+	if err := JSON.NewDecoder(strings.NewReader(data)).Decode(&redirectAnswer); err != nil {
+		if err == io.EOF {
+		} else {
+			return err
+		}
+	}
+	return nil
 }
