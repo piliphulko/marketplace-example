@@ -105,6 +105,11 @@ func RouterHTML() *chi.Mux {
 		SetErrorClientList(ErrSpiderMan).
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerReceivingGoodsSend))
 
-	r.Post("/{login_warehouse}/{login_customer}/{order_uuid}/delivery/confirm", HandlerWarehouseDeliveryConfirmSend)
+	r.Post("/{login_warehouse}/{login_customer}/{order_uuid}/delivery/confirm/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_warehouse}/warehouse/home").
+		UseErrRedirectDataURL("/{login_warehouse}/warehouse/home").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerWarehouseDeliveryConfirmSend))
+
 	return r
 }

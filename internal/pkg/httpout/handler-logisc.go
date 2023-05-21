@@ -276,5 +276,26 @@ func handlerWarehouseHomeChangeSend(ctx context.Context, cancelCtxError context.
 	}
 	ch <- buf.Bytes()
 	//ch <- []byte(strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse))
-	return
+}
+
+func handlerWarehouseDeliveryConfirmSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	var (
+		login_warehouse = chi.URLParam(r, "login_warehouse")
+		login_customer  = chi.URLParam(r, "login_customer")
+		order_uuid      = chi.URLParam(r, "order_uuid")
+	)
+	fmt.Println(login_warehouse, login_customer, order_uuid)
+
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_warehouse}", login_warehouse)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "order confirmed: " + order_uuid + "| login: " + login_customer,
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+	ch <- buf.Bytes()
 }

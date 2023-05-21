@@ -46,7 +46,7 @@
                     <td>Order UUID:</td>
                     <td>{{.OrderUuid}}</td>
                     <td colspan="4">
-                        <form action="/{{$login_warehouse}}/{{.LoginCustomer}}/{{.OrderUuid}}/delivery/confirm" method="POST">
+                        <form action="/{{$login_warehouse}}/{{.LoginCustomer}}/{{.OrderUuid}}/delivery/confirm/send" method="POST">
                             <label for="confirmation_code">Issuing an order:</label>
                             <input type="text" id="confirmation_code" name="confirmation_code" placeholder="enter the order confirmation code from the buyer">
                             <input type="submit" value="Send">

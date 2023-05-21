@@ -94,7 +94,7 @@ func (optHTTP *OptionsHTTP) handlerRun(ctx context.Context, timeCtx time.Duratio
 		select {
 		case <-ctx.Done():
 			if ctx.Err() == context.DeadlineExceeded {
-				LogHTTP.Error(fmt.Sprintf("context dedline: %d sec", timeCtx))
+				LogHTTP.Error(fmt.Sprintf("context dedline: %d", timeCtx))
 				w.WriteHeader(http.StatusRequestTimeout)
 				return
 			} else {
