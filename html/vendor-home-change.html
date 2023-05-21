@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <h1>UPDATE ACCOUNT</h1>
+    <form action="/{{.LoginVendor}}/vendor/home/change/send" method="POST">
+        <div>
+            <p>Authentication data OLD:</p>
+            <label for="login_vendor">Login:</label><br>
+            <input type="text" id="login_vendor" name="login_vendor"><br>
+            <label for="password_vendor">Passwort:</label><br>
+            <input type="password" id="password_vendor" name="password_vendor"><br>
+        </div>
+        <div>
+            <p>Authentication data NEW:</p>
+            <label for="login_vendor_new">New Login:</label><br>
+            <input type="text" id="login_vendor_new" name="login_vendor_new"><br>
+            <label for="password_vendor_new">New Passwort:</label><br>
+            <input type="password" id="password_vendor_new" name="password_vendor_new"><br>
+        </div>
+        <div>
+            <br><input type="submit" value="Send">
+            <inpur type="reset" value="Reset">
+        </div>
+        <div>
+            <label for="name_vendor">Name Vendor:</label><br>
+            <input type="text" id="name_vendor" name="name_vendor"><br>
+        </div>
+    </form>
+    <script>
+        document.getElementById("login_vendor").value = "{{.LoginVendor}}";
+        document.getElementById("name_vendor").value = "{{.NameVendor}}";
+    </script>
+</html>

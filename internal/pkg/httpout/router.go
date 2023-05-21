@@ -110,6 +110,37 @@ func RouterHTML() *chi.Mux {
 		UseErrRedirectDataURL("/{login_warehouse}/warehouse/home").
 		SetErrorClientList(ErrSpiderMan).
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerWarehouseDeliveryConfirmSend))
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	r.Get("/{login_vendor}/vendor/home", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "vendor-home.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), vendorHomePage))
+
+	r.Get("/{login_vendor}/vendor/home/change", StartOptionsHTTP().
+		WithHTML(TempHTML, "vendor-home-change.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerVendorHomeChange))
+
+	r.Post("/{login_vendor}/vendor/home/change/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_vendor}/vendor/home").
+		UseErrRedirectDataURL("/{login_vendor}/vendor/home").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerVendorHomeChangeSend))
+
+	r.Get("/{login_vendor}/vendor/home/goods/price", StartOptionsHTTP().
+		//WithHTML(TempHTML, "").
+		HeaderHTTPResponse(nil).
+		handlerRun(context.Background(), withTimeoutSecond(5), nil))
+
+	r.Get("/{login_vendor}/vendor/home/goods/price/change", StartOptionsHTTP().
+		//WithHTML(TempHTML, "").
+		HeaderHTTPResponse(nil).
+		handlerRun(context.Background(), withTimeoutSecond(5), nil))
+
+	r.Post("/{login_vendor}/vendor/home/goods/price/change/send", nil)
 
 	return r
 }

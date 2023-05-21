@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+    </style>
+    <style>
+        #info_warehouse {
+          background-color: rgb(207, 233, 207);
+          color: black;
+        }
+    </style>
+    <dif>
+        {{if .RedirectAnswer.Ok}}
+            {{- if ne .RedirectAnswer.OkInfo "" -}}
+            <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
+            {{end}}
+            {{- if ne .RedirectAnswer.ErrInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{end}}
+        {{end}}
+    </dif>
+    <h1>Welcome: {{.LoginVendor}}</h1>
+    <h3>Wallet: <a href="/{{.LoginVendor}}/vendor/home/wallet">{{.WalletMoney}} USDT</a></h3>
+    <h3>Change account details: <a href="/{{.LoginVendor}}/vendor/home/change">change</a></h3>
+    <h2><a href="/{{.LoginVendor}}/vendor/homr/goods/price">price goods</a></h2>
+    <h3>Goods in stock:</h3>
+    <table style="width:100%">
+        <tr>
+            <th>Name Goods</th>
+            <th>Type Goods</th>
+            <th>Amount Goods available</th>
+            <th>Amount Goods blocked</th>
+            <th>Amount Goods defect</th>
+            <th>Price Goods</th>
+        </tr>
+        {{- $prev := "" -}}
+        {{range .GoodsARRAY}}
+            {{- if ne $prev .NameWarehouse -}}
+                {{- $prev = .NameWarehouse -}}
+                <tr id="info_warehouse">
+                    <td colspan="2">Name Warehouse: {{.NameWarehouse}}</td>
+                    <td colspan="2">Country: {{.Country}}</td>
+                    <td colspan="2">City: {{.City}}</td>
+                </tr>
+            {{end}}
+        <tr>
+            <th>{{.NameGoods}}</th>
+            <th>{{.TypeGoods}}</th>
+            <th>{{.AmountGoodsAvailable}}</th>
+            <th>{{.AmountGoodsBlocked}}</th>
+            <th>{{.AmountGoodsDefect}}</th>
+            <th>{{.PriceGoods}}</th>
+        </tr>
+        {{end}}
+    </table>
+</html>
