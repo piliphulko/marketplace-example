@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+    </style>
+    <style>
+        #country {
+          background-color: rgb(207, 233, 207);
+          color: black;
+        }
+    </style>
+    <dif>
+        {{if .RedirectAnswer.Ok}}
+            {{- if ne .RedirectAnswer.OkInfo "" -}}
+            <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
+            {{end}}
+            {{- if ne .RedirectAnswer.ErrInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{end}}
+        {{end}}
+    </dif>
+    <div>
+        <h5>Change</h5>
+        <form action="/{{.LoginVendor}}/vendor/home/goods/price/change/send" method="POST">
+            <label for="name_goods">Name Goods:</label>
+            <select id="name_goods" name="name_goods">
+                {{range .GoodsListARRAY.NameGoods}}
+                <option value = "{{.}}">{{.}}</option>
+                {{end}}
+            </select>
+            <label for="country">Country:</label>
+            <select id="country" name="country">
+                {{range .GoodsListARRAY.Country}}
+                <option value = "{{.}}">{{.}}</option>
+                {{end}}
+            </select>
+            <label for="sales_model">Sales model:</label>
+            <select id="sales_model" name="sales_model">
+                <option value = "lifo">lifo</option>
+                <option value = "fifo">fifo</option>
+            </select>
+            <label for="change_price">Price:</label>
+            <input type="number" step="0.01" min="0" id="change_price" name="change_price">
+            <div>
+                <br><input type="submit" value="Send">
+                <inpur type="reset" value="Reset">
+            </div>
+        </form>
+    </div>
+    <div>
+        <h5>Addition</h5>
+        <form action="/{{.LoginVendor}}/vendor/home/goods/price/addition/send" method="POST">
+            <label for="name_goods">Name Goods:</label>
+            <select id="name_goods" name="name_goods">
+                {{range .GoodsListARRAY.NameGoods}}
+                <option value = "{{.}}">{{.}}</option>
+                {{end}}
+            </select>
+            <label for="country">Country:</label>
+            <select id="country" name="country">
+                {{range .GoodsListARRAY.Country}}
+                <option value = "{{.}}">{{.}}</option>
+                {{end}}
+            </select>
+            <label for="sales_model">Sales model:</label>
+            <select id="sales_model" name="sales_model">
+                <option value = "lifo">lifo</option>
+                <option value = "fifo">fifo</option>
+            </select>
+            <label for="change_price">Price:</label>
+            <input type="number" step="0.01" min="0" id="change_price" name="change_price">
+            <div>
+                <br><input type="submit" value="Send">
+                <inpur type="reset" value="Reset">
+            </div>
+        </form>
+    </div>
+    <div>
+        <h5>Create</h5>
+        <form action="/{{.LoginVendor}}/vendor/home/goods/price/create/send" method="POST">
+            <label for="name_goods">Name Goods:</label>
+            <input type="text" id="name_goods" name="name_goods">
+            <label for="type_goods">Type Goods:</label>
+            <select id="type_goods" name="type_goods">
+                {{range .GoodsListARRAY.TypeGoods}}
+                <option value = "{{.}}">{{.}}</option>
+                {{end}}
+            </select>
+            <label for="info_goods">Info Goods:</label>
+            <textarea name="info_goods" id="info_goods" rows="4" cols="40">NOTHING</textarea>
+            <div>
+                <br><input type="submit" value="Send">
+                <inpur type="reset" value="Reset">
+            </div>
+        </form>
+    </div>
+    <h3>Price list:</h3>
+    <table style="width:100%">
+        <tr>
+            <th>Name Goods</th>
+            <th>Type Goods</th>
+            <th>Price Goods</th>
+            <th>Sales model</th>
+        </tr>
+        {{- $prev := "" -}}
+        {{range .GoodsARRAY}}
+            {{- if ne $prev .Country -}}
+                {{- $prev = .Country -}}
+                <tr id="country">
+                    <td colspan="4">{{.Country}}</td>
+                </tr>
+            {{end}}
+        <tr>
+            <th>{{.NameGoods}}</th>
+            <th>{{.TypeGoods}}</th>
+            <th>{{.PriceGoods}}</th>
+            <th>{{.SalesModel}}</th>
+        </tr>
+        {{end}}
+    </table>
+</html>

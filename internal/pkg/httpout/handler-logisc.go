@@ -419,3 +419,151 @@ func handlerVendorHomeChangeSend(ctx context.Context, cancelCtxError context.Can
 	}
 	ch <- buf.Bytes()
 }
+
+func vendorGoodsPricePage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	login_vendor := chi.URLParam(r, "login_vendor")
+	redirectAnswer := RedirectAnswer{}
+	defer r.Body.Close()
+	if err := TakeRedirectAnswerFromURL(r, &redirectAnswer); err != nil {
+		cancelCtxError(err)
+	}
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		RedirectAnswer RedirectAnswer
+		LoginVendor    string
+		GoodsListARRAY struct {
+			NameGoods  []string
+			TypeGoods  []string
+			Country    []string
+			SalesModel []string
+		}
+		GoodsARRAY []struct {
+			NameGoods  string
+			TypeGoods  string
+			Country    string
+			PriceGoods float64
+			SalesModel string
+		}
+	}{
+		RedirectAnswer: redirectAnswer,
+		LoginVendor:    login_vendor,
+		GoodsListARRAY: struct {
+			NameGoods  []string
+			TypeGoods  []string
+			Country    []string
+			SalesModel []string
+		}{
+			NameGoods:  []string{"NameGoods", "ds"},
+			TypeGoods:  []string{"TypeGoods", "ds"},
+			Country:    []string{"Country", "ds"},
+			SalesModel: []string{"SalesModel", "ds"},
+		},
+		GoodsARRAY: []struct {
+			NameGoods  string
+			TypeGoods  string
+			Country    string
+			PriceGoods float64
+			SalesModel string
+		}{
+			{
+				NameGoods:  "dsz",
+				TypeGoods:  "bv",
+				Country:    "bvcx",
+				PriceGoods: 10.1,
+				SalesModel: "lifo",
+			},
+			{
+				NameGoods:  "dsz",
+				TypeGoods:  "bv",
+				Country:    "bvcx",
+				PriceGoods: 10.1,
+				SalesModel: "lifo",
+			},
+			{
+				NameGoods:  "dsz",
+				TypeGoods:  "bv",
+				Country:    "gfdxz",
+				PriceGoods: 1560.1,
+				SalesModel: "lifo",
+			},
+		},
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+	ch <- buf.Bytes()
+}
+
+func handlerVendorHomeGoodsPriceChangeSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	var (
+		login_vendorURL = chi.URLParam(r, "login_vendor")
+
+		name_goods   = r.FormValue("name_goods")
+		country      = r.FormValue("country")
+		sales_model  = r.FormValue("sales_model")
+		change_price = r.FormValue("change_price")
+	)
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_vendor}", login_vendorURL)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_vendor}", login_vendorURL)
+
+	fmt.Println(login_vendorURL, name_goods, country, sales_model, change_price)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Update completed successfully",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+	ch <- buf.Bytes()
+}
+
+func handlerVendorHomeGoodsPriceAdditionSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	var (
+		login_vendorURL = chi.URLParam(r, "login_vendor")
+
+		name_goods   = r.FormValue("name_goods")
+		country      = r.FormValue("country")
+		sales_model  = r.FormValue("sales_model")
+		change_price = r.FormValue("change_price")
+	)
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_vendor}", login_vendorURL)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_vendor}", login_vendorURL)
+
+	fmt.Println(login_vendorURL, name_goods, country, sales_model, change_price)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Addition completed successfully",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+	ch <- buf.Bytes()
+}
+
+func handlerVendorHomeGoodsPriceCreateSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	var (
+		login_vendorURL = chi.URLParam(r, "login_vendor")
+
+		name_goods = r.FormValue("name_goods")
+		type_goods = r.FormValue("type_goods")
+		info_goods = r.FormValue("info_goods")
+	)
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_vendor}", login_vendorURL)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_vendor}", login_vendorURL)
+
+	fmt.Println(login_vendorURL, name_goods, type_goods, info_goods)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Creation completed successfully",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+	ch <- buf.Bytes()
+}

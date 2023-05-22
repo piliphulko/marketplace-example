@@ -110,7 +110,7 @@ func RouterHTML() *chi.Mux {
 		UseErrRedirectDataURL("/{login_warehouse}/warehouse/home").
 		SetErrorClientList(ErrSpiderMan).
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerWarehouseDeliveryConfirmSend))
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	r.Get("/{login_vendor}/vendor/home", StartOptionsHTTP().
 		ReceptionRedirectURL().
 		WithHTML(TempHTML, "vendor-home.html").
@@ -131,16 +131,29 @@ func RouterHTML() *chi.Mux {
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerVendorHomeChangeSend))
 
 	r.Get("/{login_vendor}/vendor/home/goods/price", StartOptionsHTTP().
-		//WithHTML(TempHTML, "").
-		HeaderHTTPResponse(nil).
-		handlerRun(context.Background(), withTimeoutSecond(5), nil))
+		WithHTML(TempHTML, "vendor-home-goods-price.html").
+		ReceptionRedirectURL().
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), vendorGoodsPricePage))
 
-	r.Get("/{login_vendor}/vendor/home/goods/price/change", StartOptionsHTTP().
-		//WithHTML(TempHTML, "").
-		HeaderHTTPResponse(nil).
-		handlerRun(context.Background(), withTimeoutSecond(5), nil))
+	r.Post("/{login_vendor}/vendor/home/goods/price/change/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_vendor}/vendor/home/goods/price").
+		UseErrRedirectDataURL("/{login_vendor}/vendor/home/goods/price").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerVendorHomeGoodsPriceChangeSend))
 
-	r.Post("/{login_vendor}/vendor/home/goods/price/change/send", nil)
+	r.Post("/{login_vendor}/vendor/home/goods/price/addition/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_vendor}/vendor/home/goods/price").
+		UseErrRedirectDataURL("/{login_vendor}/vendor/home/goods/price").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerVendorHomeGoodsPriceAdditionSend))
+
+	r.Post("/{login_vendor}/vendor/home/goods/price/create/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_vendor}/vendor/home/goods/price").
+		UseErrRedirectDataURL("/{login_vendor}/vendor/home/goods/price").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerVendorHomeGoodsPriceCreateSend))
 
 	return r
 }
