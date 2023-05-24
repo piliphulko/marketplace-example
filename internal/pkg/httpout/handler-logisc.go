@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strings"
 
@@ -561,6 +562,115 @@ func handlerVendorHomeGoodsPriceCreateSend(ctx context.Context, cancelCtxError c
 	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
 		Ok:     true,
 		OkInfo: "Creation completed successfully",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+	ch <- buf.Bytes()
+}
+
+func handlerCustomerHomePage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	login_customer := chi.URLParam(r, "login_customer")
+	u1, _ := uuid.NewV4()
+	u2, _ := uuid.NewV4()
+	buf := bytes.Buffer{}
+	funcMap := template.FuncMap{
+		"add": func(a, b any) float64 {
+			return float64(a.(float64) + b.(float64))
+		},
+		"mul": func(a, b any) float64 {
+			return float64(a.(float64) * b.(float64))
+		},
+	}
+	_ = funcMap
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		LoginCustomer          string
+		WalletMoney            float64
+		UnconfirmedOrdersARRAY []struct {
+			OrderUUID     string
+			Location      string
+			NameWarehouse string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			PriceGoods    float64
+			AmountGoods   int
+		}
+		СonfirmedOrdersARRAY []struct {
+			OrderUUID     string
+			Location      string
+			NameWarehouse string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			PriceGoods    float64
+			AmountGoods   int
+		}
+	}{
+		LoginCustomer: login_customer,
+		WalletMoney:   1503.59,
+		UnconfirmedOrdersARRAY: []struct {
+			OrderUUID     string
+			Location      string
+			NameWarehouse string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			PriceGoods    float64
+			AmountGoods   int
+		}{
+			{
+				OrderUUID:     u1.String(),
+				Location:      "bfdxv",
+				NameWarehouse: "gfc",
+				NameVendor:    "fxvcx",
+				TypeGoods:     "gcvc",
+				NameGoods:     "vcdx",
+				PriceGoods:    100.2,
+				AmountGoods:   3,
+			},
+			{
+				OrderUUID:     u1.String(),
+				Location:      "bfdxv",
+				NameWarehouse: "gfc",
+				NameVendor:    "fxvcx",
+				TypeGoods:     "gcvc",
+				NameGoods:     "vcdx",
+				PriceGoods:    100.2,
+				AmountGoods:   3,
+			},
+			{
+				OrderUUID:     u2.String(),
+				Location:      "bfdxv",
+				NameWarehouse: "gfc",
+				NameVendor:    "fxvcx",
+				TypeGoods:     "gcvc",
+				NameGoods:     "vcdx",
+				PriceGoods:    100.2,
+				AmountGoods:   3,
+			},
+		},
+		СonfirmedOrdersARRAY: []struct {
+			OrderUUID     string
+			Location      string
+			NameWarehouse string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			PriceGoods    float64
+			AmountGoods   int
+		}{
+			{
+				OrderUUID:     u2.String(),
+				Location:      "bfdxv",
+				NameWarehouse: "gfc",
+				NameVendor:    "fxvcx",
+				TypeGoods:     "gcvc",
+				NameGoods:     "vcdx",
+				PriceGoods:    100.2,
+				AmountGoods:   3,
+			},
+		},
 	}); err != nil {
 		cancelCtxError(err)
 		return

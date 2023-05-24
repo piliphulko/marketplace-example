@@ -6,64 +6,147 @@
           border-collapse: collapse;
         }
     </style>
-    <h1>Welcome: {{.LoginCustomer}}</h1>
-    <h3>Wallet: <a href="/{{.LoginCustomer}}/home/wallet">{{.WalletMoney}} USDT</a></h3>
-    <h3>Change account details: <a href="/{{.LoginCustomer}}/home/change">change</a></h3>
-    {{range .OrderStatusPlusOrdersARRAY}}
-    <h3>Orders: {{.OrderStatus}}</h3>
-    <table style="width:100%">
-        <tr>
-            <th>Name Warehouse</th>
-            <th>Name Vendor</th>
-            <th>Name Goods</th>
-            <th>Amount Goods</th>
-            <th>Price Goods</th>
-            <th>Total cost</th>
-        </tr>
-        {{- $prev := "" -}}
-        {{range .OrdersARRAY}}
-            {{- if ne $prev .OrderUuid -}}
-                {{- $prev = .OrderUuid -}}
+    <style>
+        #s1 {
+          background-color: rgb(207, 233, 207);
+          color: black;
+        }
+    </style>
+    <style>
+        #s2 {
+          background-color: rgba(137, 203, 137, 0.644);
+          color: black;
+        }
+    </style>
+    <div>
+        <h3>Welcome {{.LoginCustomer}}</h3>
+        <h3>Wallet: <a href="/{{.LoginCustomer}}/home/wallet">{{.WalletMoney}}</a></h3>
+        <h3><a href="/{{.LoginCustomer}}/home/change">Change account</a></h3>
+        {{- $login_customer := .LoginCustomer -}}
+    </div>
+    <div>
+        <h3>Unconfirmed Orders</h3>
+        <table style="width:100%">
+            <tr>
+                <td>Location</td>
+                <td>Name Warehouse</td>
+                <td>Name Vendor</td>
+                <td>Type Goods</td>
+                <td>Name Goods</td>
+                <td>Price Goods</td>
+                <td>Amount Goods</td>
+            </tr>
+            {{- $total_cost := 0.00 -}}
+            {{- $total_cost_end := 0.00 -}}
+            {{- $prev := "" -}}
+            {{range .UnconfirmedOrdersARRAY}}
+                {{if ne .OrderUUID $prev}}
+                    {{- if ne $prev "" -}}
+                        <tr id="s2">
+                            <td colspan="2">Total cost: {{$total_cost}}</td>
+                            <td colspan="2">
+                                <form action="/{{$login_customer}}/{{.OrderUUID}}/confirm/send" method="POST">
+                                    <input type="submit" value="pay the order">
+                                </form>
+                            </td>
+                            <td colspan="3">
+                                <form action="/{{$login_customer}}/{{.OrderUUID}}/cancellation/send" method="POST">
+                                    <input type="submit" value="cancellation the order">
+                                </form>
+                            </td>
+                        </tr>
+                    {{end}}
+                    {{- $total_cost = 0.00 -}}
+                    {{- $prev = .OrderUUID -}}
+                    <tr id="s1">
+                        <td colspan="7">Order: {{$prev}}</td>
+                    </tr>
+                {{end}}
                 <tr>
-                    <td>Order UUID:</td>
-                    <td colspan="5">{{.OrderUuid}}</td>
+                    <td>{{.Location}}</td>
+                    <td>{{.NameWarehouse}}</td>
+                    <td>{{.NameVendor}}</td>
+                    <td>{{.TypeGoods}}</td>
+                    <td>{{.NameGoods}}</td>
+                    <td>{{.PriceGoods}}</td>
+                    <td>{{.AmountGoods}}</td>
                 </tr>
+                {{- $total_cost = addFloatFloat $total_cost (mulFloatInt .PriceGoods .AmountGoods) -}}
+                {{- $total_cost_end = $total_cost -}}
             {{end}}
-        <tr>
-            <th>{{.NameWarehouse}}</th>
-            <th>{{.NameVendor}}</th>
-            <th>{{.NameGoods}}</th>
-            <th>{{.AmountGoods}}</th>
-            <th>{{.PriceGoods}}</th>
-            <th>{{.Totalcost}}</th>
-        </tr>
-        {{end}}
-    </table>
-        {{if eq .OrderStatus "unconfirmed order"}}
-        <form action="/{.LoginCustomer}/home/order/confirm/send" method="POST">
-            <label for="сonfirm_order_uuid">Сonfirm order:</label><br>
-            <input type="text" id="сonfirm_order_uuid" name="сonfirm_order_uuid" placeholder="Enter your order UUID here">
-            <br><input type="submit" value="Send">
-        </form>
-        {{else if eq .OrderStatus "confirmed order"}}
-        <form action="/{.LoginCustomer}/home/order/pay/send" method="POST">
-            <label for="pay_order_uuid">Pay for the order:</label><br>
-            <input type="text" id="pay_order_uuid" name="pay_order_uuid" placeholder="Enter your order UUID here">
-            <br><input type="submit" value="Send">
-        </form>
-        {{end}}
-        <form action="/{.LoginCustomer}/home/order/repeal/send" method="POST">
-            <label for="repeal_order_uuid">Cancel the order:</label><br>
-            <input type="text" id="repeal_order_uuid" name="repeal_order_uuid" placeholder="Enter your order UUID here">
-            <br><input type="submit" value="Send">
-        </form>
-    {{end}}
-    {{if .DeliveryConfirmARRAY}}
-    <h3>Delivery:</h3>
-    <p>delivery is available click the order number and then dictate the number at the pickup point</p>
-        {{range .DeliveryConfirmARRAY}}
-        <h4>Order: <a href="/{{.LoginCustomer}}/home/delivery/confirm">{{.OrderUuid}}</a></h4>
-        {{end}}
-    {{end}}
-    <h3></h3>
+            {{- if ne $prev "" -}}
+            <tr id="s2">
+                <td colspan="2">Total cost: {{$total_cost_end}}</td>
+                <td colspan="2">
+                    <form action="/{{$login_customer}}/{{$prev}}/confirm/send" method="POST">
+                        <input type="submit" value="pay the order">
+                    </form>
+                </td>
+                <td colspan="3">
+                    <form action="/{{$login_customer}}/{{$prev}}/cancellation/send" method="POST">
+                        <input type="submit" value="cancellation the order">
+                    </form>
+                </td>
+            </tr>
+            {{end}}
+        </table>
+    </div>
+    <p></p>
+    <div>
+        <h3>Orders</h3>
+        <table style="width:100%">
+            <tr>
+                <td>Location</td>
+                <td>Name Warehouse</td>
+                <td>Name Vendor</td>
+                <td>Type Goods</td>
+                <td>Name Goods</td>
+                <td>Price Goods</td>
+                <td>Amount Goods</td>
+            </tr>
+            {{- $total_cost := 0.00 -}}
+            {{- $total_cost_end := 0.00 -}}
+            {{- $prev := "" -}}
+            {{range .СonfirmedOrdersARRAY}}
+                {{if ne .OrderUUID $prev}}
+                    {{- if ne $prev "" -}}
+                        <tr id="s2">
+                            <td colspan="2">Total cost: {{$total_cost}}</td>
+                            <td colspan="5">
+                                <form action="/{{$login_customer}}/{{.OrderUUID}}/receiving" method="GET">
+                                    <input type="submit" value="get order code">
+                                </form>
+                            </td>
+                        </tr>
+                    {{end}}
+                    {{- $total_cost = 0.00 -}}
+                    {{- $prev = .OrderUUID -}}
+                    <tr id="s1">
+                        <td colspan="7">Order: {{$prev}}</td>
+                    </tr>
+                {{end}}
+                <tr>
+                    <td>{{.Location}}</td>
+                    <td>{{.NameWarehouse}}</td>
+                    <td>{{.NameVendor}}</td>
+                    <td>{{.TypeGoods}}</td>
+                    <td>{{.NameGoods}}</td>
+                    <td>{{.PriceGoods}}</td>
+                    <td>{{.AmountGoods}}</td>
+                </tr>
+                {{- $total_cost = addFloatFloat $total_cost (mulFloatInt .PriceGoods .AmountGoods) -}}
+                {{- $total_cost_end = $total_cost -}}
+            {{end}}
+            {{- if ne $prev "" -}}
+            <tr id="s2">
+                <td colspan="2">Total cost: {{$total_cost}}</td>
+                <td colspan="5">
+                    <form action="/{{$login_customer}}/{{$prev}}/receiving" method="GET">
+                        <input type="submit" value="get order code">
+                    </form>
+                </td>
+            </tr>
+            {{end}}
+        </table>
+    </div>
 </html>

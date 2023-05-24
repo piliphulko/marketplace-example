@@ -23,7 +23,6 @@ func RouterHTML() *chi.Mux {
 	r.Get("/poland/marketplace", HandlerMarketplacePage)
 	r.Get("/ukraine/marketplace", HandlerMarketplacePage)
 	r.Post("/country/marketplace/send", HandlerMarketplaceSend)
-	r.Get("/error", nil)
 
 	r.Get("/", HandlerСleanPage("../../html/main-page.html"))
 	r.Get("/customer/create", HandlerCustomerCreatePage)
@@ -49,7 +48,13 @@ func RouterHTML() *chi.Mux {
 	r.Get("/{login_customer}/marketplace", nil)
 	r.Post("/{login_customer}/marketplace/send", nil)
 
-	r.Get("/{login_customer}/home", HandlerCustomerHomePage)
+	r.Get("/{login_customer}/home", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "customer-home.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), time.Duration(5*time.Second), handlerCustomerHomePage))
+
 	r.Get("/{login_customer}/home/change", HandlerCustomerHomeChangePage)
 	r.Post("/{login_customer}/home/change/send", HandlerCustomerHomeChangeSend)
 
