@@ -18,10 +18,26 @@ func RouterHTML() *chi.Mux {
 		MaxAge:           300,
 	}))
 
-	r.Get("/belarus/marketplace", HandlerMarketplacePage)
-	r.Get("/poland/marketplace", HandlerMarketplacePage)
-	r.Get("/ukraine/marketplace", HandlerMarketplacePage)
-	r.Post("/country/marketplace/send", HandlerMarketplaceSend)
+	r.Get("/marketplace/by", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "marketplace-public.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerMarketplacePublicBYPage))
+
+	r.Get("/marketplace/pl", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "marketplace-public.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerMarketplacePublicPLPage))
+
+	r.Get("/marketplace/ua", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "marketplace-public.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerMarketplacePublicUAPage))
 
 	r.Get("/", StartOptionsHTTP().
 		ReceptionRedirectURL().
@@ -37,7 +53,11 @@ func RouterHTML() *chi.Mux {
 			"Content-Type": "text/html; charset=utf-8"}).
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerCleanPage))
 
-	r.Post("/customer/create/send", HandlerCreateAccountSendPage("../../html/response-create.html", CUSTOMER))
+	r.Post("/customer/create/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/customer/authorization").
+		UseErrRedirectDataURL("/customer/create").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCustomerCreateSend))
 
 	r.Get("/customer/authorization", StartOptionsHTTP().
 		ReceptionRedirectURL().
@@ -66,7 +86,11 @@ func RouterHTML() *chi.Mux {
 			"Content-Type": "text/html; charset=utf-8"}).
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerCleanPage))
 
-	r.Post("/vendor/create/send", HandlerCreateAccountSendPage("../../html/response-create.html", VENDOR))
+	r.Post("/vendor/create/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/vendor/authorization").
+		UseErrRedirectDataURL("/vendor/create").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerVendorCreateSend))
 
 	r.Get("/vendor/authorization", StartOptionsHTTP().
 		ReceptionRedirectURL().
@@ -88,7 +112,11 @@ func RouterHTML() *chi.Mux {
 			"Content-Type": "text/html; charset=utf-8"}).
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerCleanPage))
 
-	r.Post("/warehouse/create/send", HandlerCreateAccountSendPage("../../html/response-create.html", WAREHOUSE))
+	r.Post("/warehouse/create/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/warehouse/authorization").
+		UseErrRedirectDataURL("/warehouse/create").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerWarehouseCreateSend))
 
 	r.Get("/warehouse/authorization", StartOptionsHTTP().
 		ReceptionRedirectURL().
@@ -103,9 +131,18 @@ func RouterHTML() *chi.Mux {
 		SetErrorClientList(ErrSpiderMan).
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerWarehouseAuthorizationSend))
 
-	r.Get("/{login_customer}/marketplace", nil)
+	r.Get("/{login_customer}/marketplace", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "marketplace.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerMarketplaceCustomerPage))
 
-	r.Post("/{login_customer}/marketplace/send", nil)
+	r.Post("/{login_customer}/marketplace/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_customer}/marketplace").
+		UseErrRedirectDataURL("/{login_customer}/marketplace").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerMarketplaceCustomerSend))
 
 	r.Get("/{login_customer}/home", StartOptionsHTTP().
 		ReceptionRedirectURL().

@@ -30,6 +30,7 @@
     </dif>
     <div>
         <h3>Welcome {{.LoginCustomer}}</h3>
+        <h3><a href="/{{.LoginCustomer}}/marketplace">marketplace</a></h3>
         <h3>Wallet: <a href="/{{.LoginCustomer}}/home/wallet">{{.WalletMoney}}</a></h3>
         <h3><a href="/{{.LoginCustomer}}/home/change">Change account</a></h3>
         {{- $login_customer := .LoginCustomer -}}

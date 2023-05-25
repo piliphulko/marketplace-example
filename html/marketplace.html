@@ -6,20 +6,33 @@
           border-collapse: collapse;
         }
     </style>
+    <dif>
+        {{if .RedirectAnswer.Ok}}
+            {{- if ne .RedirectAnswer.OkInfo "" -}}
+            <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
+            {{end}}
+            {{- if ne .RedirectAnswer.ErrInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{end}}
+        {{end}}
+    </dif>
     <h1>Goods list:</h1>
+    {{- $login_customer := .LoginCustomer -}}
     <table style="width:100%">
         <tr>
             <th>Name Warehouse</th>
+            <th>Location</th>
             <th>Name Vendor</th>
-            <th>Type</th>
-            <th>Name</th>
-            <th>Info</th>
-            <th>Price</th>
-            <th>Amount</th>
+            <th>Type Goods</th>
+            <th>Name Goods</th>
+            <th>Info Goods</th>
+            <th>Price Goods</th>
+            <th>Amount Goods</th>
         </tr>
         {{range .GoodsARRAY}}
         <tr>
             <th> {{.NameWarehouse}}</th>
+            <th> {{.Location}}</th>
             <th> {{.NameVendor}}</th>
             <th> {{.TypeGoods}}</th>
             <th> {{.NameGoods}}</th>
@@ -29,8 +42,12 @@
         </tr>
         {{end}}
     </table>
-    {{if .BoolOrders}}
-        <h3>Created order:{{.OrderUuid}}</h3>
+    {{- $order_uuid := .OrderUuid -}}
+    {{if .OrdersARRAY}}
+        {{- $total_cost := 0.00 -}}
+        <h4><a href="/{{$login_customer}}/home">cancellation or payment can be made in your account</a></h4>
+        <h4>automatic cancellation after 10 minutes</h4>
+        <h3>Created order:{{$order_uuid}}</h3>
         <table style="width:100%">
             <tr>
                 <th>Name Warehouse</th>
@@ -47,18 +64,19 @@
                 <th>{{.NameGoods}}</th>
                 <th>{{.AmountGoods}}</th>
                 <th>{{.PriceGoods}}</th>
-                <th>{{.Totalcost}}</th>
+                <th>{{mulFloatInt .PriceGoods .AmountGoods}}</th>
             </tr>
+            {{- $total_cost = addFloatFloat $total_cost (mulFloatInt .PriceGoods .AmountGoods) -}}
             {{end}}
         </table>
     {{else}}
-        <h3>Number to place an order: {{.OrderUuid}}</h3>
+        <h3>Number to place an order: {{$order_uuid}}</h3>
     {{end}}
     <h3>Create order:</h3>
     <form action="/country/marketplace/send" method="POST">
         <div>
             <label for="order_uuid">Order number:</label>
-            <input type="text" value="{{.OrderUuid}}" id="order_uuid" name="order_uuid" readonly>
+            <input type="text" value="{{$order_uuid}}" id="order_uuid" name="order_uuid" readonly>
             <label for="name_warehouse">Name Warehouse:</label>
             <select id="name_warehouse" name="name_warehouse">
                 {{range .GoodsARRAY}}

@@ -989,3 +989,338 @@ func handlerCleanPage(ctx context.Context, cancelCtxError context.CancelCauseFun
 
 	ch <- buf.Bytes()
 }
+
+func handlerCustomerCreateSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	var (
+		buf               = bytes.Buffer{}
+		login_customer    = r.FormValue("login_customer")
+		password_customer = r.FormValue("password_customer")
+
+		country = r.FormValue("country")
+		city    = r.FormValue("city")
+	)
+
+	fmt.Println(login_customer, password_customer, country, city)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Сreated",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerVendorCreateSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	var (
+		buf             = bytes.Buffer{}
+		login_vendor    = r.FormValue("login_vendor")
+		password_vendor = r.FormValue("password_vendor")
+		name_vendor     = r.FormValue("name_vendor")
+	)
+
+	fmt.Println(login_vendor, password_vendor, name_vendor)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Сreated",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerWarehouseCreateSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	var (
+		buf                   = bytes.Buffer{}
+		login_warehouse       = r.FormValue("login_warehouse")
+		password_warehose     = r.FormValue("password_warehose")
+		name_warehouse        = r.FormValue("name_warehouse")
+		country               = r.FormValue("country")
+		city                  = r.FormValue("city")
+		info_warehouse        = r.FormValue("info_warehouse")
+		commission_percentage = r.FormValue("commission_percentage")
+	)
+
+	fmt.Println(login_warehouse, password_warehose, name_warehouse, country, city, info_warehouse, commission_percentage)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Сreated",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerMarketplacePublicBYPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		GoodsARRAY []struct {
+			NameWarehouse string
+			Location      string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			InfoGoods     string
+			PriceGoods    float64
+		}
+	}{
+		GoodsARRAY: []struct {
+			NameWarehouse string
+			Location      string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			InfoGoods     string
+			PriceGoods    float64
+		}{
+			{
+				NameWarehouse: "dsa",
+				Location:      "dsa",
+				NameVendor:    "dsa",
+				TypeGoods:     "dsa",
+				NameGoods:     "dsa",
+				InfoGoods:     "dsa",
+				PriceGoods:    10.5,
+			},
+			{
+				NameWarehouse: "dsa",
+				Location:      "dsa",
+				NameVendor:    "dsa",
+				TypeGoods:     "dsa",
+				NameGoods:     "dsa",
+				InfoGoods:     "dsa",
+				PriceGoods:    10.5,
+			},
+		},
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerMarketplacePublicPLPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		GoodsARRAY []struct {
+			NameWarehouse string
+			Location      string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			InfoGoods     string
+			PriceGoods    float64
+		}
+	}{
+		GoodsARRAY: []struct {
+			NameWarehouse string
+			Location      string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			InfoGoods     string
+			PriceGoods    float64
+		}{
+			{
+				NameWarehouse: "dsa",
+				Location:      "dsa",
+				NameVendor:    "dsa",
+				TypeGoods:     "dsa",
+				NameGoods:     "dsa",
+				InfoGoods:     "dsa",
+				PriceGoods:    10.5,
+			},
+			{
+				NameWarehouse: "dsa",
+				Location:      "dsa",
+				NameVendor:    "dsa",
+				TypeGoods:     "dsa",
+				NameGoods:     "dsa",
+				InfoGoods:     "dsa",
+				PriceGoods:    10.5,
+			},
+		},
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerMarketplacePublicUAPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		GoodsARRAY []struct {
+			NameWarehouse string
+			Location      string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			InfoGoods     string
+			PriceGoods    float64
+		}
+	}{
+		GoodsARRAY: []struct {
+			NameWarehouse string
+			Location      string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			InfoGoods     string
+			PriceGoods    float64
+		}{
+			{
+				NameWarehouse: "dsa",
+				Location:      "dsa",
+				NameVendor:    "dsa",
+				TypeGoods:     "dsa",
+				NameGoods:     "dsa",
+				InfoGoods:     "dsa",
+				PriceGoods:    10.5,
+			},
+			{
+				NameWarehouse: "dsa",
+				Location:      "dsa",
+				NameVendor:    "dsa",
+				TypeGoods:     "dsa",
+				NameGoods:     "dsa",
+				InfoGoods:     "dsa",
+				PriceGoods:    10.5,
+			},
+		},
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerMarketplaceCustomerPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	var (
+		buf            = bytes.Buffer{}
+		login_customer = chi.URLParam(r, "login_customer")
+		redirectAnswer = RedirectAnswer{}
+	)
+	defer r.Body.Close()
+	if err := TakeRedirectAnswerFromURL(r, &redirectAnswer); err != nil {
+		cancelCtxError(err)
+	}
+	fmt.Println(login_customer)
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		RedirectAnswer RedirectAnswer
+		LoginCustomer  string
+		OrderUuid      string
+		OrdersARRAY    []struct {
+			NameWarehouse string
+			NameVendor    string
+			NameGoods     string
+			AmountGoods   int
+			PriceGoods    float64
+		}
+		GoodsARRAY []struct {
+			NameWarehouse string
+			Location      string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			InfoGoods     string
+			PriceGoods    float64
+			AmountGoods   int
+		}
+	}{
+		RedirectAnswer: redirectAnswer,
+		LoginCustomer:  login_customer,
+		OrderUuid:      "fds23c",
+		OrdersARRAY: []struct {
+			NameWarehouse string
+			NameVendor    string
+			NameGoods     string
+			AmountGoods   int
+			PriceGoods    float64
+		}{
+			{
+				NameWarehouse: "fds",
+				NameVendor:    "fds",
+				NameGoods:     "fds",
+				AmountGoods:   10,
+				PriceGoods:    10.5,
+			},
+		},
+		GoodsARRAY: []struct {
+			NameWarehouse string
+			Location      string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			InfoGoods     string
+			PriceGoods    float64
+			AmountGoods   int
+		}{
+			{
+				NameWarehouse: "dsa",
+				Location:      "dsa",
+				NameVendor:    "dsa",
+				TypeGoods:     "dsa",
+				NameGoods:     "dsa",
+				InfoGoods:     "dsa",
+				PriceGoods:    10.5,
+				AmountGoods:   122,
+			},
+			{
+				NameWarehouse: "dsa",
+				Location:      "dsa",
+				NameVendor:    "dsa",
+				TypeGoods:     "dsa",
+				NameGoods:     "dsa",
+				InfoGoods:     "dsa",
+				PriceGoods:    10.5,
+				AmountGoods:   122,
+			},
+		},
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerMarketplaceCustomerSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	var (
+		buf            = bytes.Buffer{}
+		login_customer = chi.URLParam(r, "login_customer")
+
+		name_warehouse = r.FormValue("name_warehouse")
+		name_vendor    = r.FormValue("name_vendor")
+		name_goods     = r.FormValue("name_goods")
+		amount_goods   = r.FormValue("amount_goods")
+	)
+
+	fmt.Println(login_customer, name_warehouse, name_vendor, name_goods, amount_goods)
+
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_customer}", login_customer)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Added",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
