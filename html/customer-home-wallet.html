@@ -1,5 +1,15 @@
 <!DOCTYPE html>
 <html>
+    <dif>
+        {{if .RedirectAnswer.Ok}}
+            {{- if ne .RedirectAnswer.OkInfo "" -}}
+            <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
+            {{end}}
+            {{- if ne .RedirectAnswer.ErrInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{end}}
+        {{end}}
+    </dif>
     <h3>Wallet: {{.WalletMoney}} USDT</h3>
     <h3>Fill up a wallet NOT WORK</h3>
     <h3>use promo code</h3>

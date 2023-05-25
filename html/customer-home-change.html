@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
     <h1>CHANGE ACCOUNT</h1>
-    <form action="{{.LoginCustomer}}/home/change/send" method="POST">
+    <form action="/{{.LoginCustomer}}/home/change/send" method="POST">
         <div>
-            <p>Authentication data:</p>
+            <p>Authentication data OLD:</p>
             <label for="login">Login:</label><br>
             <input type="text" id="login" name="login"><br>
             <label for="password_old">Passwort:</label><br>
             <input type="password" id="password_old" name="password_old"><br>
         </div>
         <div>
-            <p>Authentication data:</p>
+            <p>Authentication data NEW:</p>
             <label for="login_new">New Login:</label><br>
             <input type="text" id="login_new" name="login_new"><br>
             <label for="password_new">New Passwort:</label><br>
@@ -31,8 +31,9 @@
                 {{end}}
             </select><br>
             <script>
+                document.getElementById("login").value = "{{.LoginCustomer}}";
                 document.getElementById("country").value = "{{.CountryCustomer}}";
-                document.getElementById("city").value = "{{.CountryCity}}";
+                document.getElementById("city").value = "{{.CityCustomer}}";
             </script>
         </div>
         <div>

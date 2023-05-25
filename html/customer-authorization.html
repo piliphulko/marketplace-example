@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html>
+    <dif>
+        {{if .RedirectAnswer.Ok}}
+            {{- if ne .RedirectAnswer.OkInfo "" -}}
+            <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
+            {{end}}
+            {{- if ne .RedirectAnswer.ErrInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{end}}
+        {{end}}
+    </dif>
     <h1>Authentication:</h1>
     <form action="/customer/authorization/send" method="GET">
         <div>
-            <label for="login">Login:</label><br>
-            <input type="text" id="login" name="login"><br>
-            <label for="password_new">Passwort:</label><br>
-            <input type="password" id="password_new" name="password_new"><br>
+            <label for="login_customer">Login:</label><br>
+            <input type="text" id="login_customer" name="login_customer"><br>
+            <label for="password_customer">Passwort:</label><br>
+            <input type="password" id="password_customer" name="password_customer"><br>
         </div>
         <div>
             <br><input type="submit" value="Send">

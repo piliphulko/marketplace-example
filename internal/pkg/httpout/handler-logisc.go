@@ -571,6 +571,11 @@ func handlerVendorHomeGoodsPriceCreateSend(ctx context.Context, cancelCtxError c
 
 func handlerCustomerHomePage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
 	login_customer := chi.URLParam(r, "login_customer")
+	redirectAnswer := RedirectAnswer{}
+	defer r.Body.Close()
+	if err := TakeRedirectAnswerFromURL(r, &redirectAnswer); err != nil {
+		cancelCtxError(err)
+	}
 	u1, _ := uuid.NewV4()
 	u2, _ := uuid.NewV4()
 	buf := bytes.Buffer{}
@@ -584,6 +589,7 @@ func handlerCustomerHomePage(ctx context.Context, cancelCtxError context.CancelC
 	}
 	_ = funcMap
 	if err := optHTTP.HTML.Execute(&buf, struct {
+		RedirectAnswer         RedirectAnswer
 		LoginCustomer          string
 		WalletMoney            float64
 		UnconfirmedOrdersARRAY []struct {
@@ -606,9 +612,21 @@ func handlerCustomerHomePage(ctx context.Context, cancelCtxError context.CancelC
 			PriceGoods    float64
 			AmountGoods   int
 		}
+		HistoryOrdersARRAY []struct {
+			OrderUUID     string
+			Date          string
+			Location      string
+			NameWarehouse string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			PriceGoods    float64
+			AmountGoods   int
+		}
 	}{
-		LoginCustomer: login_customer,
-		WalletMoney:   1503.59,
+		RedirectAnswer: redirectAnswer,
+		LoginCustomer:  login_customer,
+		WalletMoney:    1503.59,
 		UnconfirmedOrdersARRAY: []struct {
 			OrderUUID     string
 			Location      string
@@ -671,9 +689,303 @@ func handlerCustomerHomePage(ctx context.Context, cancelCtxError context.CancelC
 				AmountGoods:   3,
 			},
 		},
+		HistoryOrdersARRAY: []struct {
+			OrderUUID     string
+			Date          string
+			Location      string
+			NameWarehouse string
+			NameVendor    string
+			TypeGoods     string
+			NameGoods     string
+			PriceGoods    float64
+			AmountGoods   int
+		}{
+			{
+				OrderUUID:     u2.String(),
+				Date:          "10.10.2010",
+				Location:      "bfdxv",
+				NameWarehouse: "gfc",
+				NameVendor:    "fxvcx",
+				TypeGoods:     "gcvc",
+				NameGoods:     "vcdx",
+				PriceGoods:    100.2,
+				AmountGoods:   3,
+			},
+			{
+				OrderUUID:     u1.String(),
+				Date:          "10.10.2010",
+				Location:      "bfdxv",
+				NameWarehouse: "gfc",
+				NameVendor:    "fxvcx",
+				TypeGoods:     "gcvc",
+				NameGoods:     "vcdx",
+				PriceGoods:    100.2,
+				AmountGoods:   3,
+			},
+		},
 	}); err != nil {
 		cancelCtxError(err)
 		return
 	}
+	ch <- buf.Bytes()
+}
+
+func handlerCustomerHomeConfirmSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	var (
+		login_customer = chi.URLParam(r, "login_customer")
+		order_uuid     = chi.URLParam(r, "order_uuid")
+	)
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_customer}", login_customer)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_customer}", login_customer)
+
+	fmt.Println(login_customer, order_uuid)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "order paid: " + order_uuid,
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+	ch <- buf.Bytes()
+}
+
+func handlerCustomerHomeCancellationSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	var (
+		login_customer = chi.URLParam(r, "login_customer")
+		order_uuid     = chi.URLParam(r, "order_uuid")
+	)
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_customer}", login_customer)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_customer}", login_customer)
+
+	fmt.Println(login_customer, order_uuid)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "order canceled: " + order_uuid,
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+	ch <- buf.Bytes()
+}
+
+func handlerCustomerHomeReceivingPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		ConfirmationCode string
+	}{
+		ConfirmationCode: "gfd5432sxxz",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+	ch <- buf.Bytes()
+}
+
+func handlerCustomerHomeWalletPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	login_customer := chi.URLParam(r, "login_customer")
+	redirectAnswer := RedirectAnswer{}
+	defer r.Body.Close()
+	if err := TakeRedirectAnswerFromURL(r, &redirectAnswer); err != nil {
+		cancelCtxError(err)
+	}
+
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		RedirectAnswer RedirectAnswer
+		WalletMoney    float64
+		LoginCustomer  string
+	}{
+		RedirectAnswer: redirectAnswer,
+		WalletMoney:    100.56,
+		LoginCustomer:  login_customer,
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerCustomerHomeWalletSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	var (
+		login_customer = chi.URLParam(r, "login_customer")
+		promo_code     = r.FormValue("promo_code")
+	)
+
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_customer}", login_customer)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_customer}", login_customer)
+
+	fmt.Println(login_customer, promo_code)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Promo code activated",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerCustomerHomeChangePage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	login_customer := chi.URLParam(r, "login_customer")
+
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		LoginCustomer   string
+		CountryCustomer string
+		CityCustomer    string
+		Countries       []string
+		Cities          []string
+	}{
+		LoginCustomer:   login_customer,
+		CountryCustomer: "BELARUS",
+		CityCustomer:    "MINSK",
+		Countries: []string{
+			"BELARUS",
+			"POLAND",
+			"UKRAINE",
+		},
+		Cities: []string{
+			"MINSK",
+			"WARSAW",
+			"KYIV",
+		},
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerCustomerHomeChangeSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	var (
+		buf            = bytes.Buffer{}
+		login_customer = chi.URLParam(r, "login_customer")
+
+		login        = r.FormValue("login")
+		password_old = r.FormValue("password_old")
+		login_new    = r.FormValue("login_new")
+		password_new = r.FormValue("password_new")
+		country      = r.FormValue("country")
+		city         = r.FormValue("city")
+	)
+	fmt.Println(login, password_old, login_new, password_new, country, city)
+
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_customer}", login_customer)
+	optHTTP.ErrRedirectPath = strings.ReplaceAll(optHTTP.ErrRedirectPath, "{login_customer}", login_customer)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Аccount updated successfully",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerAuthorizationPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+	redirectAnswer := RedirectAnswer{}
+	defer r.Body.Close()
+	if err := TakeRedirectAnswerFromURL(r, &redirectAnswer); err != nil {
+		cancelCtxError(err)
+	}
+
+	if err := optHTTP.HTML.Execute(&buf, struct {
+		RedirectAnswer RedirectAnswer
+	}{
+		RedirectAnswer: redirectAnswer,
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerWarehouseAuthorizationSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	var (
+		buf                = bytes.Buffer{}
+		login_warehouse    = r.FormValue("login_warehouse")
+		password_warehouse = r.FormValue("password_warehouse")
+	)
+
+	fmt.Println(login_warehouse, password_warehouse)
+
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_warehouse}", login_warehouse)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Authorized",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerVendorAuthorizationSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	var (
+		buf             = bytes.Buffer{}
+		login_vendor    = r.FormValue("login_vendor")
+		password_vendor = r.FormValue("password_vendor")
+	)
+
+	fmt.Println(login_vendor, password_vendor)
+
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_vendor}", login_vendor)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Authorized",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerCustomerAuthorizationSend(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	var (
+		buf               = bytes.Buffer{}
+		login_customer    = r.FormValue("login_customer")
+		password_customer = r.FormValue("password_customer")
+	)
+
+	fmt.Println(login_customer, password_customer)
+
+	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_customer}", login_customer)
+
+	if err := JSON.NewEncoder(&buf).Encode(RedirectAnswer{
+		Ok:     true,
+		OkInfo: "Authorized",
+	}); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
+	ch <- buf.Bytes()
+}
+
+func handlerCleanPage(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
+	buf := bytes.Buffer{}
+
+	if err := optHTTP.HTML.Execute(&buf, nil); err != nil {
+		cancelCtxError(err)
+		return
+	}
+
 	ch <- buf.Bytes()
 }

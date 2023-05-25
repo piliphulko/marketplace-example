@@ -2,7 +2,6 @@ package httpout
 
 import (
 	"context"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -24,28 +23,88 @@ func RouterHTML() *chi.Mux {
 	r.Get("/ukraine/marketplace", HandlerMarketplacePage)
 	r.Post("/country/marketplace/send", HandlerMarketplaceSend)
 
-	r.Get("/", HandlerСleanPage("../../html/main-page.html"))
-	r.Get("/customer/create", HandlerCustomerCreatePage)
+	r.Get("/", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "main-page.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCleanPage))
+
+	r.Get("/customer/create", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "customer-create.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCleanPage))
+
 	r.Post("/customer/create/send", HandlerCreateAccountSendPage("../../html/response-create.html", CUSTOMER))
 
-	r.Get("/customer/authorization", HandlerСleanPage("../../html/customer-authorization.html"))
-	r.Post("/customer/authorization/send", nil)
+	r.Get("/customer/authorization", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "customer-authorization.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerAuthorizationPage))
 
-	r.Get("/partner", HandlerСleanPage("../../html/main-partner-page.html"))
+	r.Get("/customer/authorization/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_customer}/home").
+		UseErrRedirectDataURL("/customer/authorization").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCustomerAuthorizationSend))
 
-	r.Get("/vendor/create", HandlerСleanPage("../../html/vendor-create.html"))
+	r.Get("/partner", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "main-partner-page.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCleanPage))
+
+	r.Get("/vendor/create", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "vendor-create.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCleanPage))
+
 	r.Post("/vendor/create/send", HandlerCreateAccountSendPage("../../html/response-create.html", VENDOR))
 
-	r.Get("/vendor/authorization", HandlerСleanPage("../../html/vendor-authorization.html"))
-	r.Post("/vendor/authorization/send", nil)
+	r.Get("/vendor/authorization", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "vendor-authorization.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerAuthorizationPage))
 
-	r.Get("/warehouse/create", HandlerWarehouseCreatePage)
+	r.Get("/vendor/authorization/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_vendor}/vendor/home").
+		UseErrRedirectDataURL("/vendor/authorization").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerVendorAuthorizationSend))
+
+	r.Get("/warehouse/create", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "warehouse-create.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCleanPage))
+
 	r.Post("/warehouse/create/send", HandlerCreateAccountSendPage("../../html/response-create.html", WAREHOUSE))
 
-	r.Get("/warehouse/authorization", HandlerСleanPage("../../html/warehouse-authorization.html"))
-	r.Post("/warehouse/authorization/send", nil)
+	r.Get("/warehouse/authorization", StartOptionsHTTP().
+		ReceptionRedirectURL().
+		WithHTML(TempHTML, "warehouse-authorization.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerAuthorizationPage))
+
+	r.Get("/warehouse/authorization/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_warehouse}/warehouse/home").
+		UseErrRedirectDataURL("/warehouse/authorization").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerWarehouseAuthorizationSend))
 
 	r.Get("/{login_customer}/marketplace", nil)
+
 	r.Post("/{login_customer}/marketplace/send", nil)
 
 	r.Get("/{login_customer}/home", StartOptionsHTTP().
@@ -53,26 +112,56 @@ func RouterHTML() *chi.Mux {
 		WithHTML(TempHTML, "customer-home.html").
 		HeaderHTTPResponse(map[string]string{
 			"Content-Type": "text/html; charset=utf-8"}).
-		handlerRun(context.Background(), time.Duration(5*time.Second), handlerCustomerHomePage))
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCustomerHomePage))
 
-	r.Get("/{login_customer}/home/change", HandlerCustomerHomeChangePage)
-	r.Post("/{login_customer}/home/change/send", HandlerCustomerHomeChangeSend)
+	r.Get("/{login_customer}/home/change", StartOptionsHTTP().
+		WithHTML(TempHTML, "customer-home-change.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCustomerHomeChangePage))
 
-	r.Post("/{login_customer}/home/order/repeal/send", HandlerOrderPepealSend)
-	r.Post("/{login_customer}/home/order/confirm/send", HandlerOrderConfirmSend)
-	r.Post("/{login_customer}/home/order/pay/send", HandlerOrderPaySend)
+	r.Post("/{login_customer}/home/change/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_customer}/home").
+		UseErrRedirectDataURL("/{login_customer}/home").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCustomerHomeChangeSend))
 
-	r.Get("/{login_customer}/home/delivery/confirm", nil)
+	r.Post("/{login_customer}/{order_uuid}/confirm/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_customer}/home").
+		UseErrRedirectDataURL("/{login_customer}/home").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCustomerHomeConfirmSend))
 
-	r.Get("/{login_customer}/home/wallet", HandlerCustomerHomeWalletPage)
-	r.Post("/{login_customer}/home/wallet/promo/send", HandlerCustomerHomeWalletPromoSend)
+	r.Post("/{login_customer}/{order_uuid}/cancellation/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_customer}/home").
+		UseErrRedirectDataURL("/{login_customer}/home").
+		SetErrorClientList(ErrSpiderMan).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCustomerHomeCancellationSend))
+
+	r.Get("/{login_customer}/{order_uuid}/receiving", StartOptionsHTTP().
+		WithHTML(TempHTML, "customer-home-receiving.html").
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCustomerHomeReceivingPage))
+
+	r.Get("/{login_customer}/home/wallet", StartOptionsHTTP().
+		WithHTML(TempHTML, "customer-home-wallet.html").
+		ReceptionRedirectURL().
+		HeaderHTTPResponse(map[string]string{
+			"Content-Type": "text/html; charset=utf-8"}).
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCustomerHomeWalletPage))
+
+	r.Post("/{login_customer}/home/wallet/promo/send", StartOptionsHTTP().
+		UseOkRedirectDataURL("/{login_customer}/home/wallet").
+		UseErrRedirectDataURL("/{login_customer}/home/wallet").
+		handlerRun(context.Background(), withTimeoutSecond(5), handlerCustomerHomeWalletSend))
 
 	r.Get("/{login_warehouse}/warehouse/home", StartOptionsHTTP().
 		ReceptionRedirectURL().
 		WithHTML(TempHTML, "warehouse-home.html").
 		HeaderHTTPResponse(map[string]string{
 			"Content-Type": "text/html; charset=utf-8"}).
-		handlerRun(context.Background(), time.Duration(5*time.Second), warehouseHomePage))
+		handlerRun(context.Background(), withTimeoutSecond(5), warehouseHomePage))
 
 	r.Get("/{login_warehouse}/warehouse/home/change", StartOptionsHTTP().
 		WithHTML(TempHTML, "warehouse-home-change.html").

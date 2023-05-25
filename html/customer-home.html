@@ -14,10 +14,20 @@
     </style>
     <style>
         #s2 {
-          background-color: rgba(137, 203, 137, 0.644);
+          background-color: rgba(237, 119, 22, 0.644);
           color: black;
         }
     </style>
+    <dif>
+        {{if .RedirectAnswer.Ok}}
+            {{- if ne .RedirectAnswer.OkInfo "" -}}
+            <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
+            {{end}}
+            {{- if ne .RedirectAnswer.ErrInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{end}}
+        {{end}}
+    </dif>
     <div>
         <h3>Welcome {{.LoginCustomer}}</h3>
         <h3>Wallet: <a href="/{{.LoginCustomer}}/home/wallet">{{.WalletMoney}}</a></h3>
@@ -27,7 +37,7 @@
     <div>
         <h3>Unconfirmed Orders</h3>
         <table style="width:100%">
-            <tr>
+            <tr id="s1">
                 <td>Location</td>
                 <td>Name Warehouse</td>
                 <td>Name Vendor</td>
@@ -37,7 +47,6 @@
                 <td>Amount Goods</td>
             </tr>
             {{- $total_cost := 0.00 -}}
-            {{- $total_cost_end := 0.00 -}}
             {{- $prev := "" -}}
             {{range .UnconfirmedOrdersARRAY}}
                 {{if ne .OrderUUID $prev}}
@@ -58,7 +67,7 @@
                     {{end}}
                     {{- $total_cost = 0.00 -}}
                     {{- $prev = .OrderUUID -}}
-                    <tr id="s1">
+                    <tr>
                         <td colspan="7">Order: {{$prev}}</td>
                     </tr>
                 {{end}}
@@ -72,11 +81,10 @@
                     <td>{{.AmountGoods}}</td>
                 </tr>
                 {{- $total_cost = addFloatFloat $total_cost (mulFloatInt .PriceGoods .AmountGoods) -}}
-                {{- $total_cost_end = $total_cost -}}
             {{end}}
             {{- if ne $prev "" -}}
             <tr id="s2">
-                <td colspan="2">Total cost: {{$total_cost_end}}</td>
+                <td colspan="2">Total cost: {{$total_cost}}</td>
                 <td colspan="2">
                     <form action="/{{$login_customer}}/{{$prev}}/confirm/send" method="POST">
                         <input type="submit" value="pay the order">
@@ -95,7 +103,7 @@
     <div>
         <h3>Orders</h3>
         <table style="width:100%">
-            <tr>
+            <tr id="s1">
                 <td>Location</td>
                 <td>Name Warehouse</td>
                 <td>Name Vendor</td>
@@ -105,7 +113,6 @@
                 <td>Amount Goods</td>
             </tr>
             {{- $total_cost := 0.00 -}}
-            {{- $total_cost_end := 0.00 -}}
             {{- $prev := "" -}}
             {{range .СonfirmedOrdersARRAY}}
                 {{if ne .OrderUUID $prev}}
@@ -121,7 +128,7 @@
                     {{end}}
                     {{- $total_cost = 0.00 -}}
                     {{- $prev = .OrderUUID -}}
-                    <tr id="s1">
+                    <tr>
                         <td colspan="7">Order: {{$prev}}</td>
                     </tr>
                 {{end}}
@@ -135,7 +142,6 @@
                     <td>{{.AmountGoods}}</td>
                 </tr>
                 {{- $total_cost = addFloatFloat $total_cost (mulFloatInt .PriceGoods .AmountGoods) -}}
-                {{- $total_cost_end = $total_cost -}}
             {{end}}
             {{- if ne $prev "" -}}
             <tr id="s2">
@@ -145,6 +151,56 @@
                         <input type="submit" value="get order code">
                     </form>
                 </td>
+            </tr>
+            {{end}}
+        </table>
+    </div>
+    <p></p>
+    <div>
+        <h3>History of orders</h3>
+        <table style="width:100%">
+            <tr id="s1">
+                <td>Location</td>
+                <td>Name Warehouse</td>
+                <td>Name Vendor</td>
+                <td>Type Goods</td>
+                <td>Name Goods</td>
+                <td>Price Goods</td>
+                <td>Amount Goods</td>
+            </tr>
+            {{- $total_cost := 0.00 -}}
+            {{- $date := "" -}}
+            {{- $prev := "" -}}
+            {{range .HistoryOrdersARRAY}}
+                {{if ne .OrderUUID $prev}}
+                    {{- if ne $prev "" -}}
+                        <tr id="s2">
+                            <td>Date: {{.Date}}</td>
+                            <td colspan="6">Total cost: {{$total_cost}}</td>
+                        </tr>
+                    {{end}}
+                    {{- $total_cost = 0.00 -}}
+                    {{- $prev = .OrderUUID -}}
+                    <tr>
+                        <td colspan="7">Order: {{$prev}}</td>
+                    </tr>
+                {{end}}
+                <tr>
+                    <td>{{.Location}}</td>
+                    <td>{{.NameWarehouse}}</td>
+                    <td>{{.NameVendor}}</td>
+                    <td>{{.TypeGoods}}</td>
+                    <td>{{.NameGoods}}</td>
+                    <td>{{.PriceGoods}}</td>
+                    <td>{{.AmountGoods}}</td>
+                </tr>
+                {{- $total_cost = addFloatFloat $total_cost (mulFloatInt .PriceGoods .AmountGoods) -}}
+                {{- $date = .Date -}}
+            {{end}}
+            {{- if ne $prev "" -}}
+            <tr id="s2">
+                <td>Date: {{$date}}</td>
+                <td colspan="6">Total cost: {{$total_cost}}</td>
             </tr>
             {{end}}
         </table>
