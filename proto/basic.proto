@@ -2,7 +2,8 @@ syntax = "proto3";
 
 package basic;
 
-option go_package = "marketplace-example/internal/proto-genr/basic";
+option go_package = "github.com/piliphulko/marketplace-example/internal/proto-genr/basic";
+//protoc -I . basic.proto --go_out=../../../.. --go-grpc_out=../../../..
 
 enum REPLY {
     UNSPECIFIED = 0;

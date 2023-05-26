@@ -2,12 +2,19 @@ syntax = "proto3";
 
 import "basic.proto";
 
-option go_package = "marketplace-example/internal/proto-genr/server-account-aut";
+option go_package = "github.com/piliphulko/marketplace-example/internal/proto-genr/server-account-aut";
+//protoc -I . server-account-aut.proto --go_out=../../../.. --go-grpc_out=../../../..
 
 package serveraccountaut;
 
 service AccountAut {
-    rpc AutAccount(LoginPass) returns (basic.REPLY);
+    rpc AutAccount(LoginPass) returns (Reply);
+    rpc CreateAccount(AccountInfo) returns (Reply);
+    rpc UpdateAccount(AccountInfo) returns (Reply);
+}
+
+message Reply {
+    basic.REPLY reply = 1;
 }
 
 message LoginPass {
@@ -15,5 +22,13 @@ message LoginPass {
         basic.CustomerAut customer_login_pass = 1;
         basic.WarehouseAut warehouse_login_pass = 2;
         basic.VendorAut vendor_login_pass = 3;
+    }
+}
+
+message AccountInfo {
+    oneof account_info {
+        basic.CustomerInfo customer_info  = 1;
+        basic.WarehouseInfo warehouse_info = 2;
+        basic.VendorInfo vendor_info = 3;
     }
 }
