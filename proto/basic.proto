@@ -4,30 +4,32 @@ package basic;
 
 option go_package = "marketplace-example/internal/proto-genr/basic";
 
-//import "google/protobuf/empty.proto";
-
-message BoolValue {
-    bool value = 1;
+enum REPLY {
+    UNSPECIFIED = 0;
+    CREATED = 1;
+    UPDATED = 2;
+    AUTHORIZED = 3;
+    UNAUTHORIZED = 4;
 }
 
-message Customer {
+message CustomerAut {
     string login_customer = 1;
     string passwort_customer = 2;
 }
 
 message CustomerInfo {
-    Customer customer_aut = 1;
+    CustomerAut customer_aut = 1;
     string customer_country = 2;
     string customer_ciry = 3;
 }
 
-message Warehouse {
+message WarehouseAut {
     string login_warehouse = 1;
     string passwort_warehouse = 2;
 }
 
 message WarehouseInfo {
-    Warehouse warehouse_aut = 1;
+    WarehouseAut warehouse_aut = 1;
     string warehouse_name = 2;
     string warehouse_country = 3;
     string warehouse_city = 4;
@@ -35,58 +37,12 @@ message WarehouseInfo {
     string warehouse_note = 6;
 }
 
-message Vendor {
+message VendorAut {
     string login_vendor = 1;
     string passwort_vendor = 2;
 }
 
 message VendorInfo {
-    Vendor vendor_aut = 1;
+    VendorAut vendor_aut = 1;
     string vendor_name = 2;
-}
-
-message Goods {
-    Vendor vendor_aut = 1;
-    string name_goods = 2;
-    string type_goods = 3;
-    string note_goods = 4;
-}
-
-message VendorPrice {
-    Vendor vendor_aut = 1;
-    string name_goods = 2;
-    string price_goods = 3;
-}
-
-message Consignment {
-    string warehouse_name = 1;
-    string vendor_name = 2;
-    string name_goods = 3;
-    fixed32 amount_goods = 4;
-    fixed32 amount_goods_defect = 5;
-    string arrival_date = 6;
-    fixed32 id_problem = 7;
-    string consignment_note = 8;
-}
-
-message ConsignmentVW {
-    oneof vendor_or_warehouse{
-        Vendor vendor_aut = 1;
-        Warehouse warehouse_aut = 2;
-    }
-    Consignment consignment_m = 3;
-}
-
-message Order {
-    string order_country = 1;
-    string vendor_name = 2;
-    string warehouse_name = 3;
-    string name_goods = 4;
-    fixed32 amount_goods = 5;
-    string login_customer = 6;
-}
-
-message ArrayOrder {
-    repeated Order orders = 1;
-    string uuid_operation = 2;
 }

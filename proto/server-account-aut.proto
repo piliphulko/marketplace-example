@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "basic.proto";
+
+option go_package = "marketplace-example/internal/proto-genr/server-account-aut";
+
+package serveraccountaut;
+
+service AccountAut {
+    rpc AutAccount(LoginPass) returns (basic.REPLY);
+}
+
+message LoginPass {
+    oneof account_choice {
+        basic.CustomerAut customer_login_pass = 1;
+        basic.WarehouseAut warehouse_login_pass = 2;
+        basic.VendorAut vendor_login_pass = 3;
+    }
+}
