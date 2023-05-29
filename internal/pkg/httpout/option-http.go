@@ -14,6 +14,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/piliphulko/marketplace-example/internal/pkg/accountaut"
 )
 
 func FillTempHTMLfromDir(pathDir string) {
@@ -44,6 +46,7 @@ type OptionsHTTP struct {
 	ErrRedirectUseDataURL bool
 	ErrRedirectPath       string
 	PossibleErrorsClient  []error
+	ConnAA                accountaut.ConnAccountAut
 }
 
 func StartOptionsHTTP() *OptionsHTTP { return &OptionsHTTP{} }
@@ -77,6 +80,11 @@ func (optHTTP *OptionsHTTP) WithHTML(temp *template.Template, nameHTML string) *
 		log.Panic()
 	}
 	optHTTP.HTML = html
+	return optHTTP
+}
+
+func (optHTTP *OptionsHTTP) WithConnServerAccountAut(serverConn accountaut.ConnAccountAut) *OptionsHTTP {
+	optHTTP.ConnAA = serverConn
 	return optHTTP
 }
 

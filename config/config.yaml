@@ -2,11 +2,16 @@
 POSTGRESQL:
   DATABASE_URL: "postgres://postgres:5432@localhost:5432/test_db"
 
-SEND_HTML_SEVER:
+SERVER_HTTP_SEND_HTML:
   PORT: ":8080"
   HTML_DIR: "../../html"
   LOG_FILE:
     INFO_LEVEL: "infoHTTP.log"
     ERROR_LEVEL: "errorHTTP.log"
     PANIC_LEVEL: "panicHTTP.log"
+
+SERVER_GRPC_ACCOUNT_AUT:
+  NETWORK_SERVER: "tcp"
+  PORT: ":50051"
+  LOG_FILE: "total.log"
 ...

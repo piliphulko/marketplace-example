@@ -10,6 +10,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gofrs/uuid"
+	"github.com/piliphulko/marketplace-example/internal/proto-genr/basic"
+	pb "github.com/piliphulko/marketplace-example/internal/proto-genr/server-account-aut"
 )
 
 func testW(ctx context.Context, cancelCtxError context.CancelCauseFunc, optHTTP *OptionsHTTP, r *http.Request, ch chan []byte) {
@@ -965,6 +967,18 @@ func handlerCustomerAuthorizationSend(ctx context.Context, cancelCtxError contex
 	)
 
 	fmt.Println(login_customer, password_customer)
+	_, err := optHTTP.ConnAA.AutAccount(ctx, &pb.LoginPass{
+		AccountChoice: &pb.LoginPass_CustomerLoginPass{
+			&basic.CustomerAut{
+				LoginCustomer:    login_customer,
+				PasswortCustomer: password_customer,
+			},
+		},
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	optHTTP.OkRedirectPath = strings.ReplaceAll(optHTTP.OkRedirectPath, "{login_customer}", login_customer)
 

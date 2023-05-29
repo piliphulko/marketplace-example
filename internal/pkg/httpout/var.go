@@ -5,13 +5,14 @@ import (
 	"html/template"
 
 	jsoniter "github.com/json-iterator/go"
+	"github.com/piliphulko/marketplace-example/internal/pkg/accountaut"
 	"go.uber.org/zap"
 )
 
 var (
-	LogHTTP *zap.Logger
-	//	TempHTML *template.Template = template.New("html")
-	JSON = jsoniter.ConfigCompatibleWithStandardLibrary
+	LogHTTP      *zap.Logger
+	JSON         = jsoniter.ConfigCompatibleWithStandardLibrary
+	ConnServerAA accountaut.ConnAccountAut
 )
 
 var TempHTML = template.New("html").Funcs(template.FuncMap{

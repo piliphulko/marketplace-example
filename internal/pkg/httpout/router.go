@@ -67,6 +67,7 @@ func RouterHTML() *chi.Mux {
 		handlerRun(context.Background(), withTimeoutSecond(5), handlerAuthorizationPage))
 
 	r.Get("/customer/authorization/send", StartOptionsHTTP().
+		WithConnServerAccountAut(ConnServerAA).
 		UseOkRedirectDataURL("/{login_customer}/home").
 		UseErrRedirectDataURL("/customer/authorization").
 		SetErrorClientList(ErrSpiderMan).
