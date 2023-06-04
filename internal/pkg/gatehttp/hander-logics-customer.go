@@ -37,7 +37,7 @@ func handlerCustomerAuthorizationSend(ctx context.Context, cancelCtxError contex
 		login_customer    = r.FormValue("login_customer")
 		password_customer = r.FormValue("password_customer")
 	)
-	fmt.Println(login_customer, password_customer)
+	reply, err := optHTTP.TakeConnGrpc(grpcAA).AutAccount(ctx, nil)
 
 	ch <- buf.Bytes()
 }

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package basic;
 
-option go_package = "github.com/piliphulko/marketplace-example/internal/proto-genr/basic";
+option go_package = "github.com/piliphulko/marketplace-example/api/basic";
 //protoc -I . basic.proto --go_out=../../../.. --go-grpc_out=../../../..
 
 enum REPLY {
@@ -46,4 +46,24 @@ message VendorAut {
 message VendorInfo {
     VendorAut vendor_aut = 1;
     string vendor_name = 2;
+}
+
+message Reply {
+    REPLY reply = 1;
+}
+
+message LoginPass {
+    oneof account_choice {
+        CustomerAut customer_login_pass = 1;
+        WarehouseAut warehouse_login_pass = 2;
+        VendorAut vendor_login_pass = 3;
+    }
+}
+
+message AccountInfo {
+    oneof account_info {
+        CustomerInfo customer_info  = 1;
+        WarehouseInfo warehouse_info = 2;
+        VendorInfo vendor_info = 3;
+    }
 }

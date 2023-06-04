@@ -18,3 +18,7 @@ var TempHTML = template.New("html").Funcs(template.FuncMap{
 var (
 	ConnServerAA accountaut.ConnAccountAut
 )
+
+const (
+	grpcAA = iota
+)

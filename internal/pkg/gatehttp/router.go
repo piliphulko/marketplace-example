@@ -70,6 +70,9 @@ func RouterHTML() *chi.Mux {
 
 		r.Get("/customer/authorization", opt.NewOptionsHTTP().
 			ReceptionRedirectURL().
+			SetConnectingToMicroservices(map[int]opt.ConnGrpc{
+				grpcAA: ConnServerAA,
+			}).
 			WithHTML(TempHTML, "customer-authorization.html").
 			SetHeaderResponse(map[string]string{
 				"Content-Type": "text/html; charset=utf-8"}).

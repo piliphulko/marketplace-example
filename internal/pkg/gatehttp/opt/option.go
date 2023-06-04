@@ -10,8 +10,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
-	"google.golang.org/grpc"
 )
 
 type OptionsHTTP struct {
@@ -21,7 +19,7 @@ type OptionsHTTP struct {
 	RedirectUseDataURL           bool
 	RedirectHTTPPathOk           string
 	RedirectHTTPPathMistake      string
-	connectingToMicroservicesMap map[string]grpc.ClientConnInterface
+	connectingToMicroservicesMap map[int]ConnGrpc
 }
 
 // NewOptionsHTTP creates an object for setting HTTP request parameters
@@ -70,7 +68,7 @@ func (optHTTP *OptionsHTTP) TakeHTML() *template.Template {
 func (optHTTP *OptionsHTTP) ReceptionRedirectURL() *OptionsHTTP { return optHTTP }
 
 // SetConnectingToMicroservices connecting grpc services to HTTP handler
-func (optHTTP *OptionsHTTP) SetConnectingToMicroservices(connections map[string]grpc.ClientConnInterface) *OptionsHTTP {
+func (optHTTP *OptionsHTTP) SetConnectingToMicroservices(connections map[int]ConnGrpc) *OptionsHTTP {
 	for k, v := range connections {
 		optHTTP.connectingToMicroservicesMap[k] = v
 	}
@@ -78,7 +76,7 @@ func (optHTTP *OptionsHTTP) SetConnectingToMicroservices(connections map[string]
 }
 
 // TakeConnGrpc getting grpc client
-func (optHTTP OptionsHTTP) TakeConnGrpc(nameGrpc string) grpc.ClientConnInterface {
+func (optHTTP OptionsHTTP) TakeConnGrpc(nameGrpc int) ConnGrpc {
 	return optHTTP.connectingToMicroservicesMap[nameGrpc]
 }
 

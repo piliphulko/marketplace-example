@@ -2,12 +2,13 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.22.0
-// source: server-account-aut.proto
+// source: microserver-account-authentication.proto
 
-package server_account_aut
+package core
 
 import (
 	context "context"
+	basic "github.com/piliphulko/marketplace-example/api/basic"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -19,18 +20,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AccountAut_AutAccount_FullMethodName    = "/serveraccountaut.AccountAut/AutAccount"
-	AccountAut_CreateAccount_FullMethodName = "/serveraccountaut.AccountAut/CreateAccount"
-	AccountAut_UpdateAccount_FullMethodName = "/serveraccountaut.AccountAut/UpdateAccount"
+	AccountAut_AutAccount_FullMethodName    = "/microserver_account_authentication.AccountAut/AutAccount"
+	AccountAut_CreateAccount_FullMethodName = "/microserver_account_authentication.AccountAut/CreateAccount"
+	AccountAut_UpdateAccount_FullMethodName = "/microserver_account_authentication.AccountAut/UpdateAccount"
 )
 
 // AccountAutClient is the client API for AccountAut service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountAutClient interface {
-	AutAccount(ctx context.Context, in *LoginPass, opts ...grpc.CallOption) (*Reply, error)
-	CreateAccount(ctx context.Context, in *AccountInfo, opts ...grpc.CallOption) (*Reply, error)
-	UpdateAccount(ctx context.Context, in *AccountInfo, opts ...grpc.CallOption) (*Reply, error)
+	AutAccount(ctx context.Context, in *basic.LoginPass, opts ...grpc.CallOption) (*basic.Reply, error)
+	CreateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*basic.Reply, error)
+	UpdateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*basic.Reply, error)
 }
 
 type accountAutClient struct {
@@ -41,8 +42,8 @@ func NewAccountAutClient(cc grpc.ClientConnInterface) AccountAutClient {
 	return &accountAutClient{cc}
 }
 
-func (c *accountAutClient) AutAccount(ctx context.Context, in *LoginPass, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *accountAutClient) AutAccount(ctx context.Context, in *basic.LoginPass, opts ...grpc.CallOption) (*basic.Reply, error) {
+	out := new(basic.Reply)
 	err := c.cc.Invoke(ctx, AccountAut_AutAccount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,8 +51,8 @@ func (c *accountAutClient) AutAccount(ctx context.Context, in *LoginPass, opts .
 	return out, nil
 }
 
-func (c *accountAutClient) CreateAccount(ctx context.Context, in *AccountInfo, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *accountAutClient) CreateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*basic.Reply, error) {
+	out := new(basic.Reply)
 	err := c.cc.Invoke(ctx, AccountAut_CreateAccount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -59,8 +60,8 @@ func (c *accountAutClient) CreateAccount(ctx context.Context, in *AccountInfo, o
 	return out, nil
 }
 
-func (c *accountAutClient) UpdateAccount(ctx context.Context, in *AccountInfo, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *accountAutClient) UpdateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*basic.Reply, error) {
+	out := new(basic.Reply)
 	err := c.cc.Invoke(ctx, AccountAut_UpdateAccount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -72,9 +73,9 @@ func (c *accountAutClient) UpdateAccount(ctx context.Context, in *AccountInfo, o
 // All implementations must embed UnimplementedAccountAutServer
 // for forward compatibility
 type AccountAutServer interface {
-	AutAccount(context.Context, *LoginPass) (*Reply, error)
-	CreateAccount(context.Context, *AccountInfo) (*Reply, error)
-	UpdateAccount(context.Context, *AccountInfo) (*Reply, error)
+	AutAccount(context.Context, *basic.LoginPass) (*basic.Reply, error)
+	CreateAccount(context.Context, *basic.AccountInfo) (*basic.Reply, error)
+	UpdateAccount(context.Context, *basic.AccountInfo) (*basic.Reply, error)
 	mustEmbedUnimplementedAccountAutServer()
 }
 
@@ -82,13 +83,13 @@ type AccountAutServer interface {
 type UnimplementedAccountAutServer struct {
 }
 
-func (UnimplementedAccountAutServer) AutAccount(context.Context, *LoginPass) (*Reply, error) {
+func (UnimplementedAccountAutServer) AutAccount(context.Context, *basic.LoginPass) (*basic.Reply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AutAccount not implemented")
 }
-func (UnimplementedAccountAutServer) CreateAccount(context.Context, *AccountInfo) (*Reply, error) {
+func (UnimplementedAccountAutServer) CreateAccount(context.Context, *basic.AccountInfo) (*basic.Reply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
 }
-func (UnimplementedAccountAutServer) UpdateAccount(context.Context, *AccountInfo) (*Reply, error) {
+func (UnimplementedAccountAutServer) UpdateAccount(context.Context, *basic.AccountInfo) (*basic.Reply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccount not implemented")
 }
 func (UnimplementedAccountAutServer) mustEmbedUnimplementedAccountAutServer() {}
@@ -105,7 +106,7 @@ func RegisterAccountAutServer(s grpc.ServiceRegistrar, srv AccountAutServer) {
 }
 
 func _AccountAut_AutAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginPass)
+	in := new(basic.LoginPass)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -117,13 +118,13 @@ func _AccountAut_AutAccount_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: AccountAut_AutAccount_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountAutServer).AutAccount(ctx, req.(*LoginPass))
+		return srv.(AccountAutServer).AutAccount(ctx, req.(*basic.LoginPass))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AccountAut_CreateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AccountInfo)
+	in := new(basic.AccountInfo)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -135,13 +136,13 @@ func _AccountAut_CreateAccount_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: AccountAut_CreateAccount_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountAutServer).CreateAccount(ctx, req.(*AccountInfo))
+		return srv.(AccountAutServer).CreateAccount(ctx, req.(*basic.AccountInfo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AccountAut_UpdateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AccountInfo)
+	in := new(basic.AccountInfo)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -153,7 +154,7 @@ func _AccountAut_UpdateAccount_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: AccountAut_UpdateAccount_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountAutServer).UpdateAccount(ctx, req.(*AccountInfo))
+		return srv.(AccountAutServer).UpdateAccount(ctx, req.(*basic.AccountInfo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -162,7 +163,7 @@ func _AccountAut_UpdateAccount_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AccountAut_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "serveraccountaut.AccountAut",
+	ServiceName: "microserver_account_authentication.AccountAut",
 	HandlerType: (*AccountAutServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -179,5 +180,5 @@ var AccountAut_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "server-account-aut.proto",
+	Metadata: "microserver-account-authentication.proto",
 }
