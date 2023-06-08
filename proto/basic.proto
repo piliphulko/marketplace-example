@@ -13,6 +13,10 @@ enum REPLY {
     UNAUTHORIZED = 4;
 }
 
+message StringJWT {
+    string string_jwt = 1;
+}
+
 message CustomerAut {
     string login_customer = 1;
     string passwort_customer = 2;

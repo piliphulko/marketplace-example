@@ -8,7 +8,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *server) AutAccount(ctx context.Context, loginPass *basic.LoginPass) (*basic.Reply, error) {
+func (s *server) AutAccount(ctx context.Context, loginPass *basic.LoginPass) (*basic.StringJWT, error) {
+	if customerLoginPass := loginPass.GetCustomerLoginPass(); customerLoginPass != nil {
+
+	} else if warehouseLoginPass := loginPass.GetWarehouseLoginPass(); warehouseLoginPass != nil {
+	} else if vendorLoginPass := loginPass.GetVendorLoginPass(); vendorLoginPass != nil {
+	}
+}
+
+func (s *server) AutAccountOld(ctx context.Context, loginPass *basic.LoginPass) (*basic.Reply, error) {
 	if customerLoginPass := loginPass.GetCustomerLoginPass(); customerLoginPass != nil {
 		// AUTHENTICATION CUSTOMER
 		tag, err := s.pgxPool.Exec(ctx, `

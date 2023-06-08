@@ -10,7 +10,7 @@ CREATE TABLE table_customer
 (
 	id_customer int GENERATED ALWAYS AS IDENTITY,
 	login_customer varchar(32) UNIQUE NOT NULL,
-	passwort_customer varchar(32) CHECK (char_length(passwort_customer) > 7),
+	passwort_customer bytea,
 
 	CONSTRAINT primery_key_id_customer PRIMARY KEY (id_customer)
 );
@@ -29,7 +29,7 @@ CREATE TABLE table_vendor
 (
 	id_vendor int GENERATED ALWAYS AS IDENTITY,
 	login_vendor varchar(32) UNIQUE NOT NULL,
-	passwort_vendor varchar(32) CHECK (char_length(passwort_vendor) > 7),
+	passwort_vendor bytea,
 
 	CONSTRAINT primery_key_id_vendor PRIMARY KEY (id_vendor)
 );
@@ -87,7 +87,7 @@ CREATE TABLE table_warehouse
 (
 	id_warehouse int GENERATED ALWAYS AS IDENTITY,
 	login_warehouse varchar(32) UNIQUE NOT NULL,
-	passwort_warehouse varchar(32) CHECK (char_length(passwort_warehouse) > 7),
+	passwort_warehouse bytea,
 
 	CONSTRAINT primery_key_id_warehouse PRIMARY KEY (id_warehouse)
 );

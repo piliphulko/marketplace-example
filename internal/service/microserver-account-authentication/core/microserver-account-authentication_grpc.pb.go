@@ -12,6 +12,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -29,9 +30,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountAutClient interface {
-	AutAccount(ctx context.Context, in *basic.LoginPass, opts ...grpc.CallOption) (*basic.Reply, error)
-	CreateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*basic.Reply, error)
-	UpdateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*basic.Reply, error)
+	AutAccount(ctx context.Context, in *basic.LoginPass, opts ...grpc.CallOption) (*basic.StringJWT, error)
+	CreateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type accountAutClient struct {
@@ -42,8 +43,8 @@ func NewAccountAutClient(cc grpc.ClientConnInterface) AccountAutClient {
 	return &accountAutClient{cc}
 }
 
-func (c *accountAutClient) AutAccount(ctx context.Context, in *basic.LoginPass, opts ...grpc.CallOption) (*basic.Reply, error) {
-	out := new(basic.Reply)
+func (c *accountAutClient) AutAccount(ctx context.Context, in *basic.LoginPass, opts ...grpc.CallOption) (*basic.StringJWT, error) {
+	out := new(basic.StringJWT)
 	err := c.cc.Invoke(ctx, AccountAut_AutAccount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -51,8 +52,8 @@ func (c *accountAutClient) AutAccount(ctx context.Context, in *basic.LoginPass, 
 	return out, nil
 }
 
-func (c *accountAutClient) CreateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*basic.Reply, error) {
-	out := new(basic.Reply)
+func (c *accountAutClient) CreateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, AccountAut_CreateAccount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -60,8 +61,8 @@ func (c *accountAutClient) CreateAccount(ctx context.Context, in *basic.AccountI
 	return out, nil
 }
 
-func (c *accountAutClient) UpdateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*basic.Reply, error) {
-	out := new(basic.Reply)
+func (c *accountAutClient) UpdateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, AccountAut_UpdateAccount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -73,9 +74,9 @@ func (c *accountAutClient) UpdateAccount(ctx context.Context, in *basic.AccountI
 // All implementations must embed UnimplementedAccountAutServer
 // for forward compatibility
 type AccountAutServer interface {
-	AutAccount(context.Context, *basic.LoginPass) (*basic.Reply, error)
-	CreateAccount(context.Context, *basic.AccountInfo) (*basic.Reply, error)
-	UpdateAccount(context.Context, *basic.AccountInfo) (*basic.Reply, error)
+	AutAccount(context.Context, *basic.LoginPass) (*basic.StringJWT, error)
+	CreateAccount(context.Context, *basic.AccountInfo) (*emptypb.Empty, error)
+	UpdateAccount(context.Context, *basic.AccountInfo) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAccountAutServer()
 }
 
@@ -83,13 +84,13 @@ type AccountAutServer interface {
 type UnimplementedAccountAutServer struct {
 }
 
-func (UnimplementedAccountAutServer) AutAccount(context.Context, *basic.LoginPass) (*basic.Reply, error) {
+func (UnimplementedAccountAutServer) AutAccount(context.Context, *basic.LoginPass) (*basic.StringJWT, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AutAccount not implemented")
 }
-func (UnimplementedAccountAutServer) CreateAccount(context.Context, *basic.AccountInfo) (*basic.Reply, error) {
+func (UnimplementedAccountAutServer) CreateAccount(context.Context, *basic.AccountInfo) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
 }
-func (UnimplementedAccountAutServer) UpdateAccount(context.Context, *basic.AccountInfo) (*basic.Reply, error) {
+func (UnimplementedAccountAutServer) UpdateAccount(context.Context, *basic.AccountInfo) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccount not implemented")
 }
 func (UnimplementedAccountAutServer) mustEmbedUnimplementedAccountAutServer() {}

@@ -2,13 +2,15 @@ syntax = "proto3";
 
 import "basic.proto";
 
+import "google/protobuf/empty.proto";
+
 option go_package = "github.com/piliphulko/marketplace-example/internal/service/microserver-account-authentication/core";
 //protoc -I . microserver-account-authentication.proto --go_out=../../../.. --go-grpc_out=../../../..
 
 package microserver_account_authentication;
 
 service AccountAut {
-    rpc AutAccount(basic.LoginPass) returns (basic.Reply);
-    rpc CreateAccount(basic.AccountInfo) returns (basic.Reply);
-    rpc UpdateAccount(basic.AccountInfo) returns (basic.Reply);
+    rpc AutAccount(basic.LoginPass) returns (basic.StringJWT);
+    rpc CreateAccount(basic.AccountInfo) returns (google.protobuf.Empty);
+    rpc UpdateAccount(basic.AccountInfo) returns (google.protobuf.Empty);
 }

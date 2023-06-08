@@ -36,3 +36,7 @@ func (s *server) ConnPostrgresql(postgresqlURL string) (closeConn, error) {
 	s.pgxPool = pool
 	return func() { s.pgxPool.Close() }, nil
 }
+
+func (s *server) AcquireConn(ctx context.Context) (*pgxpool.Conn, error) {
+	return s.pgxPool.Acquire(ctx)
+}
