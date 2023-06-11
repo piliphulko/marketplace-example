@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
+	"regexp"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -144,6 +145,19 @@ func (jwt JWT) TakeNickname() (string, error) {
 		return "", err
 	}
 	return payloadType.Nickname, nil
+}
+
+// BeIntoJWT converts to jwt
+func BeIntoJWT(jwtString string) (JWT, error) {
+	re := ".{2,}\\.\\.\\..{2,}"
+	ok, err := regexp.MatchString(re, jwtString)
+	if err != nil {
+		return JWT{}, err
+	}
+	if ok {
+		return JWT{body: []byte(jwtString)}, nil
+	}
+	return JWT{}, ErrTokenFake
 }
 
 /*

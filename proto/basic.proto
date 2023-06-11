@@ -5,57 +5,60 @@ package basic;
 option go_package = "github.com/piliphulko/marketplace-example/api/basic";
 //protoc -I . basic.proto --go_out=../../../.. --go-grpc_out=../../../..
 
-enum REPLY {
-    UNSPECIFIED = 0;
-    CREATED = 1;
-    UPDATED = 2;
-    AUTHORIZED = 3;
-    UNAUTHORIZED = 4;
-}
-
-message StringJWT {
-    string string_jwt = 1;
-}
-
+// CUSTOMER
 message CustomerAut {
     string login_customer = 1;
     string passwort_customer = 2;
 }
 
 message CustomerInfo {
-    CustomerAut customer_aut = 1;
-    string customer_country = 2;
-    string customer_ciry = 3;
+    string customer_country = 1;
+    string customer_ciry = 2;
 }
 
+message CustomerChange {
+    CustomerAut customer_aut_new = 1;
+    CustomerAut customer_aut_old = 2;
+    CustomerInfo customer_info = 3;
+}
+
+// WAREHOUSE
 message WarehouseAut {
     string login_warehouse = 1;
     string passwort_warehouse = 2;
 }
 
 message WarehouseInfo {
-    WarehouseAut warehouse_aut = 1;
-    string warehouse_name = 2;
-    string warehouse_country = 3;
-    string warehouse_city = 4;
-    float warehouse_commission = 5;
-    string warehouse_note = 6;
+    string warehouse_name = 1;
+    string warehouse_country = 2;
+    string warehouse_city = 3;
+    float warehouse_commission = 4;
+    string warehouse_note = 5;
 }
 
+message WarehouseChange {
+    WarehouseAut warehouse_aut_new = 1;
+    WarehouseAut warehouse_aut_old = 2;
+    WarehouseInfo warehouse_info = 3;
+}
+
+// VENDOR
 message VendorAut {
     string login_vendor = 1;
     string passwort_vendor = 2;
 }
 
 message VendorInfo {
-    VendorAut vendor_aut = 1;
-    string vendor_name = 2;
+    string vendor_name = 1;
 }
 
-message Reply {
-    REPLY reply = 1;
+message VendorChange {
+    VendorAut vendor_aut_new = 1;
+    VendorAut vendor_aut_old = 2;
+    VendorInfo vendor_info = 3;
 }
 
+// OTHERS
 message LoginPass {
     oneof account_choice {
         CustomerAut customer_login_pass = 1;
@@ -64,10 +67,14 @@ message LoginPass {
     }
 }
 
-message AccountInfo {
+message AccountInfoChange {
     oneof account_info {
-        CustomerInfo customer_info  = 1;
-        WarehouseInfo warehouse_info = 2;
-        VendorInfo vendor_info = 3;
+        CustomerChange customer_change = 1;
+        WarehouseChange warehouse_change = 2;
+        VendorChange vendor_change = 3;
     }
+}
+
+message StringJWT {
+    string string_jwt = 1;
 }

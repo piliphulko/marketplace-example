@@ -24,6 +24,7 @@ const (
 	AccountAut_AutAccount_FullMethodName    = "/microserver_account_authentication.AccountAut/AutAccount"
 	AccountAut_CreateAccount_FullMethodName = "/microserver_account_authentication.AccountAut/CreateAccount"
 	AccountAut_UpdateAccount_FullMethodName = "/microserver_account_authentication.AccountAut/UpdateAccount"
+	AccountAut_CheckJWT_FullMethodName      = "/microserver_account_authentication.AccountAut/CheckJWT"
 )
 
 // AccountAutClient is the client API for AccountAut service.
@@ -31,8 +32,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountAutClient interface {
 	AutAccount(ctx context.Context, in *basic.LoginPass, opts ...grpc.CallOption) (*basic.StringJWT, error)
-	CreateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	UpdateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpdateAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CheckJWT(ctx context.Context, in *basic.StringJWT, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type accountAutClient struct {
@@ -52,7 +54,7 @@ func (c *accountAutClient) AutAccount(ctx context.Context, in *basic.LoginPass, 
 	return out, nil
 }
 
-func (c *accountAutClient) CreateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *accountAutClient) CreateAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, AccountAut_CreateAccount_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -61,9 +63,18 @@ func (c *accountAutClient) CreateAccount(ctx context.Context, in *basic.AccountI
 	return out, nil
 }
 
-func (c *accountAutClient) UpdateAccount(ctx context.Context, in *basic.AccountInfo, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *accountAutClient) UpdateAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, AccountAut_UpdateAccount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountAutClient) CheckJWT(ctx context.Context, in *basic.StringJWT, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AccountAut_CheckJWT_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,8 +86,9 @@ func (c *accountAutClient) UpdateAccount(ctx context.Context, in *basic.AccountI
 // for forward compatibility
 type AccountAutServer interface {
 	AutAccount(context.Context, *basic.LoginPass) (*basic.StringJWT, error)
-	CreateAccount(context.Context, *basic.AccountInfo) (*emptypb.Empty, error)
-	UpdateAccount(context.Context, *basic.AccountInfo) (*emptypb.Empty, error)
+	CreateAccount(context.Context, *basic.AccountInfoChange) (*emptypb.Empty, error)
+	UpdateAccount(context.Context, *basic.AccountInfoChange) (*emptypb.Empty, error)
+	CheckJWT(context.Context, *basic.StringJWT) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAccountAutServer()
 }
 
@@ -87,11 +99,14 @@ type UnimplementedAccountAutServer struct {
 func (UnimplementedAccountAutServer) AutAccount(context.Context, *basic.LoginPass) (*basic.StringJWT, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AutAccount not implemented")
 }
-func (UnimplementedAccountAutServer) CreateAccount(context.Context, *basic.AccountInfo) (*emptypb.Empty, error) {
+func (UnimplementedAccountAutServer) CreateAccount(context.Context, *basic.AccountInfoChange) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
 }
-func (UnimplementedAccountAutServer) UpdateAccount(context.Context, *basic.AccountInfo) (*emptypb.Empty, error) {
+func (UnimplementedAccountAutServer) UpdateAccount(context.Context, *basic.AccountInfoChange) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccount not implemented")
+}
+func (UnimplementedAccountAutServer) CheckJWT(context.Context, *basic.StringJWT) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckJWT not implemented")
 }
 func (UnimplementedAccountAutServer) mustEmbedUnimplementedAccountAutServer() {}
 
@@ -125,7 +140,7 @@ func _AccountAut_AutAccount_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _AccountAut_CreateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(basic.AccountInfo)
+	in := new(basic.AccountInfoChange)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -137,13 +152,13 @@ func _AccountAut_CreateAccount_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: AccountAut_CreateAccount_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountAutServer).CreateAccount(ctx, req.(*basic.AccountInfo))
+		return srv.(AccountAutServer).CreateAccount(ctx, req.(*basic.AccountInfoChange))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AccountAut_UpdateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(basic.AccountInfo)
+	in := new(basic.AccountInfoChange)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -155,7 +170,25 @@ func _AccountAut_UpdateAccount_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: AccountAut_UpdateAccount_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountAutServer).UpdateAccount(ctx, req.(*basic.AccountInfo))
+		return srv.(AccountAutServer).UpdateAccount(ctx, req.(*basic.AccountInfoChange))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccountAut_CheckJWT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(basic.StringJWT)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountAutServer).CheckJWT(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccountAut_CheckJWT_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountAutServer).CheckJWT(ctx, req.(*basic.StringJWT))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -178,6 +211,10 @@ var AccountAut_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateAccount",
 			Handler:    _AccountAut_UpdateAccount_Handler,
+		},
+		{
+			MethodName: "CheckJWT",
+			Handler:    _AccountAut_CheckJWT_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

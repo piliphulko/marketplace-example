@@ -10,7 +10,7 @@ import (
 func TestTotal(t *testing.T) {
 	InsertSecretForSignJWS("12345678qwertyui")
 
-	jws, err := CreateJWS(Header{Alg: "AES", Typ: "JWT"}, Payload{Nickname: "test", Exp: time.Now().Add(1 * time.Hour).Unix()})
+	jws, err := CreateJWS(Header{Alg: "SHA256", Typ: "JWT"}, Payload{Nickname: "test", Exp: time.Now().Add(1 * time.Hour).Unix()})
 	require.Nil(t, err)
 
 	jwt, err := jws.SignJWS()
@@ -27,7 +27,7 @@ func TestTotal(t *testing.T) {
 	err = jwt.CheckJWT()
 	require.ErrorIs(t, err, ErrTokenFake)
 
-	jws, err = CreateJWS(Header{Alg: "AES", Typ: "JWT"}, Payload{Nickname: "test", Exp: time.Now().Unix() - 1})
+	jws, err = CreateJWS(Header{Alg: "SHA256", Typ: "JWT"}, Payload{Nickname: "test", Exp: time.Now().Unix() - 1})
 	require.Nil(t, err)
 
 	jwt, err = jws.SignJWS()
@@ -44,7 +44,7 @@ func BenchmarkJWS(b *testing.B) {
 	var jws JWS
 	var err error
 	for i := 0; i != 10000; i++ {
-		jws, err = CreateJWS(Header{Alg: "AES", Typ: "JWT"}, Payload{Nickname: "test", Exp: time.Now().Add(time.Minute).Unix()})
+		jws, err = CreateJWS(Header{Alg: "SHA256", Typ: "JWT"}, Payload{Nickname: "test", Exp: time.Now().Add(time.Minute).Unix()})
 		require.Nil(b, err)
 		jwt, err := jws.SignJWS()
 		require.Nil(b, err)

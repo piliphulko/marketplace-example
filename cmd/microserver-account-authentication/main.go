@@ -17,6 +17,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	pb.InitJWTSecret("asdfghjk")
 }
 
 func main() {

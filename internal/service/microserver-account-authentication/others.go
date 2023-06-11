@@ -2,8 +2,10 @@ package microserveraccountauthentication
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/piliphulko/marketplace-example/internal/pkg/jwt"
 	"github.com/piliphulko/marketplace-example/internal/service/microserver-account-authentication/core"
 	"go.uber.org/zap/zapgrpc"
 	"google.golang.org/grpc"
@@ -11,6 +13,12 @@ import (
 
 var (
 	LogGRPC *zapgrpc.Logger
+)
+
+var (
+	ErrIncorrectPass    = errors.New("Incorrect password")
+	ErrIncorrectLogin   = errors.New("Incorrect login")
+	ErrIncorrectCountry = errors.New("Incorrect country")
 )
 
 type closeConn func()
@@ -39,4 +47,8 @@ func (s *server) ConnPostrgresql(postgresqlURL string) (closeConn, error) {
 
 func (s *server) AcquireConn(ctx context.Context) (*pgxpool.Conn, error) {
 	return s.pgxPool.Acquire(ctx)
+}
+
+func InitJWTSecret(secret string) {
+	jwt.InsertSecretForSignJWS(secret)
 }

@@ -11,6 +11,7 @@ package microserver_account_authentication;
 
 service AccountAut {
     rpc AutAccount(basic.LoginPass) returns (basic.StringJWT);
-    rpc CreateAccount(basic.AccountInfo) returns (google.protobuf.Empty);
-    rpc UpdateAccount(basic.AccountInfo) returns (google.protobuf.Empty);
+    rpc CreateAccount(basic.AccountInfoChange) returns (google.protobuf.Empty);
+    rpc UpdateAccount(basic.AccountInfoChange) returns (google.protobuf.Empty);
+    rpc CheckJWT(basic.StringJWT) returns (google.protobuf.Empty);
 }

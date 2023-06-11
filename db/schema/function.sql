@@ -19,10 +19,11 @@ $$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION function_trigger_consignment() RETURNS trigger AS $$
 BEGIN
-	IF NEW.amount_goods_available = 0 AND NEW.amount_goods_blocked
-		NEW.goods_in_stock = false,
-		NEW.date_sold_out = now()
+	IF NEW.amount_goods_available = 0 AND NEW.amount_goods_blocked THEN
+		NEW.goods_in_stock = false;
+		NEW.date_sold_out = now();
 	END IF;
+	RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
 
