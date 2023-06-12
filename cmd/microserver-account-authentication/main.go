@@ -17,7 +17,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	pb.InitJWTSecret("asdfghjk")
+	pb.InitJWTSecret(viper.GetString("MICROSERVER-ACCOUNT-AUTHENTICATION.JWT_SECRET"))
 }
 
 func main() {

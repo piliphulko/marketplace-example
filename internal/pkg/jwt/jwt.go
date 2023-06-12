@@ -149,7 +149,7 @@ func (jwt JWT) TakeNickname() (string, error) {
 
 // BeIntoJWT converts to jwt
 func BeIntoJWT(jwtString string) (JWT, error) {
-	re := ".{2,}\\.\\.\\..{2,}"
+	re := `^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$`
 	ok, err := regexp.MatchString(re, jwtString)
 	if err != nil {
 		return JWT{}, err
