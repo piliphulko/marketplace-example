@@ -78,3 +78,23 @@ message AccountInfoChange {
 message StringJWT {
     string string_jwt = 1;
 }
+
+//
+
+message Order {
+    string order_uuid = 1;
+    string name_goods = 2;
+    string name_vendor = 3;
+    string name_warehouse = 4;
+    uint32 amount_goods = 5;
+    float price_goods = 6;
+}
+
+message OrdersCustomer {
+    string login_customer = 1;
+    repeated Order orders = 2;
+}
+
+message ArrayOrdersCustomer {
+    repeated OrdersCustomer orders_customer = 1;
+}

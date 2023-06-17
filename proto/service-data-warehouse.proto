@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "basic.proto";
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/piliphulko/marketplace-example/internal/service/service-data-warehouse/core";
+//protoc -I . service-data-warehouse.proto --go_out=../../../.. --go-grpc_out=../../../..
+
+package service_data_warehouse;
+
+service DataWarehouse {
+    rpc GetAcctInfo(google.protobuf.Empty) returns (basic.WarehouseInfo);
+    rpc GetArrayOrdersCustomer(google.protobuf.Empty) returns (basic.ArrayOrdersCustomer);
+}

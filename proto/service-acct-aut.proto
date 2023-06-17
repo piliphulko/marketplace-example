@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "basic.proto";
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/piliphulko/marketplace-example/internal/service/service-acct-aut/core";
+//protoc -I . service-acct-aut.proto --go_out=../../../.. --go-grpc_out=../../../..
+
+package service_acct_aut;
+
+service AccountAut {
+    rpc AutAccount(basic.LoginPass) returns (basic.StringJWT);
+    rpc CreateAccount(basic.AccountInfoChange) returns (google.protobuf.Empty);
+    rpc UpdateAccount(basic.AccountInfoChange) returns (google.protobuf.Empty);
+    rpc CheckJWT(basic.StringJWT) returns (google.protobuf.Empty);
+}
