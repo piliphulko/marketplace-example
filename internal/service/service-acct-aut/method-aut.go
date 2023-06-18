@@ -1,4 +1,4 @@
-package microserveraccountauthentication
+package serviceacctaut
 
 import (
 	"context"

@@ -12,8 +12,8 @@ import (
 )
 
 func init() {
-	//viper.SetConfigFile("../../config/config.yaml")
-	viper.SetConfigFile("config.yaml")
+	viper.SetConfigFile("../../config/config.yaml")
+	//viper.SetConfigFile("config.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -40,17 +40,19 @@ func main() {
 	grpclog.SetLoggerV2(pb.LogGRPC)
 
 	var (
-		grpcServer  = grpc.NewServer()
-		microserver = pb.StartServer()
+		grpcServer = grpc.NewServer(
+			grpc.ChainUnaryInterceptor(pb.InterceptotCheckCtx),
+		)
+		server = pb.StartServer()
 	)
 
-	close, err := microserver.ConnPostrgresql(viper.GetString("POSTGRESQL.DATABASE_URL"))
+	close, err := server.ConnPostrgresql(viper.GetString("POSTGRESQL.DATABASE_URL"))
 	defer close()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	pb.RegisterServer(grpcServer, microserver)
+	pb.RegisterServer(grpcServer, server)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

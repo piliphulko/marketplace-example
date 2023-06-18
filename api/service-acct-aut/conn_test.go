@@ -1,4 +1,4 @@
-package microserveraccountauthenticationclient
+package serviceacctaut
 
 import (
 	"testing"

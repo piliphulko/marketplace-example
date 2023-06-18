@@ -8,6 +8,8 @@ import (
 	"go.uber.org/zap/zapgrpc"
 )
 
+type logSync func()
+
 func InitializeLogger(logger **zap.Logger, pathInfoLevel, pathErrorLevel, pathPanicLevel string) error {
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -32,7 +34,7 @@ func InitializeLogger(logger **zap.Logger, pathInfoLevel, pathErrorLevel, pathPa
 	return nil
 }
 
-func InitializeLoggerGRPC(logger **zapgrpc.Logger, pathLogger string) (error, func()) {
+func InitializeLoggerGRPC(logger **zapgrpc.Logger, pathLogger string) (error, logSync) {
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
 	logFile, err := os.OpenFile(pathLogger, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.FileMode(0755))
@@ -45,4 +47,15 @@ func InitializeLoggerGRPC(logger **zapgrpc.Logger, pathLogger string) (error, fu
 	basicLogger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 	*logger = zapgrpc.NewLogger(basicLogger)
 	return nil, func() { basicLogger.Sync() }
+}
+
+func InitStdoutLoggerGRPC(logger **zapgrpc.Logger) logSync {
+	config := zap.NewProductionEncoderConfig()
+	config.EncodeTime = zapcore.ISO8601TimeEncoder
+	core := zapcore.NewTee(
+		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.AddSync(os.Stdout), zapcore.InfoLevel),
+	)
+	basicLogger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+	*logger = zapgrpc.NewLogger(basicLogger)
+	return func() { basicLogger.Sync() }
 }
