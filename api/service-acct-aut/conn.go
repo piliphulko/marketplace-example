@@ -4,10 +4,19 @@ import (
 	"context"
 
 	"github.com/piliphulko/marketplace-example/api/basic"
+	pb "github.com/piliphulko/marketplace-example/internal/service/service-acct-aut"
 	"github.com/piliphulko/marketplace-example/internal/service/service-acct-aut/core"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/emptypb"
+)
+
+var (
+	ErrIncorrectPass    = pb.ErrIncorrectPass
+	ErrIncorrectLogin   = pb.ErrIncorrectLogin
+	ErrIncorrectCountry = pb.ErrIncorrectCountry
+	ErrEmpty            = pb.ErrEmpty
+	ErrPassLen          = pb.ErrPassLen
 )
 
 type closeConn func()

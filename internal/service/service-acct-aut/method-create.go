@@ -15,14 +15,15 @@ func (s *server) CreateAccount(ctx context.Context, in *basic.AccountInfoChange)
 	if customer := in.GetCustomerChange(); customer != nil {
 
 		// CHECK EMPTY
-		if customer.CustomerAutNew.LoginCustomer == "" || &customer.CustomerAutNew.LoginCustomer == nil ||
+		if &customer.CustomerAutNew == nil || &customer.CustomerInfo == nil ||
+			customer.CustomerAutNew.LoginCustomer == "" || &customer.CustomerAutNew.LoginCustomer == nil ||
 			customer.CustomerAutNew.PasswortCustomer == "" || &customer.CustomerAutNew.PasswortCustomer == nil ||
 			customer.CustomerInfo.CustomerCountry == "" || &customer.CustomerInfo.CustomerCountry == nil ||
 			customer.CustomerInfo.CustomerCiry == "" || &customer.CustomerInfo.CustomerCiry == nil {
 			return &emptypb.Empty{}, status.New(codes.InvalidArgument, ErrEmpty.Error()).Err()
 		}
 		// CHECK LENGTH PASSWORT
-		if length := len(customer.CustomerAutNew.PasswortCustomer); length < 8 && length > 64 {
+		if length := len(customer.CustomerAutNew.PasswortCustomer); length < 8 || length > 64 {
 			return &emptypb.Empty{}, status.New(codes.InvalidArgument, ErrPassLen.Error()).Err()
 		}
 		// PASSWORT ENCODING
@@ -75,7 +76,8 @@ func (s *server) CreateAccount(ctx context.Context, in *basic.AccountInfoChange)
 	} else if warehouse := in.GetWarehouseChange(); warehouse != nil {
 
 		// CHECK EMPTY
-		if warehouse.WarehouseAutNew.LoginWarehouse == "" || &warehouse.WarehouseAutNew.LoginWarehouse == nil ||
+		if &warehouse.WarehouseAutNew == nil || &warehouse.WarehouseInfo == nil ||
+			warehouse.WarehouseAutNew.LoginWarehouse == "" || &warehouse.WarehouseAutNew.LoginWarehouse == nil ||
 			warehouse.WarehouseAutNew.PasswortWarehouse == "" || &warehouse.WarehouseAutNew.PasswortWarehouse == nil ||
 			warehouse.WarehouseInfo.WarehouseName == "" || &warehouse.WarehouseInfo.WarehouseName == nil ||
 			warehouse.WarehouseInfo.WarehouseNote == "" || &warehouse.WarehouseInfo.WarehouseNote == nil ||
@@ -143,7 +145,8 @@ func (s *server) CreateAccount(ctx context.Context, in *basic.AccountInfoChange)
 	} else if vendor := in.GetVendorChange(); vendor != nil {
 
 		// CHECK EMPTY
-		if vendor.VendorAutNew.LoginVendor == "" || &vendor.VendorAutNew.LoginVendor == nil ||
+		if &vendor.VendorAutNew == nil || &vendor.VendorInfo == nil ||
+			vendor.VendorAutNew.LoginVendor == "" || &vendor.VendorAutNew.LoginVendor == nil ||
 			vendor.VendorAutNew.PasswortVendor == "" || &vendor.VendorAutNew.PasswortVendor == nil ||
 			vendor.VendorInfo.VendorName == "" || &vendor.VendorInfo.VendorName == nil {
 			return &emptypb.Empty{}, status.New(codes.InvalidArgument, ErrEmpty.Error()).Err()

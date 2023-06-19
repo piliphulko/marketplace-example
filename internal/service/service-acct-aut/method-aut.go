@@ -15,7 +15,8 @@ func (s *server) AutAccount(ctx context.Context, loginPass *basic.LoginPass) (*b
 	if customerLoginPass := loginPass.GetCustomerLoginPass(); customerLoginPass != nil {
 		// CUSTOMER
 		// CHECK EMPTY
-		if customerLoginPass.LoginCustomer == "" || &customerLoginPass.LoginCustomer == nil ||
+		if customerLoginPass == nil ||
+			customerLoginPass.LoginCustomer == "" || &customerLoginPass.LoginCustomer == nil ||
 			customerLoginPass.PasswortCustomer == "" || &customerLoginPass.PasswortCustomer == nil {
 			return &basic.StringJWT{}, status.New(codes.InvalidArgument, ErrEmpty.Error()).Err()
 		}
@@ -66,7 +67,8 @@ func (s *server) AutAccount(ctx context.Context, loginPass *basic.LoginPass) (*b
 	} else if warehouseLoginPass := loginPass.GetWarehouseLoginPass(); warehouseLoginPass != nil {
 		// WAREHOUSE
 		// CHECK EMPTY
-		if warehouseLoginPass.LoginWarehouse == "" || &warehouseLoginPass.LoginWarehouse == nil ||
+		if warehouseLoginPass == nil ||
+			warehouseLoginPass.LoginWarehouse == "" || &warehouseLoginPass.LoginWarehouse == nil ||
 			warehouseLoginPass.PasswortWarehouse == "" || &warehouseLoginPass.PasswortWarehouse == nil {
 			return &basic.StringJWT{}, status.New(codes.InvalidArgument, ErrEmpty.Error()).Err()
 		}
@@ -117,7 +119,8 @@ func (s *server) AutAccount(ctx context.Context, loginPass *basic.LoginPass) (*b
 	} else if vendorLoginPass := loginPass.GetVendorLoginPass(); vendorLoginPass != nil {
 		// VENDOR
 		// CHECK EMPTY
-		if vendorLoginPass.LoginVendor == "" || &vendorLoginPass.LoginVendor == nil ||
+		if vendorLoginPass == nil ||
+			vendorLoginPass.LoginVendor == "" || &vendorLoginPass.LoginVendor == nil ||
 			vendorLoginPass.PasswortVendor == "" || &vendorLoginPass.PasswortVendor == nil {
 			return &basic.StringJWT{}, status.New(codes.InvalidArgument, ErrEmpty.Error()).Err()
 		}
