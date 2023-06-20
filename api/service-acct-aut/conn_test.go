@@ -1,4 +1,4 @@
-package serviceacctaut
+package serviceacctauth
 
 import (
 	"testing"

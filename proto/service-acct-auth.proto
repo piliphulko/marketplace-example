@@ -4,8 +4,8 @@ import "basic.proto";
 
 import "google/protobuf/empty.proto";
 
-option go_package = "github.com/piliphulko/marketplace-example/internal/service/service-acct-aut/core";
-//protoc -I . service-acct-aut.proto --go_out=../../../.. --go-grpc_out=../../../..
+option go_package = "github.com/piliphulko/marketplace-example/internal/service/service-acct-auth/core";
+//protoc -I . service-acct-auth.proto --go_out=../../../.. --go-grpc_out=../../../..
 
 package service_acct_aut;
 

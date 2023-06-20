@@ -1,4 +1,4 @@
-package serviceacctaut
+package serviceacctauth
 
 import (
 	"context"
@@ -14,13 +14,13 @@ import (
 func (s *server) CheckJWT(ctx context.Context, in *basic.StringJWT) (*emptypb.Empty, error) {
 
 	// CHECK EMPTY
-	if in.StringJwt == "" && &in == nil {
+	if in == nil && &in.StringJwt == nil && in.StringJwt == "" {
 		return &emptypb.Empty{}, status.New(codes.InvalidArgument, ErrEmpty.Error()).Err()
 	}
 	JWT, err := jwt.BeIntoJWT(in.StringJwt)
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenFake) {
-			return &emptypb.Empty{}, status.New(codes.Unauthenticated, jwt.ErrTokenFake.Error()).Err()
+			return &emptypb.Empty{}, status.New(codes.InvalidArgument, jwt.ErrTokenFake.Error()).Err()
 		} else {
 			LogGRPC.Error(err)
 			return &emptypb.Empty{}, status.New(codes.Internal, "").Err()
@@ -28,9 +28,9 @@ func (s *server) CheckJWT(ctx context.Context, in *basic.StringJWT) (*emptypb.Em
 	}
 	if err := JWT.CheckJWT(); err != nil {
 		if errors.Is(err, jwt.ErrTokenFake) {
-			return &emptypb.Empty{}, status.New(codes.Unauthenticated, jwt.ErrTokenFake.Error()).Err()
+			return &emptypb.Empty{}, status.New(codes.InvalidArgument, jwt.ErrTokenFake.Error()).Err()
 		} else if errors.Is(err, jwt.ErrTokenExpired) {
-			return &emptypb.Empty{}, status.New(codes.Unauthenticated, jwt.ErrTokenExpired.Error()).Err()
+			return &emptypb.Empty{}, status.New(codes.InvalidArgument, jwt.ErrTokenExpired.Error()).Err()
 		} else {
 			LogGRPC.Error(err)
 			return &emptypb.Empty{}, status.New(codes.Internal, "").Err()

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.3
-// source: service-acct-aut.proto
+// source: service-acct-auth.proto
 
 package core
 
@@ -218,5 +218,5 @@ var AccountAut_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "service-acct-aut.proto",
+	Metadata: "service-acct-auth.proto",
 }

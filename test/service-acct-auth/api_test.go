@@ -12,7 +12,7 @@ import (
 	"github.com/piliphulko/marketplace-example/api/basic"
 	pbClient "github.com/piliphulko/marketplace-example/api/service-acct-aut"
 	"github.com/piliphulko/marketplace-example/internal/pkg/logwriter"
-	pb "github.com/piliphulko/marketplace-example/internal/service/service-acct-aut"
+	pb "github.com/piliphulko/marketplace-example/internal/service/service-acct-auth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -59,7 +59,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestInterceptor(t *testing.T) {
-	conn, closeConn, err := pbClient.ConnToMicroserverAccountAuthentication(":50050")
+	conn, closeConn, err := pbClient.ConnToServiceAccountAuthentication(":50050")
 	require.Nil(t, err)
 	defer closeConn()
 	ctx1, cancelCtx1 := context.WithCancel(context.Background())
@@ -79,7 +79,7 @@ func TestInterceptor(t *testing.T) {
 }
 
 func TestCustomer(t *testing.T) {
-	conn, closeConn, err := pbClient.ConnToMicroserverAccountAuthentication(":50050")
+	conn, closeConn, err := pbClient.ConnToServiceAccountAuthentication(":50050")
 	require.Nil(t, err)
 	defer closeConn()
 	var (

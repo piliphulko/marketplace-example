@@ -1,4 +1,4 @@
-package serviceacctaut
+package serviceacctauth
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/piliphulko/marketplace-example/internal/pkg/jwt"
-	"github.com/piliphulko/marketplace-example/internal/service/service-acct-aut/core"
+	"github.com/piliphulko/marketplace-example/internal/service/service-acct-auth/core"
 	"go.uber.org/zap/zapgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -27,6 +27,7 @@ var (
 	ErrIncorrectCountry = errors.New("Incorrect country")
 	ErrEmpty            = errors.New("Empty value passed")
 	ErrPassLen          = errors.New("password is not in the allowed number of characters (8-64)")
+	ErrLoginBusy        = errors.New("login busy")
 )
 
 func errorHandling(err error) error {
@@ -38,7 +39,7 @@ func errorHandling(err error) error {
 	if errors.As(err, &pgErr) {
 		// UNIQUE ERROR
 		if pgErr.Code == "23505" {
-			return status.New(codes.AlreadyExists, "").Err()
+			return status.New(codes.AlreadyExists, ErrLoginBusy.Error()).Err()
 			// INCORRECT COUNTRY
 		} else if pgErr.Code == "22P02" {
 			return status.New(codes.InvalidArgument, ErrIncorrectCountry.Error()).Err()

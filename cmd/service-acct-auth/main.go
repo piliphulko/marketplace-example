@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/piliphulko/marketplace-example/internal/pkg/logwriter"
-	pb "github.com/piliphulko/marketplace-example/internal/service/service-acct-aut"
+	pb "github.com/piliphulko/marketplace-example/internal/service/service-acct-auth"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"

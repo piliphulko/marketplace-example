@@ -1,4 +1,4 @@
-package serviceacctaut
+package serviceacctauth
 
 import (
 	"context"
@@ -46,7 +46,7 @@ func (s *server) AutAccount(ctx context.Context, loginPass *basic.LoginPass) (*b
 			return &basic.StringJWT{}, status.New(codes.Internal, "").Err()
 		}
 		if !pa.CheckPass([]byte(customerLoginPass.PasswortCustomer)) {
-			return &basic.StringJWT{}, status.New(codes.Unauthenticated, ErrIncorrectPass.Error()).Err()
+			return &basic.StringJWT{}, status.New(codes.InvalidArgument, ErrIncorrectPass.Error()).Err()
 		}
 		// JWT creation
 		jws, err := jwt.CreateJWS(
@@ -98,7 +98,7 @@ func (s *server) AutAccount(ctx context.Context, loginPass *basic.LoginPass) (*b
 			return &basic.StringJWT{}, status.New(codes.Internal, "").Err()
 		}
 		if !pa.CheckPass([]byte(warehouseLoginPass.PasswortWarehouse)) {
-			return &basic.StringJWT{}, status.New(codes.Unauthenticated, ErrIncorrectPass.Error()).Err()
+			return &basic.StringJWT{}, status.New(codes.InvalidArgument, ErrIncorrectPass.Error()).Err()
 		}
 		// JWT creation
 		jws, err := jwt.CreateJWS(
@@ -150,7 +150,7 @@ func (s *server) AutAccount(ctx context.Context, loginPass *basic.LoginPass) (*b
 			return &basic.StringJWT{}, status.New(codes.Internal, "").Err()
 		}
 		if !pa.CheckPass([]byte(vendorLoginPass.PasswortVendor)) {
-			return &basic.StringJWT{}, status.New(codes.Unauthenticated, ErrIncorrectPass.Error()).Err()
+			return &basic.StringJWT{}, status.New(codes.InvalidArgument, ErrIncorrectPass.Error()).Err()
 		}
 		// JWT creation
 		jws, err := jwt.CreateJWS(
