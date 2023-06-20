@@ -8,6 +8,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gofrs/uuid"
+	"github.com/piliphulko/marketplace-example/api/basic"
+	pbAA "github.com/piliphulko/marketplace-example/api/service-acct-aut"
 	"github.com/piliphulko/marketplace-example/internal/pkg/gatehttp/opt"
 )
 
@@ -37,7 +39,17 @@ func handlerCustomerAuthorizationSend(ctx context.Context, cancelCtxError contex
 		login_customer    = r.FormValue("login_customer")
 		password_customer = r.FormValue("password_customer")
 	)
-	reply, err := optHTTP.TakeConnGrpc(grpcAA).AutAccount(ctx, nil)
+	stringJWT, err := optHTTP.TakeConnGrpc(connAA).AutAccount(ctx,
+		pbAA.OneofLoginPass(basic.CustomerAut{
+			LoginCustomer:    login_customer,
+			PasswortCustomer: password_customer,
+		}))
+
+	if err != nil {
+		opt.WriteRedirectAnswerInfoErr(&buf, HandlerErrConnAA(err, cancelCtxError))
+	} else {
+		opt.WriteRedirectAnswerInfoOk(&buf, stringJWT.StringJwt)
+	}
 
 	ch <- buf.Bytes()
 }
@@ -56,6 +68,12 @@ func handlerCustomerHomePage(ctx context.Context, cancelCtxError context.CancelC
 		cancelCtxError(err)
 		return
 	}
+	cookieJWT, err := r.Cookie(opt.CookieNameJWT)
+	if err != nil {
+		cancelCtxError(err)
+		return
+	}
+	fmt.Println(cookieJWT.Value)
 
 	if err := optHTTP.TakeHTML().Execute(&buf, struct {
 		RedirectAnswer         interface{}

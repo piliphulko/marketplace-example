@@ -25,11 +25,11 @@ var (
 
 type closeConn func()
 
-type AccountAutClient interface {
+type AccountAuthClient interface {
 	core.AccountAutClient
 }
 
-type accountAutClient struct {
+type accountAuthClient struct {
 	core.AccountAutClient
 }
 
@@ -87,7 +87,7 @@ func OneofLoginPass[T ChoiseLoginPass](v T) *basic.LoginPass {
 }
 
 // ConnToMicroserverAccountAuthentication getting a connection to a service
-func ConnToServiceAccountAuthentication(address string) (AccountAutClient, closeConn, error) {
+func ConnToServiceAccountAuthentication(address string) (AccountAuthClient, closeConn, error) {
 	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, nil, err
@@ -106,13 +106,13 @@ func ConnToServiceAccountAuthentication(address string) (AccountAutClient, close
 		PasswortCustomer: "123456ab",
 	}))
 */
-func (aa *accountAutClient) AutAccount(ctx context.Context, in *basic.LoginPass, opts ...grpc.CallOption) (*basic.StringJWT, error) {
+func (aa *accountAuthClient) AutAccount(ctx context.Context, in *basic.LoginPass, opts ...grpc.CallOption) (*basic.StringJWT, error) {
 	return aa.AutAccount(ctx, in, opts...)
 }
 
 // CheckJWT checks the token, if the token is invalid then returns an error
 // possible errors: ErrTokenFake, ErrTokenExpired
-func (aa *accountAutClient) CheckJWT(ctx context.Context, in *basic.StringJWT, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (aa *accountAuthClient) CheckJWT(ctx context.Context, in *basic.StringJWT, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	return aa.CheckJWT(ctx, in, opts...)
 }
 
@@ -134,7 +134,7 @@ func (aa *accountAutClient) CheckJWT(ctx context.Context, in *basic.StringJWT, o
 		},
 	}))
 */
-func (aa *accountAutClient) CreateAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (aa *accountAuthClient) CreateAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	return aa.CreateAccount(ctx, in, opts...)
 }
 
@@ -160,6 +160,6 @@ func (aa *accountAutClient) CreateAccount(ctx context.Context, in *basic.Account
 		},
 	}))
 */
-func (aa *accountAutClient) UpdateAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (aa *accountAuthClient) UpdateAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	return aa.UpdateAccount(ctx, in, opts...)
 }

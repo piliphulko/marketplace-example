@@ -2,8 +2,6 @@ package gatehttp
 
 import (
 	"html/template"
-
-	"github.com/piliphulko/marketplace-example/internal/pkg/accountaut"
 )
 
 var TempHTML = template.New("html").Funcs(template.FuncMap{
@@ -14,11 +12,3 @@ var TempHTML = template.New("html").Funcs(template.FuncMap{
 		return float64(a * float64(b))
 	},
 })
-
-var (
-	ConnServerAA accountaut.ConnAccountAut
-)
-
-const (
-	grpcAA = iota
-)

@@ -1,7 +1,9 @@
 package opt
 
-import "github.com/piliphulko/marketplace-example/internal/pkg/accountaut"
+import (
+	s1 "github.com/piliphulko/marketplace-example/api/service-acct-aut"
+)
 
 type ConnGrpc interface {
-	accountaut.ConnAccountAut
+	s1.AccountAuthClient
 }

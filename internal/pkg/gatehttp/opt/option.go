@@ -20,6 +20,8 @@ type OptionsHTTP struct {
 	RedirectHTTPPathOk           string
 	RedirectHTTPPathMistake      string
 	connectingToMicroservicesMap map[int]ConnGrpc
+	cookieWrite                  bool
+	cookieRead                   bool
 }
 
 // NewOptionsHTTP creates an object for setting HTTP request parameters
@@ -67,8 +69,8 @@ func (optHTTP *OptionsHTTP) TakeHTML() *template.Template {
 // ReceptionRedirectURL informative function that indicates that the handler is ready to receive the redirectAnswer type
 func (optHTTP *OptionsHTTP) ReceptionRedirectURL() *OptionsHTTP { return optHTTP }
 
-// SetConnectingToMicroservices connecting grpc services to HTTP handler
-func (optHTTP *OptionsHTTP) SetConnectingToMicroservices(connections map[int]ConnGrpc) *OptionsHTTP {
+// SetConnectingToServiceGrpc connecting grpc services to HTTP handler
+func (optHTTP *OptionsHTTP) SetConnectingToServiceGrpc(connections map[int]ConnGrpc) *OptionsHTTP {
 	for k, v := range connections {
 		optHTTP.connectingToMicroservicesMap[k] = v
 	}
@@ -102,6 +104,16 @@ func (optHTTP *OptionsHTTP) URLSendRedirectMistake(pathRedirect string) *Options
 
 func (optHTTP *OptionsHTTP) ChangePathMistakeRedirect(pattern string, fill string) {
 	optHTTP.RedirectHTTPPathOk = strings.ReplaceAll(optHTTP.RedirectHTTPPathOk, pattern, fill)
+}
+
+func (optHTTP *OptionsHTTP) CookieWrite() *OptionsHTTP {
+	optHTTP.cookieWrite = true
+	return optHTTP
+}
+
+func (optHTTP *OptionsHTTP) CookieRead() *OptionsHTTP {
+	optHTTP.cookieRead = true
+	return optHTTP
 }
 
 // HandlerLogics the handler logic function must match this type
@@ -196,7 +208,18 @@ func (optHTTP *OptionsHTTP) HandlerLogicsRun(ctx context.Context, timeCtx time.D
 					}
 				}
 				if redirectAnswerValue.OkInfo != "" {
-					http.Redirect(w, r, optHTTP.RedirectHTTPPathOk+"?data="+url.QueryEscape(string(result)), http.StatusMovedPermanently)
+					if optHTTP.cookieWrite {
+						c, err := CookieString(redirectAnswerValue.OkInfo).Take_httpCookie_FromCookieString()
+						if err != nil {
+							LogZap.Error(err.Error())
+							w.WriteHeader(http.StatusInternalServerError)
+							return
+						}
+						http.SetCookie(w, c)
+						http.Redirect(w, r, optHTTP.RedirectHTTPPathOk, http.StatusMovedPermanently)
+					} else {
+						http.Redirect(w, r, optHTTP.RedirectHTTPPathOk+"?data="+url.QueryEscape(string(result)), http.StatusMovedPermanently)
+					}
 					return
 				} else {
 					http.Redirect(w, r, optHTTP.RedirectHTTPPathMistake+"?data="+url.QueryEscape(string(result)), http.StatusMovedPermanently)
