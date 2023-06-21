@@ -10,6 +10,59 @@ import (
 
 type logSync func()
 
+func InitZapLog(logger **zap.Logger, pathLogFile string, level zapcore.Level) (logSync, error) {
+	config := zap.NewProductionEncoderConfig()
+	config.EncodeTime = zapcore.ISO8601TimeEncoder
+	logFile, err := os.OpenFile(pathLogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.FileMode(0755))
+	if err != nil {
+		return nil, err
+	}
+	core := zapcore.NewTee(
+		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.AddSync(logFile), level),
+	)
+	createdLogger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(level))
+	*logger = createdLogger
+	return func() { createdLogger.Sync() }, nil
+}
+
+func InitZapLogStdout(logger **zap.Logger, level zapcore.Level) logSync {
+	config := zap.NewProductionEncoderConfig()
+	config.EncodeTime = zapcore.ISO8601TimeEncoder
+	core := zapcore.NewTee(
+		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.AddSync(os.Stdout), level),
+	)
+	createdLogger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(level))
+	*logger = createdLogger
+	return func() { createdLogger.Sync() }
+}
+
+func InitZapLogGRPC(logger **zapgrpc.Logger, pathLogFile string, level zapcore.Level) (logSync, error) {
+	config := zap.NewProductionEncoderConfig()
+	config.EncodeTime = zapcore.ISO8601TimeEncoder
+	logFile, err := os.OpenFile(pathLogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.FileMode(0755))
+	if err != nil {
+		return nil, err
+	}
+	core := zapcore.NewTee(
+		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.AddSync(logFile), level),
+	)
+	createdLogger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(level))
+	*logger = zapgrpc.NewLogger(createdLogger)
+	return func() { createdLogger.Sync() }, nil
+}
+
+func NewZapLogStdoutGRPC(logger **zapgrpc.Logger, level zapcore.Level) logSync {
+	config := zap.NewProductionEncoderConfig()
+	config.EncodeTime = zapcore.ISO8601TimeEncoder
+	core := zapcore.NewTee(
+		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.AddSync(os.Stdout), level),
+	)
+	createdLogger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(level))
+	*logger = zapgrpc.NewLogger(createdLogger)
+	return func() { createdLogger.Sync() }
+}
+
+/*
 func InitializeLogger(logger **zap.Logger, pathInfoLevel, pathErrorLevel, pathPanicLevel string) error {
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -33,29 +86,4 @@ func InitializeLogger(logger **zap.Logger, pathInfoLevel, pathErrorLevel, pathPa
 	*logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 	return nil
 }
-
-func InitializeLoggerGRPC(logger **zapgrpc.Logger, pathLogger string) (error, logSync) {
-	config := zap.NewProductionEncoderConfig()
-	config.EncodeTime = zapcore.ISO8601TimeEncoder
-	logFile, err := os.OpenFile(pathLogger, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.FileMode(0755))
-	if err != nil {
-		return err, nil
-	}
-	core := zapcore.NewTee(
-		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.AddSync(logFile), zapcore.InfoLevel),
-	)
-	basicLogger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
-	*logger = zapgrpc.NewLogger(basicLogger)
-	return nil, func() { basicLogger.Sync() }
-}
-
-func InitStdoutLoggerGRPC(logger **zapgrpc.Logger) logSync {
-	config := zap.NewProductionEncoderConfig()
-	config.EncodeTime = zapcore.ISO8601TimeEncoder
-	core := zapcore.NewTee(
-		zapcore.NewCore(zapcore.NewJSONEncoder(config), zapcore.AddSync(os.Stdout), zapcore.InfoLevel),
-	)
-	basicLogger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
-	*logger = zapgrpc.NewLogger(basicLogger)
-	return func() { basicLogger.Sync() }
-}
+*/

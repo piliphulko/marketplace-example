@@ -99,7 +99,7 @@ func ConnToServiceAccountAuthentication(address string) (AccountAuthClient, clos
 // user type should be selected, for easier operation, you can use the OneofLoginPass function
 // possible errors: ErrEmpty, ErrPassLen, ErrIncorrectPass
 /*
-	pbClient "github.com/piliphulko/marketplace-example/api/service-acct-aut"
+	pbClient "github.com/piliphulko/marketplace-example/api/service-accth-aut"
 
 	jwtString, err := conn.AutAccount(ctx, pbClient.OneofLoginPass(basic.CustomerAut{
 		LoginCustomer:    "newlogin",
@@ -121,7 +121,7 @@ func (aa *accountAuthClient) CheckJWT(ctx context.Context, in *basic.StringJWT, 
 // country name must be in uppercase
 // possible errors: ErrEmpty, ErrPassLen, ErrIncorrectCountry, ErrLoginBusy
 /*
-	pbClient "github.com/piliphulko/marketplace-example/api/service-acct-aut"
+	pbClient "github.com/piliphulko/marketplace-example/api/service-accth-aut"
 
 	_, err = conn.CreateAccount(ctx, pbClient.OneofAccount(basic.CustomerChange{
 		CustomerAutNew: &basic.CustomerAut{
@@ -144,7 +144,7 @@ func (aa *accountAuthClient) CreateAccount(ctx context.Context, in *basic.Accoun
 // changes only filled fields
 // possible errors: ErrEmpty, ErrPassLen, ErrIncorrectCountry, ErrLoginBusy, ErrIncorrectLogin, ErrIncorrectPass
 /*
-	pbClient "github.com/piliphulko/marketplace-example/api/service-acct-aut"
+	pbClient "github.com/piliphulko/marketplace-example/api/service-acct-auth"
 
 	_, err = conn.UpdateAccount(ctx, pbClient.OneofAccount(basic.CustomerChange{
 		CustomerAutOld: &basic.CustomerAut{ // to change, you need to confirm the data

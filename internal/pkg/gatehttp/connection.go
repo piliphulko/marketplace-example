@@ -1,11 +1,13 @@
 package gatehttp
 
 import (
-	s1 "github.com/piliphulko/marketplace-example/api/service-acct-aut"
+	"github.com/piliphulko/marketplace-example/internal/pkg/gatehttp/opt"
 )
 
+//s1 "github.com/piliphulko/marketplace-example/api/service-acct-aut"
+
 var ( // requires connection
-	ConnAA s1.AccountAuthClient
+	ConnAA opt.ConnGrpc // s1.AccountAuthClient
 )
 
 const (

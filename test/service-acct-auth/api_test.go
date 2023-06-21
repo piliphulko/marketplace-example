@@ -15,6 +15,7 @@ import (
 	pb "github.com/piliphulko/marketplace-example/internal/service/service-acct-auth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -22,7 +23,8 @@ import (
 
 func TestMain(m *testing.M) {
 	pb.InitJWTSecret("testSecret")
-	logerSync := logwriter.InitStdoutLoggerGRPC(&pb.LogGRPC)
+	//logerSync := logwriter.InitStdoutLoggerGRPC(&pb.LogGRPC)
+	logerSync := logwriter.NewZapLogStdoutGRPC(&pb.LogGRPC, zapcore.ErrorLevel)
 	defer logerSync()
 	lis, err := net.Listen(
 		"tcp",

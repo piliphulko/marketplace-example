@@ -7,6 +7,7 @@ import (
 	"github.com/piliphulko/marketplace-example/internal/pkg/logwriter"
 	pb "github.com/piliphulko/marketplace-example/internal/service/service-acct-auth"
 	"github.com/spf13/viper"
+	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 )
@@ -18,20 +19,21 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	pb.InitJWTSecret(viper.GetString("SERVICE-ACCT-AUT.JWT_SECRET"))
+	pb.InitJWTSecret(viper.GetString("SERVICE-ACCT-AUTH.JWT_SECRET"))
 }
 
 func main() {
-	err, logSync := logwriter.InitializeLoggerGRPC(
-		&pb.LogGRPC, viper.GetString("SERVICE-ACCT-AUT.LOG_FILE"))
+	logSync, err := logwriter.InitZapLogGRPC(
+		&pb.LogGRPC, viper.GetString("SERVICE-ACCT-AUTH.LOG_FILE"), zapcore.ErrorLevel,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer logSync()
 
 	lis, err := net.Listen(
-		viper.GetString("SERVICE-ACCT-AUT.NETWORK_SERVER"),
-		viper.GetString("SERVICE-ACCT-AUT.PORT"),
+		viper.GetString("SERVICE-ACCT-AUTH.NETWORK_SERVER"),
+		viper.GetString("SERVICE-ACCT-AUTH.PORT"),
 	)
 	if err != nil {
 		log.Fatal(err)

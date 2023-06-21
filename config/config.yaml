@@ -2,7 +2,7 @@
 POSTGRESQL:
   DATABASE_URL: "postgres://postgres:5432@localhost:5432/test_db"
 
-SERVER_HTTP_SEND_HTML:
+SERVICE-HTTP-SEND-HTML:
   PORT: ":8080"
   HTML_DIR: "../../html"
   LOG_FILE:
@@ -10,7 +10,7 @@ SERVER_HTTP_SEND_HTML:
     ERROR_LEVEL: "errorHTTP.log"
     PANIC_LEVEL: "panicHTTP.log"
 
-SERVICE-ACCT-AUT:
+SERVICE-ACCT-AUTH:
   NETWORK_SERVER: "tcp"
   PORT: ":50051"
   LOG_FILE: "total.log"
