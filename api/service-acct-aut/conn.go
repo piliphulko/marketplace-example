@@ -97,7 +97,7 @@ func ConnToServiceAccountAuthentication(address string) (AccountAuthClient, clos
 
 // AutAccount account authentication and getting a JWT token
 // user type should be selected, for easier operation, you can use the OneofLoginPass function
-// possible errors: ErrEmpty, ErrPassLen, ErrIncorrectPass
+// possible errors: ErrEmpty, ErrPassLen, ErrIncorrectPass, ErrIncorrectLogin
 /*
 	pbClient "github.com/piliphulko/marketplace-example/api/service-accth-aut"
 

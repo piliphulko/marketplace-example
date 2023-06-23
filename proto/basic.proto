@@ -42,6 +42,12 @@ message WarehouseChange {
     WarehouseInfo warehouse_info = 3;
 }
 
+message WarehouseWalletInfo {
+    float wallet_money_available = 1;
+    float wallet_money_blocked = 2;
+    float commission_percentage = 3;
+}
+
 // VENDOR
 message VendorAut {
     string login_vendor = 1;

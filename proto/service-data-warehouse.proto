@@ -10,6 +10,21 @@ option go_package = "github.com/piliphulko/marketplace-example/internal/service/
 package service_data_warehouse;
 
 service DataWarehouse {
+    /* GetAcctInfo
+    get information about account data
+    account login is determined from the JWT token */
     rpc GetAcctInfo(google.protobuf.Empty) returns (basic.WarehouseInfo);
+
+    /* GetArrayOrdersCustomer
+    receives a list of orders from the customer to the given warehouse
+    account login is determined from the JWT token 
+    text of possible errors:
+    -- 'Empty value passed' */
     rpc GetArrayOrdersCustomer(google.protobuf.Empty) returns (basic.ArrayOrdersCustomer);
+
+    /* GetInfoWallet
+    getting information about money and commission percentage
+    account login is determined from the JWT token */
+    rpc GetInfoWallet(google.protobuf.Empty) returns(basic.WarehouseWalletInfo);
+
 }

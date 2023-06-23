@@ -26,8 +26,8 @@ var (
 	ErrIncorrectLogin   = errors.New("Incorrect login")
 	ErrIncorrectCountry = errors.New("Incorrect country")
 	ErrEmpty            = errors.New("Empty value passed")
-	ErrPassLen          = errors.New("password is not in the allowed number of characters (8-64)")
-	ErrLoginBusy        = errors.New("login busy")
+	ErrPassLen          = errors.New("Password is not in the allowed number of characters (8-64)")
+	ErrLoginBusy        = errors.New("Login busy")
 )
 
 func errorHandling(err error) error {
