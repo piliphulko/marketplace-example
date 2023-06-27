@@ -48,6 +48,16 @@ message WarehouseWalletInfo {
     float commission_percentage = 3;
 }
 
+message ReceivingGoods {
+    string name_vendor = 1;
+    string name_goods = 2;
+    uint32 amount_goods = 3;
+}
+
+message ReceivingGoodsARRAY {
+    repeated ReceivingGoods receiving_goods_array = 1;
+}
+
 // VENDOR
 message VendorAut {
     string login_vendor = 1;

@@ -19,8 +19,8 @@ var (
 )
 
 var (
-	ErrTokenFake    = errors.New("token fake")
-	ErrTokenExpired = errors.New("token expired")
+	ErrTokenFake    = errors.New("Token fake")
+	ErrTokenExpired = errors.New("Token expired")
 )
 
 // InsertSecretForSignJWT inserts the key to sign the JWS

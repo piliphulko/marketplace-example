@@ -9,10 +9,20 @@ option go_package = "github.com/piliphulko/marketplace-example/internal/service/
 
 package service_data_warehouse;
 
+/*
+ALL possible errors + text of possible errors:
+    -- ErrEmpty: "Empty value passed"
+    -- ErrTokenFake: "Token fake"
+    -- ErrTokenExpired: "Token expired"
+    -- ErrMissingMetadata: "Missing metadata"
+*/
+
 service DataWarehouse {
+    
     /* GetAcctInfo
     get information about account data
-    account login is determined from the JWT token */
+    account login is determined from the JWT token
+    # possible errors: */
     rpc GetAcctInfo(google.protobuf.Empty) returns (basic.WarehouseInfo);
 
     /* GetArrayOrdersCustomer
@@ -27,4 +37,8 @@ service DataWarehouse {
     account login is determined from the JWT token */
     rpc GetInfoWallet(google.protobuf.Empty) returns(basic.WarehouseWalletInfo);
 
+    /* ReceivingGoods
+    adds goods to stock
+    account login is determined from the JWT token*/
+    rpc ReceivingGoods(basic.ReceivingGoodsARRAY) returns(google.protobuf.Empty);
 }
