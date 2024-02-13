@@ -5,8 +5,8 @@
             {{- if ne .RedirectAnswer.OkInfo "" -}}
             <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
             {{end}}
-            {{- if ne .RedirectAnswer.ErrInfo "" -}}
-            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{- if ne .RedirectAnswer.MistakeInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.MistakeInfo}}</p>
             {{end}}
         {{end}}
     </dif>

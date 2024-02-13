@@ -21,7 +21,7 @@ func BenchmarkOne(b *testing.B) {
 			},
 			CustomerInfo: &basic.CustomerInfo{
 				CustomerCountry: "gfds",
-				CustomerCiry:    "vcxz ",
+				CustomerCity:    "vcxz ",
 			},
 		})
 	}
@@ -45,7 +45,7 @@ func BenchmarkSimple(b *testing.B) {
 					},
 					CustomerInfo: &basic.CustomerInfo{
 						CustomerCountry: "gfds",
-						CustomerCiry:    "vcxz ",
+						CustomerCity:    "vcxz ",
 					},
 				},
 			},

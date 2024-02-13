@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "basic.proto";
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/piliphulko/marketplace-example/internal/service/service-data-customer/core";
+
+service DataCustomer {
+
+    rpc GetCustomerInfo(google.protobuf.Empty) returns (basic.CustomerInfo);
+
+    rpc GetCustomerOrders(basic.OrderStatus) returns (basic.Orders);
+
+    rpc GetWalletInfo(google.protobuf.Empty) returns (basic.WalletInfo);
+}

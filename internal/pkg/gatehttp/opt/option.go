@@ -3,6 +3,7 @@ package opt
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"html/template"
 	"io"
 	"log"
@@ -13,15 +14,15 @@ import (
 )
 
 type OptionsHTTP struct {
-	headerResponseMap            map[string]string
-	headerRequestMap             map[string]string
-	html                         *template.Template
-	RedirectUseDataURL           bool
-	RedirectHTTPPathOk           string
-	RedirectHTTPPathMistake      string
-	connectingToMicroservicesMap map[int]ConnGrpc
-	cookieWrite                  bool
-	cookieRead                   bool
+	headerResponseMap       map[string]string
+	headerRequestMap        map[string]string
+	html                    *template.Template
+	RedirectUseDataURL      bool
+	RedirectHTTPPathOk      string
+	RedirectHTTPPathMistake string
+	cookieWrite             bool
+	cookieRead              bool
+	cookieDelete            bool
 }
 
 // NewOptionsHTTP creates an object for setting HTTP request parameters
@@ -69,6 +70,7 @@ func (optHTTP *OptionsHTTP) TakeHTML() *template.Template {
 // ReceptionRedirectURL informative function that indicates that the handler is ready to receive the redirectAnswer type
 func (optHTTP *OptionsHTTP) ReceptionRedirectURL() *OptionsHTTP { return optHTTP }
 
+/*
 // SetConnectingToServiceGrpc connecting grpc services to HTTP handler
 func (optHTTP *OptionsHTTP) SetConnectingToServiceGrpc(connections map[int]ConnGrpc) *OptionsHTTP {
 	for k, v := range connections {
@@ -81,6 +83,7 @@ func (optHTTP *OptionsHTTP) SetConnectingToServiceGrpc(connections map[int]ConnG
 func (optHTTP OptionsHTTP) TakeConnGrpc(nameGrpc int) ConnGrpc {
 	return optHTTP.connectingToMicroservicesMap[nameGrpc]
 }
+*/
 
 // URLSendRedirectOk setting the reddirect path
 // you need to change the path manually using the ChangePathOkRedirect method in your HandlerLogics
@@ -116,6 +119,11 @@ func (optHTTP *OptionsHTTP) CookieRead() *OptionsHTTP {
 	return optHTTP
 }
 
+func (optHTTP *OptionsHTTP) CookieDelete() *OptionsHTTP {
+	optHTTP.cookieDelete = true
+	return optHTTP
+}
+
 // HandlerLogics the handler logic function must match this type
 // after the successful execution of the function, the response must be written to the channel to complete the work of the handler
 // to terminate the work due to an error, you need to use the function context.CancelCauseFunc
@@ -133,6 +141,16 @@ func WriteRedirectAnswerInfoOk(writer io.Writer, okInfo string) error {
 	if err := JSON.NewEncoder(writer).Encode(redirectAnswer{
 		Ok:     true,
 		OkInfo: okInfo,
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func WriteRedirectAnswerCookie(writer io.Writer, name, value string) error {
+	if err := JSON.NewEncoder(writer).Encode(redirectAnswer{
+		Ok:     true,
+		OkInfo: fmt.Sprintf("NAME: %s || VALUE: %s", name, value),
 	}); err != nil {
 		return err
 	}
@@ -182,12 +200,13 @@ func (optHTTP *OptionsHTTP) HandlerLogicsRun(ctx context.Context, timeCtx time.D
 		case <-ctx.Done():
 			switch ctx.Err() {
 			case context.DeadlineExceeded:
-				LogZap.Error("timeout expired")
+				fmt.Println("timeout expired")
 				w.WriteHeader(http.StatusRequestTimeout)
 				return
 			default:
 				err := context.Cause(ctx)
-				LogZap.Error(err.Error())
+				fmt.Println(err)
+				//LogZap.Error(err.Error())
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
@@ -198,24 +217,48 @@ func (optHTTP *OptionsHTTP) HandlerLogicsRun(ctx context.Context, timeCtx time.D
 				redirectAnswerValue := redirectAnswer{}
 				if err := JSON.NewDecoder(bytes.NewReader(result)).Decode(&redirectAnswerValue); err != nil {
 					if err == io.EOF {
-						LogZap.Error("responseAnswer type expected")
+						fmt.Println("responseAnswer type expected")
 						w.WriteHeader(http.StatusInternalServerError)
 						return
 					} else {
-						LogZap.Error(err.Error())
+						fmt.Println(err)
 						w.WriteHeader(http.StatusInternalServerError)
 						return
 					}
 				}
 				if redirectAnswerValue.OkInfo != "" {
 					if optHTTP.cookieWrite {
-						c, err := CookieString(redirectAnswerValue.OkInfo).Take_httpCookie_FromCookieString()
-						if err != nil {
-							LogZap.Error(err.Error())
+						var (
+							name, value string
+						)
+						if _, err := fmt.Sscanf(redirectAnswerValue.OkInfo, "NAME: %s || VALUE: %s", &name, &value); err != nil {
+							fmt.Println(err)
 							w.WriteHeader(http.StatusInternalServerError)
 							return
 						}
-						http.SetCookie(w, c)
+						http.SetCookie(w, &http.Cookie{
+							Name:     name,
+							Value:    value,
+							Path:     "/",
+							Secure:   false,
+							HttpOnly: true,
+							SameSite: http.SameSiteStrictMode,
+						})
+						http.Redirect(w, r, optHTTP.RedirectHTTPPathOk, http.StatusMovedPermanently)
+					} else if optHTTP.cookieDelete {
+						var (
+							name, value string
+						)
+						if _, err := fmt.Sscanf(redirectAnswerValue.OkInfo, "NAME: %s || VALUE: %s", &name, &value); err != nil {
+							fmt.Println(err)
+							w.WriteHeader(http.StatusInternalServerError)
+							return
+						}
+						http.SetCookie(w, &http.Cookie{
+							Name:    name,
+							Value:   value,
+							Expires: time.Unix(0, 0),
+						})
 						http.Redirect(w, r, optHTTP.RedirectHTTPPathOk, http.StatusMovedPermanently)
 					} else {
 						http.Redirect(w, r, optHTTP.RedirectHTTPPathOk+"?data="+url.QueryEscape(string(result)), http.StatusMovedPermanently)

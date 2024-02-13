@@ -5,13 +5,13 @@
             {{- if ne .RedirectAnswer.OkInfo "" -}}
             <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
             {{end}}
-            {{- if ne .RedirectAnswer.ErrInfo "" -}}
-            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{- if ne .RedirectAnswer.MistakeInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.MistakeInfo}}</p>
             {{end}}
         {{end}}
     </dif>
     <h1>Authentication:</h1>
-    <form action="/customer/authorization/send" method="GET">
+    <form action="/customer/authorization/send" method="POST">
         <div>
             <label for="login_customer">Login:</label><br>
             <input type="text" id="login_customer" name="login_customer"><br>

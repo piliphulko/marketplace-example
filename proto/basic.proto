@@ -8,12 +8,17 @@ option go_package = "github.com/piliphulko/marketplace-example/api/basic";
 // CUSTOMER
 message CustomerAut {
     string login_customer = 1;
-    string passwort_customer = 2;
+    string password_customer = 2;
 }
 
 message CustomerInfo {
     string customer_country = 1;
-    string customer_ciry = 2;
+    string customer_city = 2;
+}
+
+message CustomerNew {
+    CustomerAut customer_aut = 1;
+    CustomerInfo customer_info = 2;
 }
 
 message CustomerChange {
@@ -25,7 +30,7 @@ message CustomerChange {
 // WAREHOUSE
 message WarehouseAut {
     string login_warehouse = 1;
-    string passwort_warehouse = 2;
+    string password_warehouse = 2;
 }
 
 message WarehouseInfo {
@@ -34,6 +39,11 @@ message WarehouseInfo {
     string warehouse_city = 3;
     float warehouse_commission = 4;
     string warehouse_note = 5;
+}
+
+message WarehouseNew {
+    WarehouseAut warehouse_aut = 1;
+    WarehouseInfo warehouse_info = 2;
 }
 
 message WarehouseChange {
@@ -61,7 +71,7 @@ message ReceivingGoodsARRAY {
 // VENDOR
 message VendorAut {
     string login_vendor = 1;
-    string passwort_vendor = 2;
+    string password_vendor = 2;
 }
 
 message VendorInfo {
@@ -74,6 +84,11 @@ message VendorChange {
     VendorInfo vendor_info = 3;
 }
 
+message VendorNew {
+    VendorAut vendor_aut = 1;
+    VendorInfo vendor_info = 2;
+}
+
 // OTHERS
 message LoginPass {
     oneof account_choice {
@@ -83,7 +98,7 @@ message LoginPass {
     }
 }
 
-message AccountInfoChange {
+message AccountInfo {
     oneof account_info {
         CustomerChange customer_change = 1;
         WarehouseChange warehouse_change = 2;
@@ -99,18 +114,76 @@ message StringJWT {
 
 message Order {
     string order_uuid = 1;
-    string name_goods = 2;
+    string location = 2;
+    string name_goods = 3;
+    string type_goods = 4;
+    string name_vendor = 5;
+    string name_warehouse = 6;
+    uint32 amount_goods = 7;
+    float price_goods = 8;
+    string date = 9;
+}
+
+message Orders {
+    repeated Order orders = 1;
+}
+
+enum OrderStatusEnum {
+    UNSPECIFIED = 0;
+    UNCONFIRMED = 1;
+    CONFIRNED = 2;
+    COMPLETED = 3;
+}
+
+message OrderStatus {
+    OrderStatusEnum order_status = 1;
+}
+
+message NewOrder {
+    string name_warehouse = 1;
+    string name_vendor = 2;
+    string name_goods = 3;
+    uint32 amount_goods = 4;
+}
+
+message NewOrderARRAY {
+    repeated NewOrder new_order = 1;
+}
+
+message AddToOrderARRAY {
+    string order_uuid = 1;
+    repeated NewOrder new_order = 2;
+}
+
+message OrderUuid {
+    string order_uuid = 1;
+}
+
+message WalletInfo {
+    float amount_money = 1;
+    float blocked_money = 2;
+}
+
+message CountryCityPair {
+    string country = 1;
+    string city = 2;
+}
+
+message CountryCityPairs {
+    repeated CountryCityPair country_city_pairs = 1;
+}
+
+message Goods {
+    string name_warehouse = 1;
+    string location = 2;
     string name_vendor = 3;
-    string name_warehouse = 4;
-    uint32 amount_goods = 5;
-    float price_goods = 6;
+    string type_goods = 4;
+    string name_goods = 5;
+    string info_goods = 6;
+    float price_goods = 7;
+    uint32 amount_goods = 8;
 }
 
-message OrdersCustomer {
-    string login_customer = 1;
-    repeated Order orders = 2;
-}
-
-message ArrayOrdersCustomer {
-    repeated OrdersCustomer orders_customer = 1;
+message GoodsArray {
+    repeated Goods goods = 1;
 }

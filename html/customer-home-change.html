@@ -1,5 +1,15 @@
 <!DOCTYPE html>
 <html>
+    <dif>
+        {{if .RedirectAnswer.Ok}}
+            {{- if ne .RedirectAnswer.OkInfo "" -}}
+            <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
+            {{end}}
+            {{- if ne .RedirectAnswer.MistakeInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.MistakeInfo}}</p>
+            {{end}}
+        {{end}}
+    </dif>
     <h1>CHANGE ACCOUNT</h1>
     <form action="/{{.LoginCustomer}}/home/change/send" method="POST">
         <div>

@@ -4,17 +4,13 @@ import (
 	"log"
 	"net/http"
 
-	serviceacctauth "github.com/piliphulko/marketplace-example/api/service-acct-aut"
-	"github.com/piliphulko/marketplace-example/internal/pkg/gatehttp"
-	"github.com/piliphulko/marketplace-example/internal/pkg/gatehttp/opt"
-	"github.com/piliphulko/marketplace-example/internal/pkg/logwriter"
-	"github.com/spf13/viper"
-	"go.uber.org/zap/zapcore"
-)
+	s1 "github.com/piliphulko/marketplace-example/api/service-acct-aut"
+	s3 "github.com/piliphulko/marketplace-example/api/service-data-customer"
+	s2 "github.com/piliphulko/marketplace-example/api/service-order-pay"
 
-var (
-	logSync, closeConnAA func()
-	err                  error
+	"github.com/piliphulko/marketplace-example/internal/pkg/gatehttp"
+	"github.com/piliphulko/marketplace-example/internal/pkg/jwt"
+	"github.com/spf13/viper"
 )
 
 func init() {
@@ -22,27 +18,35 @@ func init() {
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal(err)
 	}
-
-	if logSync, err = logwriter.InitZapLog(
-		&opt.LogZap, viper.GetString("SERVICE-HTTP-SEND-HTML.LOG_FILE.ERROR_LEVEL"), zapcore.ErrorLevel,
-	); err != nil {
-		log.Fatal(err)
-	}
-
 	if err := gatehttp.FillTempHTMLfromDir(viper.GetString("SERVICE-HTTP-SEND-HTML.HTML_DIR")); err != nil {
 		log.Fatal(err)
 	}
+	jwt.InsertSecretForSignJWS(viper.GetString("SERVICE-ACCT-AUTH.JWT_SECRET"))
 }
 
 func main() {
-	defer logSync()
-	gatehttp.ConnAA, closeConnAA, err = serviceacctauth.ConnToServiceAccountAuthentication(viper.GetString("SERVICE-ACCT-AUTH.PORT"))
+	var (
+		closeConnAA, closeConnDC, closeConnOP func()
+		err                                   error
+	)
+	gatehttp.ConnAA, closeConnAA, err = s1.ConnToServiceAccountAuthentication(viper.GetString("SERVICE-ACCT-AUTH.PORT"))
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer closeConnAA()
+	gatehttp.ConnOP, closeConnOP, err = s2.ConnToServiceOrderPay(viper.GetString("SERVICE-ORDER-PAY.PORT"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer closeConnOP()
+	gatehttp.ConnDC, closeConnDC, err = s3.ConnToServiceDataCustomer(viper.GetString("SERVICE-DATA-CUSTOMER.PORT"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer closeConnDC()
 
 	log.Fatal(
-		http.ListenAndServe(viper.GetString("SERVER_HTTP_SEND_HTML.PORT"), gatehttp.RouterHTML()),
+		http.ListenAndServe(viper.GetString("SERVICE-HTTP-SEND-HTML.PORT"), gatehttp.RouterHTML()),
 	)
 }

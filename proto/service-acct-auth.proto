@@ -9,36 +9,32 @@ option go_package = "github.com/piliphulko/marketplace-example/internal/service/
 
 package service_acct_aut;
 
-/*
-ALL possible errors + text of possible errors:
-    -- ErrEmpty: "Empty value passed"
-    -- ErrPassLen: "Password is not in the allowed number of characters (8-64)"
-    -- ErrIncorrectCountry : "Incorrect country"
-    -- ErrLoginBusy: "Login busy"
-    -- ErrIncorrectPass: "Incorrect password"
-    -- ErrIncorrectLogin: "Incorrect login"
-*/
 
 service AccountAut {
-    /* AutAccount
-    the method prompts you to select an account type using oneof
-    if the password and login are valid then returns JWT
-    # possible errors: ErrEmpty; ErrPassLen; ErrIncorrectLogin; ErrIncorrectPass; */
-    rpc AutAccount(basic.LoginPass) returns (basic.StringJWT);
+    
+    rpc CreateAccount(basic.CustomerNew) returns (google.protobuf.Empty);
+    
+    rpc CreateAccountWarehouse(basic.WarehouseNew) returns (google.protobuf.Empty);
 
-    /* CreateAccount 
-    the method prompts you to select an account type using oneof
-    all type fields must be filled
-    # possible errors: ErrEmpty; ErrPassLen; ErrIncorrectPass; ErrIncorrectCountry; ErrLoginBusy; */
-    rpc CreateAccount(basic.AccountInfoChange) returns (google.protobuf.Empty);
+    rpc CreateAccountVendor(basic.VendorNew) returns (google.protobuf.Empty);
 
-    /* UpdateAccount
-    the method prompts you to select an account type using oneof
-    it is safe to pass empty values ​​or current values ​​in strings
-    requires the transfer of the old / current password for confirmation
-    updates only completed rows with new values
-    # possible errors: ErrEmpty; ErrPassLen; ErrIncorrectLogin; ErrIncorrectPass; ErrIncorrectCountry; ErrLoginBusy; */
-    rpc UpdateAccount(basic.AccountInfoChange) returns (google.protobuf.Empty);
+    
+    rpc AutAccount(basic.CustomerAut) returns (basic.StringJWT);
 
-    rpc CheckJWT(basic.StringJWT) returns (google.protobuf.Empty);
+    rpc AutAccountWarehouse(basic.WarehouseAut) returns (basic.StringJWT);
+
+    rpc AutAccountVendor(basic.VendorAut) returns (basic.StringJWT);
+
+
+    rpc ChangeAccount(basic.CustomerChange) returns (google.protobuf.Empty);
+
+    rpc ChangeAccountWarehouse(basic.WarehouseChange) returns (google.protobuf.Empty);
+
+    rpc ChangeAccountVendor(basic.VendorChange) returns (google.protobuf.Empty);
+
+
+    //rpc CheckJWT(basic.StringJWT) returns (google.protobuf.Empty);
+
+    //rpc GetCountryCity(google.protobuf.Empty) returns (basic.CountryCityPairs);
+
 }

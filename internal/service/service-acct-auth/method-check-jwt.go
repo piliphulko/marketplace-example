@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/piliphulko/marketplace-example/api/apierror"
 	"github.com/piliphulko/marketplace-example/api/basic"
 	"github.com/piliphulko/marketplace-example/internal/pkg/jwt"
 	"google.golang.org/grpc/codes"
@@ -15,25 +16,23 @@ func (s *server) CheckJWT(ctx context.Context, in *basic.StringJWT) (*emptypb.Em
 
 	// CHECK EMPTY
 	if in == nil && &in.StringJwt == nil && in.StringJwt == "" {
-		return &emptypb.Empty{}, status.New(codes.InvalidArgument, ErrEmpty.Error()).Err()
+		return &emptypb.Empty{}, apierror.ErrEmpty
 	}
 	JWT, err := jwt.BeIntoJWT(in.StringJwt)
 	if err != nil {
-		if errors.Is(err, jwt.ErrTokenFake) {
-			return &emptypb.Empty{}, status.New(codes.InvalidArgument, jwt.ErrTokenFake.Error()).Err()
+		if errors.Is(err, apierror.ErrTokenFake) {
+			return &emptypb.Empty{}, apierror.ErrTokenFake
 		} else {
-			LogGRPC.Error(err)
-			return &emptypb.Empty{}, status.New(codes.Internal, "").Err()
+			return &emptypb.Empty{}, err
 		}
 	}
 	if err := JWT.CheckJWT(); err != nil {
-		if errors.Is(err, jwt.ErrTokenFake) {
-			return &emptypb.Empty{}, status.New(codes.InvalidArgument, jwt.ErrTokenFake.Error()).Err()
-		} else if errors.Is(err, jwt.ErrTokenExpired) {
-			return &emptypb.Empty{}, status.New(codes.InvalidArgument, jwt.ErrTokenExpired.Error()).Err()
+		if errors.Is(err, apierror.ErrTokenFake) {
+			return &emptypb.Empty{}, apierror.ErrTokenFake
+		} else if errors.Is(err, apierror.ErrTokenExpired) {
+			return &emptypb.Empty{}, apierror.ErrTokenExpired
 		} else {
-			LogGRPC.Error(err)
-			return &emptypb.Empty{}, status.New(codes.Internal, "").Err()
+			return &emptypb.Empty{}, err
 		}
 	}
 	return &emptypb.Empty{}, status.New(codes.OK, "").Err()

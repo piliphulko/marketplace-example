@@ -61,7 +61,7 @@ func RouterHTML() *chi.Mux {
 			WithHTML(TempHTML, "customer-create.html").
 			SetHeaderResponse(map[string]string{
 				"Content-Type": "text/html; charset=utf-8"}).
-			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), handlerCleanPage))
+			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), handlerCustomerCreatePage))
 
 		r.Post("/customer/create/send", opt.NewOptionsHTTP().
 			URLSendRedirectOk("/customer/authorization").
@@ -76,25 +76,62 @@ func RouterHTML() *chi.Mux {
 			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), handlerAuthorizationPage))
 
 		r.Post("/customer/authorization/send", opt.NewOptionsHTTP().
-			URLSendRedirectOk("/{login_customer}/home").
+			URLSendRedirectOk("/home").
 			URLSendRedirectMistake("/customer/authorization").
 			CookieWrite().
-			SetConnectingToServiceGrpc(map[int]opt.ConnGrpc{
-				connAA: ConnAA,
-			}).
 			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), handlerCustomerAuthorizationSend))
 	})
 
 	// CUSTOMER PRIVAT ROUTER
 	r.Group(func(r chi.Router) {
 
-		r.Get("/{login_customer}/home", opt.NewOptionsHTTP().
+		r.Get("/home", opt.NewOptionsHTTP().
 			ReceptionRedirectURL().
 			WithHTML(TempHTML, "customer-home.html").
 			SetHeaderResponse(map[string]string{
 				"Content-Type": "text/html; charset=utf-8"}).
 			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), handlerCustomerHomePage))
 
+		r.Get("/home/change", opt.NewOptionsHTTP().
+			ReceptionRedirectURL().
+			WithHTML(TempHTML, "customer-home-change.html").
+			SetHeaderResponse(map[string]string{
+				"Content-Type": "text/html; charset=utf-8"}).
+			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), handlerCustomerHomeChangePage))
+
+		r.Post("/home/change/send", opt.NewOptionsHTTP().
+			URLSendRedirectOk("/customer/authorization").
+			URLSendRedirectMistake("{login_customer}/home/change").
+			CookieDelete().
+			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), handlerCustomerHomeChangeSend))
+
+		r.Get("/home/wallet", opt.NewOptionsHTTP().
+			ReceptionRedirectURL().
+			WithHTML(TempHTML, "customer-home-wallet.html").
+			SetHeaderResponse(map[string]string{
+				"Content-Type": "text/html; charset=utf-8"}).
+			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), handlerCustomerHomeWalletPage))
+
+		r.Get("/marketplace", opt.NewOptionsHTTP().
+			WithHTML(TempHTML, "marketplace.html").
+			SetHeaderResponse(map[string]string{
+				"Content-Type": "text/html; charset=utf-8"}).
+			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), handlerMarketplaceCustomerPage))
+
+		r.Post("/marketplace/send", opt.NewOptionsHTTP().
+			URLSendRedirectOk("/marketplace").
+			URLSendRedirectMistake("/marketplace").
+			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), handlerMarketplaceSend))
+
+		r.Post("/{order_uuid}/confirm/send", opt.NewOptionsHTTP().
+			URLSendRedirectOk("/marketplace").
+			URLSendRedirectMistake("/marketplace").
+			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), nil))
+
+		r.Post("/{order_uuid}/cancellation/send", opt.NewOptionsHTTP().
+			URLSendRedirectOk("/{login_customer}/home").
+			URLSendRedirectMistake("/marketplace").
+			HandlerLogicsRun(context.Background(), time.Duration(5*time.Second), nil))
 	})
 
 	return r

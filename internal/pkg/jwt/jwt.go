@@ -5,11 +5,11 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"errors"
 	"regexp"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
+	"github.com/piliphulko/marketplace-example/api/apierror"
 )
 
 var (
@@ -18,11 +18,12 @@ var (
 	keySecret []byte
 )
 
+/*
 var (
 	ErrTokenFake    = errors.New("Token fake")
 	ErrTokenExpired = errors.New("Token expired")
 )
-
+*/
 // InsertSecretForSignJWT inserts the key to sign the JWS
 func InsertSecretForSignJWS(secret string) {
 	keySecret = []byte(secret)
@@ -120,14 +121,14 @@ func (jwt JWT) CheckJWT() error {
 	base64.RawURLEncoding.Encode(signatureHMACBase64URL, signatureHMAC)
 
 	if !hmac.Equal(signatureHMACBase64URL, signature) {
-		return ErrTokenFake
+		return apierror.ErrTokenFake
 	}
 	base64.RawURLEncoding.Decode(payloadJson, payload)
 	if err := JSON.Unmarshal(payloadJson, &payloadType); err != nil {
 		return err
 	}
 	if time.Now().Unix() > payloadType.Exp {
-		return ErrTokenExpired
+		return apierror.ErrTokenExpired
 	}
 
 	return nil
@@ -157,7 +158,7 @@ func BeIntoJWT(jwtString string) (JWT, error) {
 	if ok {
 		return JWT{body: []byte(jwtString)}, nil
 	}
-	return JWT{}, ErrTokenFake
+	return JWT{}, apierror.ErrTokenFake
 }
 
 /*

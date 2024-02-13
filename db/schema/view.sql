@@ -1,5 +1,6 @@
 CREATE OR REPLACE VIEW view_marketplace AS SELECT
     table_warehouse_info.country,
+	table_warehouse_info.city, 
     table_warehouse_info.name_warehouse,
     table_vendor_info.name_vendor,
     table_goods.type_goods,
@@ -12,8 +13,31 @@ JOIN table_warehouse_info USING (id_warehouse)
 JOIN table_vendor_info USING (id_vendor)
 JOIN table_goods USING (id_goods)
 JOIN table_vendor_price USING (id_goods)
-WHERE table_warehouse_info.country = table_vendor_price.country AND goods_in_stock = true
+WHERE table_warehouse_info.country = table_vendor_price.country AND table_consignment.goods_in_stock = true
 ORDER BY table_warehouse_info.country DESC, table_goods.type_goods;
+
+CREATE OR REPLACE VIEW view_orders_all AS SELECT
+	table_orders.delivery_status_order,
+    table_orders.operation_uuid,
+    table_orders.id_order,
+    table_customer.login_customer,
+    table_orders.id_consignment,
+    table_vendor_info.name_vendor,
+    table_warehouse_info.name_warehouse,
+    table_goods.name_goods,
+	table_goods.type_goods,
+    table_orders.price_goods,
+    table_orders.amount_goods,
+    table_orders.delivery_location_country,
+    table_orders.delivery_location_city,
+    table_orders.date_order_start,
+    table_orders.date_order_finish
+FROM table_orders
+JOIN table_customer USING (id_customer)
+JOIN table_vendor_info USING (id_vendor)
+JOIN table_goods USING (id_goods)
+JOIN table_warehouse_info USING (id_warehouse)
+ORDER BY table_orders.operation_uuid;
 
 CREATE OR REPLACE VIEW view_orders_active AS SELECT
     table_orders.operation_uuid,

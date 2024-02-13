@@ -9,16 +9,10 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/piliphulko/marketplace-example/api/apierror"
 	"github.com/piliphulko/marketplace-example/internal/pkg/jwt"
 	"github.com/piliphulko/marketplace-example/internal/service/service-acct-auth/core"
-	"go.uber.org/zap/zapgrpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-)
-
-var (
-	LogGRPC *zapgrpc.Logger
 )
 
 var (
@@ -29,23 +23,31 @@ var (
 	ErrPassLen          = errors.New("Password is not in the allowed number of characters (8-64)")
 	ErrLoginBusy        = errors.New("Login busy")
 )
+var JwtClaims = struct {
+	Alg string
+	Typ string
+	Exp int64
+}{
+	Alg: "SHA256",
+	Typ: "JWT",
+	Exp: time.Now().Add(24 * 7 * time.Hour).Unix(),
+}
 
-func errorHandling(err error) error {
+func handlingErrSql(err error) error {
 	var pgErr *pgconn.PgError
 	if err == pgx.ErrNoRows {
-		return status.New(codes.Unauthenticated, ErrIncorrectLogin.Error()).Err()
+		return apierror.ErrIncorrectLogin
 	}
-	LogGRPC.Error(err)
 	if errors.As(err, &pgErr) {
 		// UNIQUE ERROR
 		if pgErr.Code == "23505" {
-			return status.New(codes.AlreadyExists, ErrLoginBusy.Error()).Err()
+			return apierror.ErrLoginBusy
 			// INCORRECT COUNTRY
 		} else if pgErr.Code == "22P02" {
-			return status.New(codes.InvalidArgument, ErrIncorrectCountry.Error()).Err()
+			return apierror.ErrIncorrectCountry
 		}
 	}
-	return status.New(codes.Internal, "").Err()
+	return err
 }
 
 type closeConn func()

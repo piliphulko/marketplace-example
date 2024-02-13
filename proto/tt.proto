@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package basic;
+
+option go_package = "github.com/piliphulko/marketplace-example/test";
+
+message Mm {
+    string m_m = 1; // @gotags: validate:"omitempty"
+}

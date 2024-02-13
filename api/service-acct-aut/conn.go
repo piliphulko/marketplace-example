@@ -4,35 +4,67 @@ import (
 	"context"
 
 	"github.com/piliphulko/marketplace-example/api/basic"
-	"github.com/piliphulko/marketplace-example/internal/pkg/jwt"
-	pb "github.com/piliphulko/marketplace-example/internal/service/service-acct-auth"
 	"github.com/piliphulko/marketplace-example/internal/service/service-acct-auth/core"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var (
-	ErrIncorrectPass    = pb.ErrIncorrectPass
-	ErrIncorrectLogin   = pb.ErrIncorrectLogin
-	ErrIncorrectCountry = pb.ErrIncorrectCountry
-	ErrEmpty            = pb.ErrEmpty
-	ErrPassLen          = pb.ErrPassLen
-	ErrLoginBusy        = pb.ErrLoginBusy
-	ErrTokenFake        = jwt.ErrTokenFake
-	ErrTokenExpired     = jwt.ErrTokenExpired
-)
-
 type closeConn func()
 
-type AccountAuthClient interface {
+type AccountAutClient interface {
 	core.AccountAutClient
 }
 
-type accountAuthClient struct {
+type accountAutClient struct {
 	core.AccountAutClient
 }
 
+func ConnToServiceAccountAuthentication(address string) (AccountAutClient, closeConn, error) {
+	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, nil, err
+	}
+	return core.NewAccountAutClient(conn), func() { conn.Close() }, nil
+}
+
+func (c *accountAutClient) CreateAccount(ctx context.Context, in *basic.CustomerNew, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return c.CreateAccount(ctx, in, opts...)
+}
+
+func (c *accountAutClient) CreateAccountWarehouse(ctx context.Context, in *basic.WarehouseNew, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return c.CreateAccountWarehouse(ctx, in, opts...)
+}
+
+func (c *accountAutClient) CreateAccountVendor(ctx context.Context, in *basic.VendorNew, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return c.CreateAccountVendor(ctx, in, opts...)
+}
+
+func (c *accountAutClient) AutAccount(ctx context.Context, in *basic.CustomerAut, opts ...grpc.CallOption) (*basic.StringJWT, error) {
+	return c.AutAccount(ctx, in, opts...)
+}
+
+func (c *accountAutClient) AutAccountWarehouse(ctx context.Context, in *basic.WarehouseAut, opts ...grpc.CallOption) (*basic.StringJWT, error) {
+	return c.AutAccountWarehouse(ctx, in, opts...)
+}
+
+func (c *accountAutClient) AutAccountVendor(ctx context.Context, in *basic.VendorAut, opts ...grpc.CallOption) (*basic.StringJWT, error) {
+	return c.AutAccountVendor(ctx, in, opts...)
+}
+
+func (c *accountAutClient) ChangeAccount(ctx context.Context, in *basic.CustomerChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return c.ChangeAccount(ctx, in, opts...)
+}
+
+func (c *accountAutClient) ChangeAccountWarehouse(ctx context.Context, in *basic.WarehouseChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return c.ChangeAccountWarehouse(ctx, in, opts...)
+}
+
+func (c *accountAutClient) ChangeAccountVendor(ctx context.Context, in *basic.VendorChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return c.ChangeAccountVendor(ctx, in, opts...)
+}
+
+/*
 type ChoiseAccount interface {
 	basic.CustomerChange | basic.VendorChange | basic.WarehouseChange
 }
@@ -106,6 +138,7 @@ func ConnToServiceAccountAuthentication(address string) (AccountAuthClient, clos
 		PasswortCustomer: "123456ab",
 	}))
 */
+/*
 func (aa *accountAuthClient) AutAccount(ctx context.Context, in *basic.LoginPass, opts ...grpc.CallOption) (*basic.StringJWT, error) {
 	return aa.AutAccount(ctx, in, opts...)
 }
@@ -130,15 +163,16 @@ func (aa *accountAuthClient) CheckJWT(ctx context.Context, in *basic.StringJWT, 
 		},
 		CustomerInfo: &basic.CustomerInfo{
 			CustomerCountry: "BELARUS",
-			CustomerCiry:    "MINSK",
+			CustomerCity:    "MINSK",
 		},
 	}))
 */
+/*
 func (aa *accountAuthClient) CreateAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	return aa.CreateAccount(ctx, in, opts...)
 }
-
-// UpdateAccount changes account information
+*/
+// ChangeAccount changes account information
 // for convenient data filling, you can use the OneofAccount ​​function
 // country name must be in uppercase
 // changes only filled fields
@@ -146,7 +180,7 @@ func (aa *accountAuthClient) CreateAccount(ctx context.Context, in *basic.Accoun
 /*
 	pbClient "github.com/piliphulko/marketplace-example/api/service-acct-auth"
 
-	_, err = conn.UpdateAccount(ctx, pbClient.OneofAccount(basic.CustomerChange{
+	_, err = conn.ChangeAccount(ctx, pbClient.OneofAccount(basic.CustomerChange{
 		CustomerAutOld: &basic.CustomerAut{ // to change, you need to confirm the data
 			LoginCustomer:    "newlogin",
 			PasswortCustomer: "123456ab",
@@ -159,7 +193,12 @@ func (aa *accountAuthClient) CreateAccount(ctx context.Context, in *basic.Accoun
 			CustomerCiry:    "",
 		},
 	}))
+func (aa *accountAuthClient) ChangeAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return aa.ChangeAccount(ctx, in, opts...)
+}
+
 */
-func (aa *accountAuthClient) UpdateAccount(ctx context.Context, in *basic.AccountInfoChange, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	return aa.UpdateAccount(ctx, in, opts...)
+
+func (c *accountAutClient) CreateAccount(ctx context.Context, in *basic.CustomerNew, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return c.AccountAut(ctx, in, opts)
 }

@@ -23,16 +23,16 @@
             {{- if ne .RedirectAnswer.OkInfo "" -}}
             <p style="color:green">OK: {{.RedirectAnswer.OkInfo}}</p>
             {{end}}
-            {{- if ne .RedirectAnswer.ErrInfo "" -}}
-            <p style="color:red">ERROR: {{.RedirectAnswer.ErrInfo}}</p>
+            {{- if ne .RedirectAnswer.MistakeInfo "" -}}
+            <p style="color:red">ERROR: {{.RedirectAnswer.MistakeInfo}}</p>
             {{end}}
         {{end}}
     </dif>
     <div>
         <h3>Welcome {{.LoginCustomer}}</h3>
-        <h3><a href="/{{.LoginCustomer}}/marketplace">marketplace</a></h3>
-        <h3>Wallet: <a href="/{{.LoginCustomer}}/home/wallet">{{.WalletMoney}}</a></h3>
-        <h3><a href="/{{.LoginCustomer}}/home/change">Change account</a></h3>
+        <h3><a href="/marketplace">marketplace</a></h3>
+        <h3>Wallet: <a href="/home/wallet">{{.WalletMoney}}</a></h3>
+        <h3><a href="/home/change">Change account</a></h3>
         {{- $login_customer := .LoginCustomer -}}
     </div>
     <div>
@@ -50,24 +50,24 @@
             {{- $total_cost := 0.00 -}}
             {{- $prev := "" -}}
             {{range .UnconfirmedOrdersARRAY}}
-                {{if ne .OrderUUID $prev}}
+                {{if ne .OrderUuid $prev}}
                     {{- if ne $prev "" -}}
                         <tr id="s2">
                             <td colspan="2">Total cost: {{$total_cost}}</td>
                             <td colspan="2">
-                                <form action="/{{$login_customer}}/{{.OrderUUID}}/confirm/send" method="POST">
+                                <form action="/{{$login_customer}}/{{.OrderUuid}}/confirm/send" method="POST">
                                     <input type="submit" value="pay the order">
                                 </form>
                             </td>
                             <td colspan="3">
-                                <form action="/{{$login_customer}}/{{.OrderUUID}}/cancellation/send" method="POST">
+                                <form action="/{{$login_customer}}/{{.OrderUuid}}/cancellation/send" method="POST">
                                     <input type="submit" value="cancellation the order">
                                 </form>
                             </td>
                         </tr>
                     {{end}}
                     {{- $total_cost = 0.00 -}}
-                    {{- $prev = .OrderUUID -}}
+                    {{- $prev = .OrderUuid -}}
                     <tr>
                         <td colspan="7">Order: {{$prev}}</td>
                     </tr>
@@ -116,19 +116,19 @@
             {{- $total_cost := 0.00 -}}
             {{- $prev := "" -}}
             {{range .СonfirmedOrdersARRAY}}
-                {{if ne .OrderUUID $prev}}
+                {{if ne .OrderUuid $prev}}
                     {{- if ne $prev "" -}}
                         <tr id="s2">
                             <td colspan="2">Total cost: {{$total_cost}}</td>
                             <td colspan="5">
-                                <form action="/{{$login_customer}}/{{.OrderUUID}}/receiving" method="GET">
+                                <form action="/{{$login_customer}}/{{.OrderUuid}}/receiving" method="GET">
                                     <input type="submit" value="get order code">
                                 </form>
                             </td>
                         </tr>
                     {{end}}
                     {{- $total_cost = 0.00 -}}
-                    {{- $prev = .OrderUUID -}}
+                    {{- $prev = .OrderUuid -}}
                     <tr>
                         <td colspan="7">Order: {{$prev}}</td>
                     </tr>

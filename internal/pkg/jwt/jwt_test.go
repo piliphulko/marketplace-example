@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/piliphulko/marketplace-example/api/apierror"
 	"github.com/stretchr/testify/require"
 )
 
@@ -25,7 +26,7 @@ func TestTotal(t *testing.T) {
 
 	jwt.body = []byte("eyJhbGciOiJBRVMiLCJ0eXAiOiJKV1Qi.fQp7Im5pY2tuYW1lIjoidGVzdCIsImV4cCI6IjI0MjIi.QQ8-1MOWCthrrOaMsF_S--yKKf-FYTDvx6RDGn")
 	err = jwt.CheckJWT()
-	require.ErrorIs(t, err, ErrTokenFake)
+	require.ErrorIs(t, err, apierror.ErrTokenFake)
 
 	jws, err = CreateJWS(Header{Alg: "SHA256", Typ: "JWT"}, Payload{Nickname: "test", Exp: time.Now().Unix() - 1})
 	require.Nil(t, err)
@@ -34,7 +35,7 @@ func TestTotal(t *testing.T) {
 	require.Nil(t, err)
 
 	err = jwt.CheckJWT()
-	require.ErrorIs(t, err, ErrTokenExpired)
+	require.ErrorIs(t, err, apierror.ErrTokenExpired)
 }
 
 var bendE *JWS

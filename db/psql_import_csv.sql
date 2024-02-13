@@ -3,7 +3,7 @@
 \COPY table_customer_info (id_customer, delivery_location_country, delivery_location_city) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_customer_info.csv' DELIMITER ',' CSV HEADER;
 \COPY table_vendor (login_vendor, passwort_vendor) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_vendor.csv' DELIMITER ',' CSV HEADER;
 \COPY table_vendor_info (id_vendor, name_vendor) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_vendor_info.csv' DELIMITER ',' CSV HEADER;
-\COPY table_goods (id_vendor, type_googs, name_goods, info_goods) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_goods.csv' DELIMITER ',' CSV HEADER;
+\COPY table_goods (id_vendor, type_goods, name_goods, info_goods) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_goods.csv' DELIMITER ',' CSV HEADER;
 \COPY table_vendor_price (id_vendor, id_goods, country, price_goods) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_vendor_price.csv' DELIMITER ',' CSV HEADER;
 \COPY table_warehouse (login_warehouse, passwort_warehouse) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_warehouse.csv' DELIMITER ',' CSV HEADER;
 \COPY table_warehouse_info (id_warehouse, name_warehouse, country, city) FROM 'C:\Users\pilip\go\src\github.com\piliphulko\marketplace-example\db\csv\table_warehouse_info.csv' DELIMITER ',' CSV HEADER;
