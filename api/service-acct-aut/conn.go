@@ -198,7 +198,3 @@ func (aa *accountAuthClient) ChangeAccount(ctx context.Context, in *basic.Accoun
 }
 
 */
-
-func (c *accountAutClient) CreateAccount(ctx context.Context, in *basic.CustomerNew, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	return c.AccountAut(ctx, in, opts)
-}

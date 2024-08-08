@@ -2,6 +2,7 @@ package f16
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/piliphulko/marketplace-example/api/apierror"
 	"google.golang.org/grpc"
@@ -43,6 +44,10 @@ func InterceptorCheckCtx(ctx context.Context, req interface{}, info *grpc.UnaryS
 
 func IntrceptorHandlerErrors(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	resp, err := handler(ctx, req)
+	if err == nil {
+		return resp, err
+	}
+	fmt.Println(err)
 	codesAnswer, ok := mapClientCodes[err]
 	if ok {
 		return resp, status.New(codesAnswer, err.Error()).Err()

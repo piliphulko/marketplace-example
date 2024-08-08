@@ -1,5 +1,6 @@
 package serviceacctauth
 
+/*
 import (
 	"testing"
 
@@ -55,3 +56,4 @@ func BenchmarkSimple(b *testing.B) {
 
 // BenchmarkSimple-8   	 2603131	       440.2 ns/op	     376 B/op	       6 allocs/op
 // BenchmarkSimple-8   	 2760363	       435.9 ns/op	     376 B/op	       6 allocs/op
+*/

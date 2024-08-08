@@ -89,6 +89,12 @@ message VendorNew {
     VendorInfo vendor_info = 2;
 }
 
+message VendorWalletInfo {
+    float wallet_money_available = 1;
+    float wallet_money_blocked = 2;
+    float commission_percentage = 3;
+}
+
 // OTHERS
 message LoginPass {
     oneof account_choice {
@@ -114,14 +120,15 @@ message StringJWT {
 
 message Order {
     string order_uuid = 1;
-    string location = 2;
-    string name_goods = 3;
-    string type_goods = 4;
-    string name_vendor = 5;
-    string name_warehouse = 6;
-    uint32 amount_goods = 7;
-    float price_goods = 8;
-    string date = 9;
+    OrderStatusEnum order_status_enum = 2;
+    string location = 3;
+    string name_goods = 4;
+    string type_goods = 5;
+    string name_vendor = 6;
+    string name_warehouse = 7;
+    uint32 amount_goods = 8;
+    float price_goods = 9;
+    string date = 10;
 }
 
 message Orders {

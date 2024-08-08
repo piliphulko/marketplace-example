@@ -30,8 +30,6 @@ const (
 	AccountAut_ChangeAccount_FullMethodName          = "/service_acct_aut.AccountAut/ChangeAccount"
 	AccountAut_ChangeAccountWarehouse_FullMethodName = "/service_acct_aut.AccountAut/ChangeAccountWarehouse"
 	AccountAut_ChangeAccountVendor_FullMethodName    = "/service_acct_aut.AccountAut/ChangeAccountVendor"
-	AccountAut_CheckJWT_FullMethodName               = "/service_acct_aut.AccountAut/CheckJWT"
-	AccountAut_GetCountryCity_FullMethodName         = "/service_acct_aut.AccountAut/GetCountryCity"
 )
 
 // AccountAutClient is the client API for AccountAut service.
@@ -47,8 +45,6 @@ type AccountAutClient interface {
 	ChangeAccount(ctx context.Context, in *basic.CustomerChange, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ChangeAccountWarehouse(ctx context.Context, in *basic.WarehouseChange, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	ChangeAccountVendor(ctx context.Context, in *basic.VendorChange, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	CheckJWT(ctx context.Context, in *basic.StringJWT, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	GetCountryCity(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*basic.CountryCityPairs, error)
 }
 
 type accountAutClient struct {
@@ -140,24 +136,6 @@ func (c *accountAutClient) ChangeAccountVendor(ctx context.Context, in *basic.Ve
 	return out, nil
 }
 
-func (c *accountAutClient) CheckJWT(ctx context.Context, in *basic.StringJWT, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, AccountAut_CheckJWT_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accountAutClient) GetCountryCity(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*basic.CountryCityPairs, error) {
-	out := new(basic.CountryCityPairs)
-	err := c.cc.Invoke(ctx, AccountAut_GetCountryCity_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // AccountAutServer is the server API for AccountAut service.
 // All implementations must embed UnimplementedAccountAutServer
 // for forward compatibility
@@ -171,8 +149,6 @@ type AccountAutServer interface {
 	ChangeAccount(context.Context, *basic.CustomerChange) (*emptypb.Empty, error)
 	ChangeAccountWarehouse(context.Context, *basic.WarehouseChange) (*emptypb.Empty, error)
 	ChangeAccountVendor(context.Context, *basic.VendorChange) (*emptypb.Empty, error)
-	CheckJWT(context.Context, *basic.StringJWT) (*emptypb.Empty, error)
-	GetCountryCity(context.Context, *emptypb.Empty) (*basic.CountryCityPairs, error)
 	mustEmbedUnimplementedAccountAutServer()
 }
 
@@ -206,12 +182,6 @@ func (UnimplementedAccountAutServer) ChangeAccountWarehouse(context.Context, *ba
 }
 func (UnimplementedAccountAutServer) ChangeAccountVendor(context.Context, *basic.VendorChange) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeAccountVendor not implemented")
-}
-func (UnimplementedAccountAutServer) CheckJWT(context.Context, *basic.StringJWT) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CheckJWT not implemented")
-}
-func (UnimplementedAccountAutServer) GetCountryCity(context.Context, *emptypb.Empty) (*basic.CountryCityPairs, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCountryCity not implemented")
 }
 func (UnimplementedAccountAutServer) mustEmbedUnimplementedAccountAutServer() {}
 
@@ -388,42 +358,6 @@ func _AccountAut_ChangeAccountVendor_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccountAut_CheckJWT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(basic.StringJWT)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountAutServer).CheckJWT(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AccountAut_CheckJWT_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountAutServer).CheckJWT(ctx, req.(*basic.StringJWT))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccountAut_GetCountryCity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountAutServer).GetCountryCity(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AccountAut_GetCountryCity_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountAutServer).GetCountryCity(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // AccountAut_ServiceDesc is the grpc.ServiceDesc for AccountAut service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -466,14 +400,6 @@ var AccountAut_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ChangeAccountVendor",
 			Handler:    _AccountAut_ChangeAccountVendor_Handler,
-		},
-		{
-			MethodName: "CheckJWT",
-			Handler:    _AccountAut_CheckJWT_Handler,
-		},
-		{
-			MethodName: "GetCountryCity",
-			Handler:    _AccountAut_GetCountryCity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

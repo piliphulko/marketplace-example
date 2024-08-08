@@ -19,3 +19,7 @@ protoc-service-data-warehouse:
 protoc-service-data-customer:
 
 	protoc -I . service-data-customer.proto --go_out=../../../.. --go-grpc_out=../../../..
+
+protoc-service-get-data:
+
+	protoc -I . service-get-data.proto --go_out=../../../.. --go-grpc_out=../../../..

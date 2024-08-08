@@ -1,0 +1,42 @@
+vault auth enable -tls-skip-verify approle
+
+vault secrets enable -tls-skip-verify database
+
+vault write -tls-skip-verify database/config/pgconn_vault plugin_name="postgresql-database-plugin" allowed_roles="*" connection_url="postgresql://{{username}}:{{password}}@host.docker.internal:5432/test_db" username="vault_creater_roles" password="5432" password_authentication="scram-sha-256"
+
+--vault write database/config/pgconn_vault plugin_name="postgresql-database-plugin" 
+--    allowed_roles="*" connection_url="postgresql://{{username}}:{{password}}@host.docker.internal:5432/test_db" 
+--    username="vault_creater_roles" password="5432" password_authentication="scram-sha-256"
+
+vault write -tls-skip-verify database/roles/service-acct-role db_name="pgconn_vault" creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}' IN ROLE role_service_acct_auth;" default_ttl="1h" max_ttl="24h"
+
+--vault write database/roles/service-acct-role db_name="pgconn_vault" 
+--    creation_statements='CREATE ROLE "{{name}}" 
+--                        WITH LOGIN PASSWORD ''{{password}}'' 
+--                        VALID UNTIL ''{{expiration}}'' 
+--                        IN ROLE role_service_acct_auth;' 
+--    default_ttl="1h" max_ttl="24h"
+
+vault policy write -tls-skip-verify service-acct-role-policies service-acct-role-policies.hcl
+
+vault write -tls-skip-verify auth/approle/role/service-acct-role token_ttl=10m token_max_ttl=10m secret_id_ttl=24h secret_id_num_uses=1 token_num_uses=3 policies="service-acct-role-policies"
+
+--vault write auth/approle/role/service-acct-role
+--    token_ttl=10m token_max_ttl=10m secret_id_ttl=24h
+--    secret_id_num_uses=1 token_num_uses=3
+--    policies="service-acct-role-policies"
+
+
+vault secrets enable -tls-skip-verify pki
+
+vault secrets tune -tls-skip-verify -max-lease-ttl=8760h pki
+
+vault write -tls-skip-verify pki/root/generate/internal common_name="marketplace_example" ttl=87600h
+
+vault write -tls-skip-verify pki/config/urls issuing_certificates="http://host.docker.internal:8200/v1/pki/ca" crl_distribution_points="http://host.docker.internal:8200/v1/pki/crl"
+
+--vault write pki/config/urls 
+--    issuing_certificates="http://host.docker.internal:8200/v1/pki/ca" 
+--    crl_distribution_points="http://host.docker.internal:8200/v1/pki/crl"
+
+vault write -tls-skip-verify pki/roles/service-acct-role allowed_domains="host.docker.internal" allow_bare_domains=true allow_subdomains=true max_ttl="720h"

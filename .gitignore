@@ -1,2 +1,5 @@
 *.log
 cmd/test/
+config.jaml
+root_token.txt
+private.key

@@ -1,6 +1,6 @@
 ---
 POSTGRESQL:
-  DATABASE_URL: "postgres://postgres:5432@172.21.80.1:5432/test_db"
+  DATABASE_URL: "postgres://postgres:5432@172.18.64.1:5432/test_db"
 
 SERVICE-HTTP-SEND-HTML:
   PORT: ":8080"

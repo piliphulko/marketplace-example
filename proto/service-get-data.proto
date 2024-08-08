@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+import "basic.proto";
+
+option go_package = "github.com/piliphulko/marketplace-example/internal/service/service-get-data/core";
+
+service GetData {
+
+    //OTHERS
+
+    rpc GetMarketplace(google.protobuf.Empty) returns (basic.GoodsArray);
+
+    // CUSTOMER
+
+    rpc GetCustomerInfo(google.protobuf.Empty) returns (basic.CustomerInfo);
+
+    rpc GetCustomerWalletInfo(google.protobuf.Empty) returns (basic.WalletInfo);
+
+    rpc GetCustomerOrders(google.protobuf.Empty) returns (basic.Orders);
+
+    // WAREHOUSE
+
+    rpc GetWarehouseInfo(google.protobuf.Empty) returns (basic.WarehouseInfo);
+
+    rpc GetWarehouseInfoWallet(google.protobuf.Empty) returns(basic.WarehouseWalletInfo);
+
+    rpc GetArrayOrdersCustomerForWarehouse(google.protobuf.Empty) returns (basic.ArrayOrdersCustomer);
+
+    //VENDOR
+
+    rpc GetVendorInfo(google.protobuf.Empty) returns (basic.VendorInfo);
+
+    rpc GetVendorInfoWallet(google.protobuf.Empty) returns(basic.VendorWalletInfo);
+
+    rpc GetArrayGoodsInWarehousesForVendor(google.protobuf.Empty) returns(basic.GoodsArray);
+} 

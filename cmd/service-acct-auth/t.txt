@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1
+
+FROM golang:alpine AS builder
+
+# installing git package without storing cache in image
+RUN apk update && apk add --no-cache git
+
+WORKDIR /app
+
+# layer caching to improve the speed of subsequent builds
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server ./cmd/service-acct-auth
+
+FROM alpine
+RUN apk add shadow
+
+RUN useradd -m user_main
+
+COPY --from=builder /app/server ./app
+COPY --from=builder /app/config/config.yaml ./app
+
+RUN chown user_main:user_main ./app
+USER user_main
+ENTRYPOINT ["./app/server"]

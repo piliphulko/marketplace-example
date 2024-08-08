@@ -11,8 +11,8 @@ import (
 )
 
 func init() {
-	viper.SetConfigFile("../../config/config.yaml")
 	//viper.SetConfigFile("config.yaml")
+	viper.SetConfigFile("/usr/local/bin/config.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatal(err)
