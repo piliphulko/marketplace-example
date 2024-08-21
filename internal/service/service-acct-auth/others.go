@@ -3,7 +3,6 @@ package serviceacctauth
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -65,22 +64,7 @@ func RegisterServer(s1 grpc.ServiceRegistrar, s2 *server) {
 	core.RegisterAccountAutServer(s1, s2)
 }
 
-func (s *server) ConnPostrgresql(postgresqlURL string) (closeConn, error) {
-	var i int = 1
-	for {
-		fmt.Printf("|POSTGRESQL|:connection attempt: %d\n", i)
-		pool, err := pgxpool.New(context.Background(), postgresqlURL)
-		if err != nil && i > 4 {
-			return nil, err
-		} else if err == nil {
-			fmt.Println("|POSTGRESQL|:connection completed successfully")
-			s.pgxPool = pool
-			return func() { s.pgxPool.Close() }, nil
-		}
-		time.Sleep(time.Duration(i^2*250) * time.Microsecond)
-		i++
-	}
-}
+func (s *server) InsertPostgresql(pgxPool *pgxpool.Pool) { s.pgxPool = pgxPool }
 
 func (s *server) AcquireConn(ctx context.Context) (*pgxpool.Conn, error) {
 	return s.pgxPool.Acquire(ctx)
