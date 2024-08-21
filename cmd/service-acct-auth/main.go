@@ -4,11 +4,18 @@ import (
 	"log"
 	"net"
 
+	"github.com/piliphulko/marketplace-example/internal/pkg/donkeyhealth"
+	"github.com/piliphulko/marketplace-example/internal/pkg/donkeypacking"
 	"github.com/piliphulko/marketplace-example/internal/pkg/f16"
 	pb "github.com/piliphulko/marketplace-example/internal/service/service-acct-auth"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
+
+type HealthServer struct {
+	grpc_health_v1.UnimplementedHealthServer
+}
 
 func init() {
 	//viper.SetConfigFile("config.yaml")
@@ -21,13 +28,6 @@ func init() {
 }
 
 func main() {
-	//logSync, err := logwriter.InitZapLogGRPC(
-	//	&pb.LogGRPC, viper.GetString("SERVICE-ACCT-AUTH.LOG_FILE"), zapcore.ErrorLevel,
-	//)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//defer logSync()
 
 	lis, err := net.Listen(
 		viper.GetString("SERVICE-ACCT-AUTH.NETWORK_SERVER"),
@@ -45,13 +45,25 @@ func main() {
 			f16.IntrceptorHandlerErrors,
 		),
 	)
-	server := pb.StartServer()
 
-	close, err := server.ConnPostrgresql(viper.GetString("POSTGRESQL.DATABASE_URL"))
-	defer close()
+	pgxPool, closePgxPool, err := donkeypacking.GetConnPostrgresql(viper.GetString("POSTGRESQL.DATABASE_URL"))
+
+	defer closePgxPool()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	server := pb.StartServer()
+
+	server.InsertPostgresql(pgxPool)
+
+	healthFragmentServer := donkeyhealth.CreateFragmentForCheckingHealthServer(
+		donkeyhealth.ServiceAsFollows{
+			Postgresql: pgxPool,
+		},
+	)
+
+	grpc_health_v1.RegisterHealthServer(grpcServer, healthFragmentServer)
 
 	pb.RegisterServer(grpcServer, server)
 
