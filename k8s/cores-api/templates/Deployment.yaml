@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment
+  namespace: {{ index .Values.SERVICES .Values.SELECTED "NAMESPACE" }}
+spec:
+  replicas: {{ index .Values.SERVICES .Values.SELECTED "REPLICAS" }}
+  selector:
+    matchLabels:
+      app: separate-copy
+  template:
+    metadata:
+      labels:
+        app: separate-copy
+    spec:
+      containers:
+      - name: container
+        image: {{ index .Values.SERVICES .Values.SELECTED "CONTAINER-IMAGE" }}
+        ports:
+        - containerPort: {{ index .Values.SERVICES .Values.SELECTED "PORTS" "CONTAINER-PORT" }}
+          protocol: TCP
+        env:
+        - name: APP_PORT
+          value: "{{ index .Values.SERVICES .Values.SELECTED "PORTS" "CONTAINER-PORT" }}"
+        resources:
+          requests:
+            memory: {{ index .Values.SERVICES .Values.SELECTED "LIMITES" "CONTAINER" "DEFAULT" "MEM" }}
+            cpu: {{ index .Values.SERVICES .Values.SELECTED "LIMITES" "CONTAINER" "DEFAULT" "CPU" }}
+          limits:
+            memory: {{ index .Values.SERVICES .Values.SELECTED "LIMITES" "CONTAINER" "LIMITS" "MEM" }}
+            cpu: {{ index .Values.SERVICES .Values.SELECTED "LIMITES" "CONTAINER" "LIMITS" "CPU" }}
+        livenessProbe:
+          grpc:
+            port: {{ index .Values.SERVICES .Values.SELECTED "PORTS" "CONTAINER-PORT" }}
+          initialDelaySeconds: {{ index .Values.SERVICES .Values.SELECTED "PROBE" "READINESS" "DELAY-SEC" }}
+          periodSeconds: {{ index .Values.SERVICES .Values.SELECTED "PROBE" "READINESS" "PERIOD-SEC" }}
+          timeoutSeconds: {{ index .Values.SERVICES .Values.SELECTED "PROBE" "READINESS" "TIMEOUT-SEC" }}
+        readinessProbe:
+          grpc:
+            port: {{ index .Values.SERVICES .Values.SELECTED "PORTS" "CONTAINER-PORT" }}
+          initialDelaySeconds: {{ index .Values.SERVICES .Values.SELECTED "PROBE" "LIVENESS" "DELAY-SEC" }}
+          periodSeconds: {{ index .Values.SERVICES .Values.SELECTED "PROBE" "LIVENESS" "PERIOD-SEC" }}
+          timeoutSeconds: {{ index .Values.SERVICES .Values.SELECTED "PROBE" "LIVENESS" "TIMEOUT-SEC" }}

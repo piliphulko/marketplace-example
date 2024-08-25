@@ -14,8 +14,11 @@ docker-run-service-acct-auth:
 docker-run-registry:
 	docker run -d -p 5000:5000 --name registry -v registry-data:/var/lib/registry registry:2
 
-k8s-use-manifest-service-acct-auth:
-	kubectl apply -f k8s/service-acct-auth
+helm-install-service-acct-auth:
+	helm install --debug service-acct-auth ./k8s/cores-api --set SELECTED=SERVICE-ACCT-AUTH
 
-k8s-del-manifest-service-acct-auth:
-	kubectl delete -f k8s/service-acct-auth
+helm-upgrade-service-acct-auth:
+	helm upgrade service-acct-auth ./k8s/cores-api --set SELECTED=SERVICE-ACCT-AUTH
+
+helm-uninstall-service-acct-auth:
+	helm uninstall service-acct-auth 

@@ -1,0 +1,39 @@
+# Default values for cores-api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+SELECTED: "SERVICE-ACCT-AUTH"
+
+SERVICES:
+  SERVICE-ACCT-AUTH:
+    NAMESPACE: "testspace-service-acct-auth"
+    CONTAINER-IMAGE: "localhost:5000/service-acct-auth:V0.0.2"
+    REPLICAS: 1
+    PORTS:
+      CONTAINER-PORT: 50051
+      INTERNAL-PORT: 50051
+      EXTRENAL-PORT: 30051
+    LIMITES:
+      CONTAINER:
+        DEFAULT:
+          CPU: "100m"
+          MEM: "128Mi"
+        LIMITS:
+          CPU: "300m"
+          MEM: "524Mi"
+      SPACE:
+        LIMITS-PODS: "15"
+        DEFAULT:
+          CPU: "100m"
+          MEM: "128Mi"
+        LIMITS:
+          CPU: "500m"
+          MEM: "1024Mi"
+    PROBE:
+      READINESS:
+        DELAY-SEC: 30
+        PERIOD-SEC: 60
+        TIMEOUT-SEC: 5
+      LIVENESS:
+        DELAY-SEC: 30
+        PERIOD-SEC: 60
+        TIMEOUT-SEC: 5

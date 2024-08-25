@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-ports
+  namespace: {{ index .Values.SERVICES .Values.SELECTED "NAMESPACE" }}
+spec:
+  selector:
+    app: separate-copy
+  ports:
+  - name: grpc
+    protocol: TCP
+    port: {{ index .Values.SERVICES .Values.SELECTED "PORTS" "INTERNAL-PORT" }}
+    targetPort: {{ index .Values.SERVICES .Values.SELECTED "PORTS" "CONTAINER-PORT" }}
+    nodePort: {{ index .Values.SERVICES .Values.SELECTED "PORTS" "EXTRENAL-PORT" }}
+  type: NodePort
