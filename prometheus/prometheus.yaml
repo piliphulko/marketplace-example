@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s  # Как часто собирать метрики
+  evaluation_interval: 15s  # Как часто выполнять правила
+  external_labels:
+    cluster: "cores-api"  # Уникальный идентификатор для вашего кластера
+    replica: "replica-0"     # Уникальный идентификатор для каждой реплики Prometheus (если есть)
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']

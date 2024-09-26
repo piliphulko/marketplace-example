@@ -1,0 +1,32 @@
+NAMESPACE: "testspace-service-acct-auth"
+CONTAINER_IMAGE: "localhost:5000/service-acct-auth:V0.0.2"
+REPLICAS: 1
+PORTS:
+  CONTAINER_PORT: 50051
+  INTERNAL_PORT: 50051
+  EXTRENAL_PORT: 30051
+LIMITES:
+  CONTAINER:
+    DEFAULT:
+      CPU: "100m"
+      MEM: "128Mi"
+    LIMITS:
+      CPU: "300m"
+      MEM: "524Mi"
+  SPACE:
+    LIMITS_PODS: "15"
+    DEFAULT:
+      CPU: "100m"
+      MEM: "128Mi"
+    LIMITS:
+      CPU: "500m"
+      MEM: "1024Mi"
+PROBE:
+  READINESS:
+    DELAY_SEC: 30
+    PERIOD_SEC: 60
+    TIMEOUT_SEC: 5
+  LIVENESS:
+    DELAY_SEC: 30
+    PERIOD_SEC: 60
+    TIMEOUT_SEC: 5

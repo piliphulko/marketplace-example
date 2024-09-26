@@ -1,0 +1,12 @@
+apiVersion: v2
+
+name: service-acct-auth
+type: application
+
+version: 0.1.0
+appVersion: "0.0.2"
+
+dependencies:
+  - name: cores-api-library
+    version: "0.1.0"
+    repository: "oci://localhost:5000/helm-repo"

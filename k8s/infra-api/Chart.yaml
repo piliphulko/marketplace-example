@@ -1,0 +1,7 @@
+apiVersion: v2
+name: infra-api
+version: 0.0.1
+dependencies:
+  - name: prometheus
+    version: "0.0.1"
+    repository: "file://charts/prometheus"
