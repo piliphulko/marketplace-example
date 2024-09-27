@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: thanos-sidecar
+spec:
+  containers:
+    - name: thanos-sidecar
+      image: thanosio/thanos:main-2024-09-02-dfeaf6e
+      args:
+        - sidecar
+        - --tsdb.path=/prometheus
+        - --objstore.config-file=/etc/thanos/thanos.yaml
+        - --prometheus.url=http://localhost:9090
+      volumeMounts:
+        - name: objstore-config
+          mountPath: /etc/thanos/thanos.yaml
+          subPath: thanos.yaml
+        - name: prometheus-data
+          mountPath: /prometheus
+  volumes:
+    - name: objstore-config
+      hostPath:
+        path: /path/on/host/to/thanos.yaml  # Абсолютный путь на хосте к файлу конфигурации
+    - name: prometheus-data
+      hostPath:
+        path: /path/on/host/to/prometheus/data  # Абсолютный путь на хосте к данным Prometheus

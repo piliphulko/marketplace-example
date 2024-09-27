@@ -1,0 +1,6 @@
+dependencies:
+- name: cores-api-library
+  repository: oci://localhost:5000/helm-repo
+  version: 0.1.0
+digest: sha256:ac81e4ebe54e59fd3d787c56d4e00f7b08c8a64191060b71dec2e9cffad5a6ea
+generated: "2024-09-26T22:32:35.2057006+02:00"

@@ -1,0 +1,9 @@
+apiVersion: v2
+name: core-api
+version: 0.1.0
+description: Superchart that includes multiple microservices
+
+dependencies:
+  - name: service-acct-auth
+    version: "0.1.0"
+    repository: "file://./charts/service-acct-auth"
